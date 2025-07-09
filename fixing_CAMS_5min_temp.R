@@ -1,5 +1,5 @@
 cruise <- "Cruise 24"
-#need full cruise information
+##### Loading in cruise information #####
 cruise_info <- read.delim(
   "/Users/reneechabot-mehlin/Desktop/cruise24_eulerian/all_data_cruise24.txt",
   sep = ",",
@@ -25,23 +25,39 @@ cruise_info_5min <- timeAverage(
   cruise_info,
   avg.time = "5 min",
   data.thresh = 0,
-  statistic = "mean"
-)
+  statistic = "mean",
+  start.date = min(cruise_info$Day),
+  end.date =  max(cruise_info$Day) + 1)
+
 library(hms)
 cruise_info_5min$time_only <- as_hms(cruise_info_5min$date)
+cruise_info_5min <- cruise_info_5min[!is.na(cruise_info_5min$Longitude_deg), ]
 
-
+###### Loading in CAMS information #####
 library(raster)
 library(ncdf4)
-library(ggplot2)
 library(sf)
 library(dplyr)
+library(reshape2)
 CAMS <- list()
+all_timestamps <- list()
 files <- list.files(
   '/Users/reneechabot-mehlin/Desktop/cruise24_eulerian/cams_global_inversion_optimized_ghg_fluxes',
   pattern = '\\.nc$',
   full.names = TRUE
 )
+states <- st_read(
+  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
+)
+east_coast_states <- c(
+  "Maine", "New Hampshire", "Massachusetts", "Rhode Island", "Connecticut",
+  "New York", "New Jersey", "Delaware", "Maryland", "Virginia",
+  "North Carolina", "South Carolina", "Georgia", "Florida", "Pennsylvania", "Vermont"
+)
+east_states_sf <- states %>%
+  filter(NAME %in% east_coast_states)
+east_extent <- extent(-85, -65, 25, 47)
+
 for (f in files) {
   cat("Processing:", f, "\n")
   nc <- nc_open(f)
@@ -56,92 +72,87 @@ for (f in files) {
     nc_close(nc)
     next
   }
-  dims <- nc$var[[var_to_use]]$varsize
-  print(paste("Variable", var_to_use, "dimensions:", paste(dims, collapse = " x ")))
-  nc_close(nc)
-  if (length(dims) < 3 || any(dims == 0)) {
-    warning(paste("Skipping", f, "- invalid dimensions"))
-    next
-  }
-  tryCatch({
-    r <- raster(f, varname = var_to_use, band = 1)
-    CAMS[[paste0(var_to_use, "_", length(CAMS) + 1)]] <- r
-  }, error = function(e) {
-    warning(paste("Skipping", f, "- could not load raster:", e$message))
-  })
-}
-#grabbing timestamps
-all_timestamps <- list()
-
-for (i in seq_along(files)) {
-  cat("Reading time info from:", files[i], "\n")
-  nc <- nc_open(files[i])
-  if (!("time" %in% names(nc$dim))) {
-    warning(paste("No 'time' dimension in:", files[i]))
+  
+  # Read timestamps
+  if ("time" %in% names(nc$dim)) {
+    time_vals <- ncvar_get(nc, "time")
+    time_units <- ncatt_get(nc, "time", "units")$value
+    origin <- sub("hours since ", "", time_units)
+    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
+  } else {
+    warning("No time dimension in:", f)
     nc_close(nc)
     next
   }
-  time_vals <- ncvar_get(nc, "time")
-  time_units <- ncatt_get(nc, "time", "units")$value
   nc_close(nc)
-  origin <- sub("hours since ", "", time_units)
-  timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
-  all_timestamps[[basename(files[i])]] <- timestamps
-}
-#shapefile load
-
-states <- st_read(
-  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
-)
-
-east_coast_states <- c(
-  "Maine", "New Hampshire", "Massachusetts", "Rhode Island", "Connecticut",
-  "New York", "New Jersey", "Delaware", "Maryland", "Virginia",
-  "North Carolina", "South Carolina", "Georgia", "Florida", "Pennsylvania", "Vermont"
-)
-
-east_states_sf <- states %>%
-  filter(NAME %in% east_coast_states)
-east_states_sf <- st_transform(east_states_sf, crs = st_crs(CAMS[[1]]))
-east_extent <- extent(-85, -65, 25, 47)
-names(CAMS)
-CAMS_cropped <- mapply(function(ras, ras_name) {
-  if (grepl("CO2", ras_name, ignore.case = TRUE)) {
-    cat("Cropping CO2:", ras_name, "\n")
-    ras <- crop(ras, east_extent)
-    ras <- mask(ras, east_states_sf)
-    ras <- ras * 1e6  # unit fix for CO2
-  } else if (grepl("CH4", ras_name, ignore.case = TRUE)) {
-    cat("Cropping CH4:", ras_name, "\n")
-    ras <- crop(ras, east_extent)
-    ras <- mask(ras, east_states_sf)
-    # no unit fix for CH4
-  } else {
-    cat("Skipping:", ras_name, "\n")
-  }
-  return(ras)
-}, CAMS, names(CAMS), SIMPLIFY = FALSE)
-CAMS_df_list <- lapply(seq_along(CAMS_cropped), function(i) {
-  ras <- CAMS_cropped[[i]]
-  ras_name <- names(CAMS_cropped)[i]
   
-  if (is.null(ras)) return(NULL)  # skip if it wasn't matched
+  # Load all time layers
+  r <- stack(f, varname = var_to_use)
+  
+  # Ensure CRS matches shapefile
+  if (is.na(crs(r))) {
+    crs(r) <- st_crs(east_states_sf)$proj4string
+  }
+  
+  # Crop and mask
+  r <- crop(r, east_extent)
+  r <- mask(r, east_states_sf)
+  
+  # Unit fix for CO2
+  if (var_to_use == "CO2") {
+    r <- calc(r, function(x) x * 1e6)
+  }
+  
+  file_key <- basename(f)  # Use file name as key
+  CAMS[[file_key]] <- r
+  all_timestamps[[file_key]] <- timestamps
+}
+east_states_sf <- st_transform(east_states_sf, crs = st_crs(CAMS[[1]]))
+CAMS_df_list <- lapply(names(CAMS), function(file_key) {
+  ras <- CAMS[[file_key]]
+  
+  if (is.null(ras)) return(NULL)
   
   df <- as.data.frame(ras, xy = TRUE)
+  df <- na.omit(df)
+  # Example dataframe df with first two columns lon, lat and the rest timestamp columns
+  # Rename only from column 3 onward
   
-  if (grepl("CO2", ras_name, ignore.case = TRUE)) {
-    names(df)[3] <- "CO2"
-  } else if (grepl("CH4", ras_name, ignore.case = TRUE)) {
-    names(df)[3] <- "CH4"
+  names(df)[3:ncol(df)] <- {
+    cn <- names(df)[3:ncol(df)]         # subset column names
+    cn <- sub("^X", "", cn)             # remove leading X
+    
+    # Use regmatches + regexec to extract date/time parts
+    parts <- regmatches(cn, regexec("^([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})(.*)$", cn))
+    
+    sapply(parts, function(p) {
+      if (length(p) == 0) return(NA_character_)
+      date_part <- paste0(p[2], "-", p[3], "-", p[4])
+      time_part <- p[5]
+      if (time_part == "") {
+        time_part <- " 00:00:00"
+      } else {
+        time_part <- gsub("\\.", ":", sub("^\\.", " ", time_part))
+      }
+      paste0(date_part, time_part)
+    })
   }
-  
-  df$source <- ras_name
-  return(df)
-})
-# Remove any NULLs if some rasters were skipped
-CAMS_df_list <- Filter(Negate(is.null), CAMS_df_list)
+  library(tidyr)
+  df_long <- pivot_longer(
+    df,
+    cols = -(1:2),               # all columns except lat and long
+    names_to = "date",           # new column name for former column headers
+    values_to = "concentration"  # new column name for values
+  )
+  df_long$date <- as.POSIXct(df_long$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
-#can now choose from CAMS_cropped
+  df_long$gas <- ifelse(grepl("CO2", file_key, ignore.case = TRUE), "CO2", "CH4")
+  df_long$source <- file_key
+  
+  df_long
+})
+
+##### Plotting- probably will need to edit ####
 # Choose Layer and Plot Date
 layer_number <- 1 #this will change depending on date/time (out of 120)
 co2_file <- files[3]
@@ -190,67 +201,84 @@ ggplot() +
     y = "Latitude"
   ) +
   theme_minimal()
+
 ##matching dates 
-
-
-#problem is not going through all CAMS times (full month data)
-#Date info is cruise_info_5min$date in UTC
-library(ncdf4)
+##### EDITS ######
+library(raster)
+cam_times <- c(
+  all_timestamps[[1]], 
+  all_timestamps[[2]],
+  all_timestamps[[3]],
+  all_timestamps[[4]]
+)
 library(raster)
 library(dplyr)
-traj_dates_utc <- as.POSIXct(cruise_info_5min$date, tz = "UTC")
-extract_cams_values_by_traj_dates <- function(nc_files, variable, traj_dates) {
-  results_list <- list()  # more efficient than rbind in a loop
-  row_idx <- 1
-  
-  for (f in nc_files) {
-    cat("Checking:", f, "\n")
-    nc <- nc_open(f)
-    
-    if (!(variable %in% names(nc$var))) {
-      nc_close(nc)
-      next
-    }
-    # Get timestamps from NetCDF
-    time_vals <- ncvar_get(nc, "time")
-    time_units <- ncatt_get(nc, "time", "units")$value
-    origin <- sub("hours since ", "", time_units)
-    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
-    
-    for (td in traj_dates) {
-      idx <- which.min(abs(difftime(timestamps, td, units = "secs")))
-      
-      if (length(idx) == 0 || is.na(idx)) next
-      
-      if (abs(difftime(timestamps[idx], td, units = "hours")) <= 1) {
-        band <- (idx - 1) * 34 + 1  # adjust for your band structure
-        
-        val <- tryCatch({
-          r <- raster(f, varname = variable, band = band)
-          mean(values(r), na.rm = TRUE)
-        }, error = function(e) {
-          warning(paste("Failed at", f, "band", band, ":", e$message))
-          NA
-        })
-        
-        if (!is.na(val)) {
-          results_list[[row_idx]] <- data.frame(
-            traj_datetime_utc = as.POSIXct(td, tz = "UTC"),
-            matched_cams_datetime = as.POSIXct(timestamps[idx], tz = "UTC"),
-            value = val,
-            stringsAsFactors = FALSE
-          )
-          row_idx <- row_idx + 1
-        }
-      }
-    }
-    nc_close(nc)
+
+CAMS_flat <- unlist(lapply(CAMS, function(r) {
+  if (nlayers(r) > 1) {
+    raster::unstack(r)
+  } else {
+    r
   }
-  results <- bind_rows(results_list)
-  
-  return(results)
+}), recursive = FALSE)
+# Flatten timestamps into single vector
+cam_times <- unlist(all_timestamps)
+
+if (length(cam_times) != length(CAMS_flat)) {
+  stop(paste0("Mismatch: cam_times length = ", length(cam_times),
+              ", CAMS_flat length = ", length(CAMS_flat)))
 }
 
-co2_df <- extract_cams_values_by_traj_dates(files, "CO2", traj_dates_utc)
-ch4_df <- extract_cams_values_by_traj_dates(files, "CH4", traj_dates_utc)
+gas_types <- sapply(names(CAMS_flat), function(nm) {
+  if (grepl("co2", nm, ignore.case = TRUE)) {
+    "CO2"
+  } else if (grepl("ch4", nm, ignore.case = TRUE)) {
+    "CH4"
+  } else {
+    NA  # fallback if neither string found
+  }
+})
+
+
+co2_idx <- which(gas_types == "CO2")
+ch4_idx <- which(gas_types == "CH4")
+
+CAMS_CO2 <- CAMS_flat[co2_idx]
+times_CO2 <- cam_times[co2_idx]
+
+CAMS_CH4 <- CAMS_flat[ch4_idx]
+times_CH4 <- cam_times[ch4_idx]
+
+extract_closest_value <- function(lat, lon, datetime, raster_list, raster_times, max_time_diff = 1800) {
+  time_diffs <- abs(difftime(raster_times, datetime, units = "secs"))
+  closest_idx <- which.min(time_diffs)
+  if (time_diffs[closest_idx] > max_time_diff) return(NA)
+  val <- raster::extract(raster_list[[closest_idx]], matrix(c(lon, lat), ncol = 2))
+  return(val)
+}
+
+cruise_info_5min$CO2_value <- mapply(
+  extract_closest_value,
+  lat = cruise_info_5min$Latitude_deg,
+  lon = cruise_info_5min$Longitude_deg,
+  datetime = cruise_info_5min$date,
+  MoreArgs = list(raster_list = CAMS_CO2, raster_times = times_CO2)
+)
+
+cruise_info_5min$CH4_value <- mapply(
+  extract_closest_value,
+  lat = cruise_info_5min$Latitude_deg,
+  lon = cruise_info_5min$Longitude_deg,
+  datetime = cruise_info_5min$date,
+  MoreArgs = list(raster_list = CAMS_CH4, raster_times = times_CH4)
+)
+
+# Remove rows where either CO2_value or CH4_value is NA
+cruise_info_5min <- cruise_info_5min[ !is.na(cruise_info_5min$CO2_value) & !is.na(cruise_info_5min$CH4_value), ]
+cruise_info_5min$CH4_value <- cruise_info_5min$CH4_value/1000
+
+cruise_info_5min$CAMS_bias_co2 <- cruise_info_5min$CO2_value - cruise_info_5min$CO2_dry_cal_moving_day
+cruise_info_5min$CAMS_bias_ch4 <- cruise_info_5min$CH4_value - cruise_info_5min$CH4_dry_cal_moving_day
+cruise_info_5min$CAMS_bias_co2_sd <- sd(cruise_info_5min$CAMS_bias_co2, na.rm = T)
+cruise_info_5min$CAMS_bias_ch4_sd <- sd(cruise_info_5min$CAMS_bias_ch4, na.rm =T)
 
