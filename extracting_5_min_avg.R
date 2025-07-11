@@ -1,4 +1,4 @@
-cruise <- "Cruise 24"
+cruise <- "Cruise 22"
 ##### Loading in cruise information #####
 cruise_squish <- tolower(gsub(" ", "", cruise))
 cruise_info <- read.delim(
@@ -701,12 +701,15 @@ east_states_sf <- st_transform(east_states_sf, crs = st_crs(CAMS[[1]]))
 CAMS_df_list <- lapply(names(CAMS), function(file_key) {
   ras <- CAMS[[file_key]]
   
-  if (is.null(ras)) return(NULL)
-  
+  if (is.null(ras)) {
+    message("[", file_key, "] Raster is NULL — skipping.")
+    return(NULL)
+  }
   df <- as.data.frame(ras, xy = TRUE)
   df <- na.omit(df)
   # Example dataframe df with first two columns lon, lat and the rest timestamp columns
   # Rename only from column 3 onward
+  if (ncol(df) < 3) return(NULL)
   
   names(df)[3:ncol(df)] <- {
     cn <- names(df)[3:ncol(df)]         # subset column names
@@ -727,6 +730,13 @@ CAMS_df_list <- lapply(names(CAMS), function(file_key) {
       paste0(date_part, time_part)
     })
   }
+  bad_cols <- which(is.na(names(df)))
+  if (length(bad_cols) > 0) {
+    df <- df[, -bad_cols, drop = FALSE]
+  }
+  
+  if (ncol(df) < 3) return(NULL)  # no data columns left
+  
   library(tidyr)
   df_long <- pivot_longer(
     df,
@@ -735,7 +745,6 @@ CAMS_df_list <- lapply(names(CAMS), function(file_key) {
     values_to = "concentration"  # new column name for values
   )
   df_long$date <- as.POSIXct(df_long$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-  
   df_long$gas <- ifelse(grepl("CO2", file_key, ignore.case = TRUE), "CO2", "CH4")
   df_long$source <- file_key
   
@@ -781,9 +790,13 @@ joined$Bias_CT_CO2 <- joined$CT_CO2 - joined$Observed_CO2
 joined$Bias_CT_CH4 <- joined$CT_CH4 - joined$Observed_CH4
 joined$Bias_CAMS_CO2 <- joined$CAMS_CO2 - joined$Observed_CO2
 joined$Bias_CAMS_CH4 <- joined$CAMS_CH4 - joined$Observed_CH4
+joined$Bias_CT_CO2_SD <- sd(joined$Bias_CT_CO2, na.rm = T)
+joined$Bias_CT_CH4_SD <- sd(joined$Bias_CT_CH4, na.rm =T)
+joined$Bias_CAMS_CO2_SD <- sd(joined$Bias_CAMS_CO2, na.rm =T)
+joined$Bias_CAMS_CH4_SD <- sd(joined$Bias_CAMS_CH4, na.rm =T)
 
 
-
+PREVIOUS_VER <- read.csv('/Users/reneechabot-mehlin/Desktop/cruise22_eulerian/ Cruise22 _info_5min_avg_ALL.csv')
 
 
 
