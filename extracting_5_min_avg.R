@@ -1,4 +1,4 @@
-cruise <- "Cruise 22"
+cruise <- "Cruise 24"
 ##### Loading in cruise information #####
 cruise_squish <- tolower(gsub(" ", "", cruise))
 cruise_info <- read.delim(
@@ -29,13 +29,13 @@ cruise_info_5min <- timeAverage(
   cruise_info,
   avg.time = "5 min",
   data.thresh = 0,
-  statistic = "mean",
-  start.date = min(cruise_info$Day),
-  end.date =  max(cruise_info$Day) + 1)
+  statistic = "mean")
+ # start.date = min(cruise_info$Day),
+  #end.date =  max(cruise_info$Day) + 1)
 
 library(hms)
 cruise_info_5min$time_only <- as_hms(cruise_info_5min$date)
-cruise_info_5min <- cruise_info_5min[!is.na(cruise_info_5min$Longitude_deg), ]
+#cruise_info_5min <- cruise_info_5min[!is.na(cruise_info_5min$Longitude_deg), ]
 ##### Loading in basic CT files #####
 library(raster)
 CT_CO2 <- list()
@@ -142,7 +142,7 @@ print(interval_labels)
 library(hms)
 cruise_info_5min$CT_CO2_tile <- NA_real_
 
-start_time <- as_hms("24:00:00")
+start_time <- as_hms("00:00:00")
 end_time   <- as_hms("03:00:00") 
 
 for (i in seq_along(CTCO2_1)) {
@@ -355,7 +355,7 @@ for (i in seq_along(CTCO2_7)) {
 }
 
 start_time <- as_hms("21:00:00")
-end_time   <- as_hms("24:00:00")
+end_time   <- as_hms("23:59:59")
 
 for (i in seq_along(CTCO2_8)) {
   cropped_raster <- CTCO2_8[[i]][[1]]
@@ -389,7 +389,7 @@ for (i in seq_along(CTCO2_8)) {
 library(hms)
 cruise_info_5min$CT_CH4_tile <- NA_real_
 
-start_time <- as_hms("24:00:00")
+start_time <- as_hms("00:00:00")
 end_time   <- as_hms("03:00:00")
 
 for (i in seq_along(CTCH4_1)) {
@@ -593,7 +593,7 @@ for (i in seq_along(CTCH4_7)) {
 }
 
 start_time <- as_hms("21:00:00")
-end_time   <- as_hms("24:00:00")
+end_time   <- as_hms("23:59:59")
 
 for (i in seq_along(CTCH4_8)) {
   cropped_raster <- CTCH4_8[[i]][[1]]
@@ -795,34 +795,50 @@ joined$Bias_CT_CH4_SD <- sd(joined$Bias_CT_CH4, na.rm =T)
 joined$Bias_CAMS_CO2_SD <- sd(joined$Bias_CAMS_CO2, na.rm =T)
 joined$Bias_CAMS_CH4_SD <- sd(joined$Bias_CAMS_CH4, na.rm =T)
 
-
-PREVIOUS_VER <- read.csv('/Users/reneechabot-mehlin/Desktop/cruise22_eulerian/ Cruise22 _info_5min_avg_ALL.csv')
-
-
-
-
 ##### Plotting CT-NRT against observations #####
+plots <- list()
+#Plotting 1:1 graph:
 library(ggplot2)
-ggplot(cruise_info_5min,
-       aes(x = CT_CO2_tile, y = CO2_dry_cal_moving_day)) + geom_point() +
+library(ggpubr)
+
+xrange <- range(joined$Observed_CO2, na.rm = TRUE)
+yrange <- range(joined$CT_CO2, na.rm = TRUE)
+
+overall_min <- min(xrange[1], yrange[1])
+overall_max <- max(xrange[2], yrange[2])
+
+label.x <- overall_min + 0.02 * (overall_max - overall_min)
+label.y <- overall_max - 0.02 * (overall_max - overall_min)
+
+plots[[1]] <-ggplot(joined, aes(x = Observed_CO2, y = CT_CO2)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  stat_regline_equation(
+    aes(label = paste(..eq.label.., "*\", \"*", ..rr.label.., sep = "")),
+    label.x = label.x,
+    label.y = label.y
+  ) +
   labs(
     title = paste(
-      "CT CO2: Cruise #4 averaged every 5 minutes vs measured concentrations"
+      "CT CO2:", cruise, "averaged every 5 minutes vs measured concentrations"
     ),
-    x = "CT_CO2 (ppm)",
-    y = "Observed CO2 (ppm)"
+    x = "Observed CO2 (ppm)",
+    y = "CT CO2 (ppm)"
   ) +
-  geom_smooth(method = lm) + theme(axis.text=element_text(size=14),
-                                   axis.title=element_text(size=16),
-                                   plot.title=element_text(size=20))
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  coord_fixed(ratio = 1, xlim = c(overall_min, overall_max), ylim = c(overall_min, overall_max)) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
 
-cruise_info_5min$co2_mean_bias <- cruise_info_5min$CT_CO2_tile - cruise_info_5min$CO2_dry_cal_moving_day
-cruise_info_5min$co2_SD <- sd(cruise_info_5min$co2_mean_bias)
-
-ggplot(cruise_info_5min, aes(x = CO2_dry_cal_moving_day)) + geom_density() +
+#Plotting individual density plots: 
+##Observed: 
+plots[[2]] <-ggplot(joined, aes(x = Observed_CO2)) + geom_density() +
   geom_vline(
     aes(
-      xintercept = mean(cruise_info_5min$CO2_dry_cal_moving_day, na.rm = T)
+      xintercept = mean(Observed_CO2, na.rm = T)
     ),
     # Ignore NA values for mean
     color = "red",
@@ -831,17 +847,17 @@ ggplot(cruise_info_5min, aes(x = CO2_dry_cal_moving_day)) + geom_density() +
   ) +
   labs(
     title = paste(
-      "Cruise #4 averaged every 5 minutes density plot: Observed concentrations"
+      cruise, " averaged every 5 minutes density plot: Observed concentrations"
     ),
     x = "Observed CO2 (ppm)",
     y = "Density"
   ) + theme(axis.text=element_text(size=14),
             axis.title=element_text(size=16),
             plot.title=element_text(size=20))
-
-ggplot(cruise_info_5min, aes(x = CT_CO2_tile)) + geom_density() +
+##CT-NRT:
+plots[[3]] <-ggplot(joined, aes(x = CT_CO2)) + geom_density() +
   geom_vline(
-    aes(xintercept = mean(cruise_info_5min$CT_CO2_tile, na.rm = T)),
+    aes(xintercept = mean(CT_CO2, na.rm = T)),
     # Ignore NA values for mean
     color = "red",
     linetype = "dashed",
@@ -849,7 +865,7 @@ ggplot(cruise_info_5min, aes(x = CT_CO2_tile)) + geom_density() +
   ) +
   labs(
     title = paste(
-      "Cruise #4 averaged every 5 minutes density plot: Modeled concentrations"
+     cruise, " averaged every 5 minutes density plot: Modeled concentrations"
     ),
     x = "CT model CO2 (ppm)",
     y = "Density"
@@ -857,59 +873,324 @@ ggplot(cruise_info_5min, aes(x = CT_CO2_tile)) + geom_density() +
             axis.title=element_text(size=16),
             plot.title=element_text(size=20))
 
+#Dual PDF: 
+library(ggplot2)
+library(tidyr)
+joined_long <- joined %>%
+  pivot_longer(
+    cols = c(CT_CO2, Observed_CO2),
+    names_to = "Source",
+    values_to = "CO2"
+  )
+plots[[4]] <- ggplot(joined_long, aes(x = CO2, fill = Source)) +
+  geom_density(alpha = 0.5) +  # semi-transparent fill for overlap
+  labs(
+    title = paste(cruise, ":Dual Probability Density Function"),
+    x = "CO2 (ppm)",
+    y = "Density",
+    fill = "Source"
+  ) +
+  theme_minimal()
+
+
 ##### Plotting CT CH4 against observations #####
 library(ggplot2)
-ggplot(cruise_info_5min,
-       aes(x = CT_CH4_tile, y = CH4_dry_cal_moving_day)) + geom_point() +
-  labs(
-    title = paste(
-      "CT CH4: Cruise #4 averaged every 5 minutes vs measured concentrations"
-    ),
-    x = "CT_CH4 (ppb)",
-    y = "Observed CH4 (ppb)"
-  ) +
-  geom_smooth(method = lm) + theme(axis.text=element_text(size=14),
-                                   axis.title=element_text(size=16),
-                                   plot.title=element_text(size=20))
+library(ggpubr)
+library(tidyr)
+xrange <- range(joined$Observed_CH4, na.rm = TRUE)
+yrange <- range(joined$CT_CH4, na.rm = TRUE)
 
-cruise_info_5min$ch4_mean_bias <- cruise_info_5min$CT_CH4_tile - cruise_info_5min$CH4_dry_cal_moving_day
-cruise_info_5min$ch4_SD <- sd(cruise_info_5min$ch4_mean_bias)
+overall_min <- min(xrange[1], yrange[1])
+overall_max <- max(xrange[2], yrange[2])
 
-ggplot(cruise_info_5min, aes(x = CH4_dry_cal_moving_day)) + geom_density() +
-  geom_vline(
-    aes(
-      xintercept = mean(cruise_info_5min$CH4_dry_cal_moving_day, na.rm = T)
-    ),
-    # Ignore NA values for mean
-    color = "red",
-    linetype = "dashed",
-    size = 1
+label.x <- overall_min + 0.02 * (overall_max - overall_min)
+label.y <- overall_max - 0.02 * (overall_max - overall_min)
+
+plots[[5]] <-ggplot(joined, aes(x = Observed_CH4, y = CT_CH4)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  stat_regline_equation(
+    aes(label = paste(..eq.label.., "*\", \"*", ..rr.label.., sep = "")),
+    label.x = label.x,
+    label.y = label.y
   ) +
   labs(
     title = paste(
-      "Cruise #4 averaged every 5 minutes density plot: Observed concentrations"
+      "CT CH4:", cruise, "averaged every 5 minutes vs measured concentrations"
     ),
     x = "Observed CH4 (ppb)",
-    y = "Density"
-  ) + theme(axis.text=element_text(size=14),
-            axis.title=element_text(size=16),
-            plot.title=element_text(size=20))
+    y = "CT CH4 (ppb)"
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  coord_fixed(ratio = 1, xlim = c(overall_min, overall_max), ylim = c(overall_min, overall_max)) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
 
-ggplot(cruise_info_5min, aes(x = CT_CH4_tile)) + geom_density() +
+#Individual density plots 
+## Observed CH4
+plots[[6]] <-ggplot(joined, aes(x = Observed_CH4)) +
+  geom_density() +
   geom_vline(
-    aes(xintercept = mean(cruise_info_5min$CT_CH4_tile, na.rm = T)),
-    # Ignore NA values for mean
+    aes(xintercept = mean(Observed_CH4, na.rm = TRUE)),
     color = "red",
     linetype = "dashed",
     size = 1
   ) +
   labs(
     title = paste(
-      "Cruise #4 averaged every 5 minutes density plot: Modeled concentrations"
+      cruise, "averaged every 5 minutes density plot: Observed concentrations"
     ),
-    x = "CT model CH4 (ppb)",
+    x = "Observed CH4 (ppm)",
     y = "Density"
-  ) + theme(axis.text=element_text(size=14),
-            axis.title=element_text(size=16),
-            plot.title=element_text(size=20))
+  ) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
 
+## CT CH4
+plots[[7]] <-ggplot(joined, aes(x = CT_CH4)) +
+  geom_density() +
+  geom_vline(
+    aes(xintercept = mean(CT_CH4, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1
+  ) +
+  labs(
+    title = paste(
+      cruise, "averaged every 5 minutes density plot: Modeled concentrations"
+    ),
+    x = "CT model CH4 (ppm)",
+    y = "Density"
+  ) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
+
+#Dual probability density plot
+joined_long <- joined %>%
+  pivot_longer(
+    cols = c(CT_CH4, Observed_CH4),
+    names_to = "Source",
+    values_to = "CH4"
+  )
+
+plots[[8]] <- ggplot(joined_long, aes(x = CH4, fill = Source)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = paste(cruise, ": Dual Probability Density Function"),
+    x = "CH4 (ppm)",
+    y = "Density",
+    fill = "Source"
+  ) +
+  theme_minimal()
+
+##### Plotting CAMS CO2 against observations #####
+# 1:1 scatter plot for CAMS CO₂
+library(ggplot2)
+library(ggpubr)
+
+xrange <- range(joined$Observed_CO2, na.rm = TRUE)
+yrange <- range(joined$CAMS_CO2, na.rm = TRUE)
+
+overall_min <- min(xrange[1], yrange[1])
+overall_max <- max(xrange[2], yrange[2])
+
+label.x <- overall_min + 0.02 * (overall_max - overall_min)
+label.y <- overall_max - 0.02 * (overall_max - overall_min)
+
+plots[[9]] <- ggplot(joined, aes(x = Observed_CO2, y = CAMS_CO2)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  stat_regline_equation(
+    aes(label = paste(..eq.label.., "*\", \"*", ..rr.label.., sep = "")),
+    label.x = label.x,
+    label.y = label.y
+  ) +
+  labs(
+    title = paste(
+      "CAMS CO2:", cruise, "averaged every 5 minutes vs measured concentrations"
+    ),
+    x = "Observed CO2 (ppm)",
+    y = "CAMS CO2 (ppm)"
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  coord_fixed(ratio = 1, xlim = c(overall_min, overall_max), ylim = c(overall_min, overall_max)) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
+
+# Individual density plots: Observed CO₂
+plots[[10]] <-ggplot(joined, aes(x = Observed_CO2)) + 
+  geom_density() +
+  geom_vline(
+    aes(xintercept = mean(Observed_CO2, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1
+  ) +
+  labs(
+    title = paste(
+      cruise, "averaged every 5 minutes density plot: Observed concentrations"
+    ),
+    x = "Observed CO2 (ppm)",
+    y = "Density"
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20))
+
+# Individual density plot: CAMS CO₂
+plots[[11]] <-ggplot(joined, aes(x = CAMS_CO2)) +
+  geom_density() +
+  geom_vline(
+    aes(xintercept = mean(CAMS_CO2, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1
+  ) +
+  labs(
+    title = paste(
+      cruise, "averaged every 5 minutes density plot: Modeled concentrations"
+    ),
+    x = "CAMS model CO2 (ppm)",
+    y = "Density"
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20))
+
+# Dual probability density plot: CAMS CO₂ vs Observed CO₂
+library(tidyr)
+joined_long <- joined %>%
+  pivot_longer(
+    cols = c(CAMS_CO2, Observed_CO2),
+    names_to = "Source",
+    values_to = "CO2"
+  )
+
+plots[[12]] <-ggplot(joined_long, aes(x = CO2, fill = Source)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = paste(cruise, ": Dual Probability Density Function"),
+    x = "CO2 (ppm)",
+    y = "Density",
+    fill = "Source"
+  ) +
+  theme_minimal()
+##### Plotting CAMS CH4 against observations #####
+# 1:1 scatter plot for CAMS CH₄
+library(ggplot2)
+library(ggpubr)
+library(tidyr)
+
+xrange <- range(joined$Observed_CH4, na.rm = TRUE)
+yrange <- range(joined$CAMS_CH4, na.rm = TRUE)
+
+overall_min <- min(xrange[1], yrange[1])
+overall_max <- max(xrange[2], yrange[2])
+
+label.x <- overall_min + 0.02 * (overall_max - overall_min)
+label.y <- overall_max - 0.02 * (overall_max - overall_min)
+
+plots[[12]] <- ggplot(joined, aes(x = Observed_CH4, y = CAMS_CH4)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  stat_regline_equation(
+    aes(label = paste(..eq.label.., "*\", \"*", ..rr.label.., sep = "")),
+    label.x = label.x,
+    label.y = label.y
+  ) +
+  labs(
+    title = paste(
+      "CAMS CH4:", cruise, "averaged every 5 minutes vs measured concentrations"
+    ),
+    x = "Observed CH4 (ppm)",
+    y = "CAMS CH4 (ppm)"
+  ) +
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  coord_fixed(ratio = 1, xlim = c(overall_min, overall_max), ylim = c(overall_min, overall_max)) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20)
+  )
+
+# Individual density plot: Observed CH₄
+plots[[13]] <- ggplot(joined, aes(x = Observed_CH4)) +
+  geom_density() +
+  geom_vline(
+    aes(xintercept = mean(Observed_CH4, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1
+  ) +
+  labs(
+    title = paste(
+      cruise, "averaged every 5 minutes density plot: Observed concentrations"
+    ),
+    x = "Observed CH4 (ppm)",
+    y = "Density"
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20))
+
+# Individual density plot: CAMS CH₄
+plots[[14]] <- ggplot(joined, aes(x = CAMS_CH4)) +
+  geom_density() +
+  geom_vline(
+    aes(xintercept = mean(CAMS_CH4, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1
+  ) +
+  labs(
+    title = paste(
+      cruise, "averaged every 5 minutes density plot: Modeled concentrations"
+    ),
+    x = "CAMS model CH4 (ppm)",
+    y = "Density"
+  ) +
+  theme(axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20))
+
+# Dual probability density plot: CAMS CH₄ vs Observed CH₄
+joined_long <- joined %>%
+  pivot_longer(
+    cols = c(CAMS_CH4, Observed_CH4),
+    names_to = "Source",
+    values_to = "CH4"
+  )
+
+plots[[15]] <- ggplot(joined_long, aes(x = CH4, fill = Source)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = paste(cruise, ": Dual Probability Density Function"),
+    x = "CH4 (ppm)",
+    y = "Density",
+    fill = "Source"
+  ) +
+  theme_minimal()
+
+print(plots)
+##### Saving .csv file and plots #####
+write.csv(joined, paste0("/Users/reneechabot-mehlin/Desktop/",cruise_squish,"_eulerian/",cruise_squish,"_info_5_min_avg_ALL.csv"))
+output_dir <- paste0("/Users/reneechabot-mehlin/Desktop/", cruise_squish, "_eulerian/figures/")
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+for (i in seq_along(plots)) {
+  filename <- paste0(output_dir, cruise_squish, "_figure_", i, ".png")
+  ggsave(filename, plot = plots[[i]], width = 8, height = 6, dpi = 300)
+}
