@@ -1,4 +1,4 @@
-#NEC TOWERS INFO
+##### Load in NEC tower .csv files #####
 #____
 LEW_22_CH4_95 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-ch4-95m-1-hour-20230425.csv")
 LEW_22_CH4_95$DATE <- as.Date(LEW_22_CH4_95$datetime_UTC)
@@ -178,6 +178,7 @@ BVA_22_CO2_50$datetime_EDT <- with_tz(BVA_22_CO2_50$datetime_UTC, tzone = "Ameri
 #  SNJ_22_CO2_42$datetime_EDT <- with_tz(SNJ_22_CO2_42$datetime_UTC, tzone = "America/New_York")
 #
 
+##### Basic Plotting #####
 xlim_vals <- c(as.POSIXct("2022-04-09 00:00:00"),
                as.POSIXct("2022-04-2012 23:00:00"))
 #ch4
@@ -449,6 +450,7 @@ legend(
   bty = "o"
 )
 
+##### Averaging data for 3 hour intervals #####
 #3 hr avg__
 all_data <- list(
   LEW_22_CH4_50 = LEW_22_CH4_50,
@@ -522,6 +524,7 @@ datetime_filtered_data <- lapply(averaged_data, function(df) { #3hr average for 
  df[df$date >= start_date & df$date <= end_date, ]
 })
 
+##### Adding Carbon Tracker Information #####
 # adding carbon tracker
 library(raster)
 CT_CO2 <- list()
@@ -635,7 +638,7 @@ datetime_with_ct <- lapply(datetime_filtered_data, function(df) {
   df
 })
 
-
+##### Plotting bias against CT #####
 #edits below
 library(dplyr)
 library(tidyr)
