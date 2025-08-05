@@ -9,20 +9,19 @@ library(terra)
 library(tmap)
 
 #Seawolf <-read.csv("PATH_TO_CRUISE_TRACKS.csv")
-#Seawolf <-read.csv('/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/1904-01-01__1904-01-01_Seawolf_1hz.csv')
-states <- st_read("/Users/reneechabot/Downloads/cb_2023_us_state_500k/cb_2023_us_state_500k.shp")
+#Seawolf <-read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/1904-01-01__1904-01-01_Seawolf_1hz.csv')
+states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2021_us_state_500k/cb_2021_us_state_500k.shp")
 #
-# Seawolf <-read.csv('/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/1904-01-01__1904-01-01_Seawolf_1hz.csv')
+# Seawolf <-read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/1904-01-01__1904-01-01_Seawolf_1hz.csv')
 # Seawolf_lat_lon <- data.frame(Seawolf$Latitude_deg,Seawolf$Longitude_deg)
 # colnames(Seawolf_lat_lon) <- c("Latitude_deg", "Longitude_deg")
-# write.csv(Seawolf_lat_lon, '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/Seawolf_24_lat_lon')
+# write.csv(Seawolf_lat_lon, '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/Seawolf_24_lat_lon')
 
 Seawolf_lat_lon <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/Seawolf_24_lat_lon'
-)
+"/Users/reneechabot-mehlin/Downloads/FLIGHT_07_02_2025.csv")
 
-directory <- "/Users/reneechabot/Desktop/test"
-#directory <- "/Users/reneechabot/hysplit/working/cruise_4_hrrr_tdump_files"
+directory <- "/Users/reneechabot-mehlin/Desktop/test"
+#directory <- "/Users/reneechabot-mehlin/hysplit/working/cruise_4_hrrr_tdump_files"
 setwd(directory)
 
 #Get a vector of all filenames and read them one by one
@@ -68,10 +67,10 @@ while (i <= length(tdump_files)) {
     paste(Year, Month, Day, (Current_Hour), sep = "-")
   ), tz = "UTC", "%y-%m-%d-%H")
   print("Timezone is UTC.")
-  Single_Example_file_traj1$Starting.Date.Time <- format(Single_Example_file_traj1$Starting.Date.Time,
-                                                         tz = "America/New_York",
-                                                         usetz = TRUE)
-  print("Timezone is America/New_York.")
+ #  Single_Example_file_traj1$Starting.Date.Time <- format(Single_Example_file_traj1$Starting.Date.Time,
+ #                                                         tz = "America/New_York",
+ #                                                         usetz = TRUE)
+ # print("Timezone is America/New_York.")
   # Single_Example_file_traj2 <- Single_Example_file[Single_Example_file$`Trajectory Number`==2, ]
   # Single_Example_file_traj2$Starting.Date.Time <- as.POSIXct(with(Single_Example_file_traj2, paste(Year, Month,
   #                                                                                                  Day,Current_Hour, sep = "-")),
@@ -109,7 +108,7 @@ while (i <= length(tdump_files)) {
 # colors = paletteer_c("grDevices::rainbow", n=length(trajectory1_list))
 # #"grDevices::Plasma" <- try that maybe?
 # #"oompaBase::jetColors" <- or this?
-# #jpeg("/Users/reneechabot/Desktop/Seawolf/24/trajectory_hrrr.jpeg")
+# #jpeg("/Users/reneechabot-mehlin/Desktop/Seawolf/24/trajectory_hrrr.jpeg")
 # #par(xpd = F, mar = c(5.5, 4, 3, 10), mgp = c(2, 0.5, 0), las = 1)
 # #make sure you change main for NAM or HRRR
 # plot(st_geometry((states)), xlim =c(-76,-70), ylim= c(38,42),
@@ -129,16 +128,16 @@ while (i <= length(tdump_files)) {
 #________________________________________________________________________________
 #Setting everything up
 cities <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major NE cities lat_long.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major NE cities lat_long.csv'
 )
 landfills <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-landfills.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-landfills.csv'
 )
 powerplants <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-powerplants.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-powerplants.csv'
 )
 setwd(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/towers in LI'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/towers in LI'
 )
 Tower_windsfiles = list.files(pattern = glob2rx('*.csv'))
 order <- order(basename(Tower_windsfiles))
@@ -161,44 +160,49 @@ tower_lat_lon <- data.frame(
   unique(Tower_winds$longitude..degrees_east.)
 )
 NEC_towers <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-01-30T15-24-2/mds2-2491/NEC_sites.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-01-30T15-24-2/mds2-2491/NEC_sites.csv'
 )
 trainline <- read.csv(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /MTA_LIRR_Branches.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /MTA_LIRR_Branches.csv'
 )
 train_tracks <- st_as_sfc(trainline$the_geom, crs = 4326)
 
+states <- st_transform(states, crs = 4326)
 #Plotting tracks and trajectories
 library(paletteer)
-colors = paletteer_c("grDevices::rainbow", n = 100)
+colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
 plot(
   st_geometry((states)),
   xlim = c(-78, -70),
   ylim = c(38, 42),
   xlab = "",
   ylab = "",
-  main = "Back Trajectories in HRRR: Cruise #24",
+  main = "Back Trajectories in HRRR: Flight #07_02_2025",
   border = "grey",
   axes = T,
-  las = 1
+  las = 1,
+  asp = 1
 )
 lines(
   Seawolf_lat_lon$Longitude_deg,
   Seawolf_lat_lon$Latitude_deg,
   col = 'grey4',
-  lwd = "2"
+  lwd = 2
 )
-for (i in (1:100)) {
-  lines(
-    trajectory1_list[[i]][[11]],
-    trajectory1_list[[i]][[10]],
-    col = colors[i],
-    lwd = "0.5",
-    type = "o",
-    pch = 20,
-    cex = 0.6
-  )
+for (i in 1:length(trajectory1_list)) {
+  lon <- trajectory1_list[[i]][[11]]
+  lat <- trajectory1_list[[i]][[10]]
+  
+  print(paste("i =", i, "length(lon) =", length(lon), "length(lat) =", length(lat)))
+  
+  if (all(is.finite(lon)) && all(is.finite(lat)) && length(lon) > 1) {
+   # lines(lon, lat, col = colors[i], lwd = 0.5, type = "o", pch = 20, cex = 0.6)
+    points(lon[1],lat[1], col = colors[i],pch = 20)
+  } else {
+    message("Skipped trajectory ", i)
+  }
 }
+
 #plot(st_geometry(train_tracks), col = "blue", lwd = 2, add = TRUE)
 
 #Plotting cities
@@ -384,7 +388,7 @@ library(raster) # package for raster manipulation
 library(fields)
 library(ggplot2) # package for plotting
 raster_data <- raster(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/inventories/Vulcan_V3_Annual_Emissions_1741/data/Vulcan_v3_US_annual_1km_total_mn.nc4',
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/inventories/Vulcan_V3_Annual_Emissions_1741/data/Vulcan_v3_US_annual_1km_total_mn.nc4',
   band = 6
 )
 new_crs <- CRS("+proj=longlat +datum=WGS84")
@@ -392,7 +396,7 @@ raster_reproject <- projectRaster(raster_data, crs = new_crs)
 
 library(sf)
 states <- st_read(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
 )
 states_sf <- st_as_sf(states)
 states_transformed <- st_transform(states_sf, crs = "EPSG:4326")
@@ -449,7 +453,7 @@ K <-  1000 * (1 / 16.04) * (1 * 10^9)
 Final <- R * K
 library(sf)
 states <- st_read(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
 )
 states_sf <- st_as_sf(states)
 states_transformed <- st_transform(states_sf, crs = "EPSG:4326")
@@ -482,14 +486,14 @@ lines(states_transformed)
 #Adding Kris's inventory
 kris_inventory <- sum(
   brick(
-    '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Kris/Conferences/AGU/2024/mean_across_ensemble.nc'
+    '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Kris/Conferences/AGU/2024/mean_across_ensemble.nc'
   )
 )
 K_inventory <- projectRaster(kris_inventory, crs = new_crs)
 K_inventory_log10 <- log10(K_inventory + epsilon)
 library(sf)
 states <- st_read(
-  '/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp'
 )
 states_sf <- st_as_sf(states)
 states_transformed <- st_transform(states_sf, crs = "EPSG:4326")
@@ -531,7 +535,7 @@ lines(states_transformed)
 # #         type = "o", pch= 20, cex = .6)
 # # }
 # #dev.off()
-# cities <- read.csv('/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major NE cities lat_long.csv')
+# cities <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major NE cities lat_long.csv')
 # library(paletteer)
 # colors2 = paletteer_c("grDevices::Plasma", n=length(cities$Longitude))
 # for (j in 1:length(cities$Longitude)){
@@ -662,14 +666,14 @@ lines(states_transformed)
 #
 #
 #
-# jpeg("/Users/reneechabot/Desktop/Seawolf/Cities.jpeg")
+# jpeg("/Users/reneechabot-mehlin/Desktop/Seawolf/Cities.jpeg")
 #
 # plot(st_geometry((states)), xlim =c(-80,-65), ylim= c(38,42),
 #      xlab = "", ylab="",
 #      main= "Cities", border= "grey",
 #      axes=T, las = 1)
 #
-# cities <- read.csv("/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv")
+# cities <- read.csv("/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv")
 # library(paletteer)
 # colors2 = paletteer_c("grDevices::Plasma", n=length(cities$Longitude))
 # for (j in 1:length(cities$Longitude)){
@@ -693,8 +697,8 @@ lines(states_transformed)
 
 
 
-pdf("/Users/reneechabot/Desktop/Seawolf/04/hrrr_w_cities.pdf")
-#jpeg("/Users/reneechabot/Desktop/Seawolf/02/hrrr_w_cities.jpeg")
+pdf("/Users/reneechabot-mehlin/Desktop/Seawolf/04/hrrr_w_cities.pdf")
+#jpeg("/Users/reneechabot-mehlin/Desktop/Seawolf/02/hrrr_w_cities.jpeg")
 par(mar = c(5, 4, 4, 16)) # Increase right margin
 plot(
   st_geometry((states)),
@@ -710,7 +714,7 @@ plot(
   bg = "lightblue"
 )
 cities <- read.csv(
-  "/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv"
+  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv"
 )
 library(paletteer)
 #colors2 = rainbow(n=length(cities$Longitude))
@@ -793,12 +797,12 @@ legend(
 dev.off()
 
 #
-# jpeg("/Users/reneechabot/Desktop/Seawolf/Cities.jpeg")
+# jpeg("/Users/reneechabot-mehlin/Desktop/Seawolf/Cities.jpeg")
 # plot(st_geometry((states)), xlim =c(-78,-72), ylim= c(38,42),
 #      xlab = "[Height at 11.1 m]", ylab="",
 #      main= "Cities", border= "black",
 #      axes=T, las = 1, col="lightgrey",bg="lightblue")
-# cities <- read.csv("/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv")
+# cities <- read.csv("/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major_NE_cities_lat_long.csv")
 # library(paletteer)
 # #colors2 = rainbow(n=length(cities$Longitude))
 # colors2 = paletteer_d("ggsci::category10_d3", n=length(cities$Longitude))
