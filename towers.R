@@ -149,59 +149,55 @@ BVA_22_CO2_50$datetime_UTC <- as.POSIXct(BVA_22_CO2_50$datetime_combined,
 library(lubridate)
 BVA_22_CO2_50$datetime_EDT <- with_tz(BVA_22_CO2_50$datetime_UTC, tzone = "America/New_York")
 
-#____
-# UNY_22_CH4_68 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 2/UNY-2022-ch4-68m-1-hour-20230425.csv')
-# UNY_22_CH4_68$DATE <- as.Date(UNY_22_CH4_68$datetime_UTC)
-# UNY_22_CH4_68$HH <- sprintf("%02d:00:00", UNY_22_CH4_68$HH)
-# UNY_22_CH4_68$datetime_combined <- paste(UNY_22_CH4_68$DATE, UNY_22_CH4_68$HH)
-# UNY_22_CH4_68$datetime_UTC <- as.POSIXct(UNY_22_CH4_68$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-# library(lubridate)
-# UNY_22_CH4_68$datetime_EDT <- with_tz(UNY_22_CH4_68$datetime_UTC, tzone = "America/New_York")
-#
-# UNY_22_CH4_60 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 2/UNY-2022-ch4-60m-1-hour-20230425.csv')
-# UNY_22_CH4_60$DATE <- as.Date(UNY_22_CH4_60$datetime_UTC)
-# UNY_22_CH4_60$HH <- sprintf("%02d:00:00", UNY_22_CH4_60$HH)
-# UNY_22_CH4_60$datetime_combined <- paste(UNY_22_CH4_60$DATE, UNY_22_CH4_60$HH)
-# UNY_22_CH4_60$datetime_UTC <- as.POSIXct(UNY_22_CH4_60$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-# library(lubridate)
-# UNY_22_CH4_60$datetime_EDT <- with_tz(UNY_22_CH4_60$datetime_UTC, tzone = "America/New_York")
 
-# UNY_22_CO2_68 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 2/UNY-2022-co2-68m-1-hour-20230425.csv')
-# UNY_22_CO2_60 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 2/UNY-2022-co2-60m-1-hour-20230425.csv')
+WNJ_22_CH4_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-ch4-43m-1-hour-v20250319.csv"
+)
+WNJ_22_CH4_43$DATE <- as.Date(WNJ_22_CH4_43$datetime_UTC)
+WNJ_22_CH4_43$HH <- sprintf("%02d:00:00", WNJ_22_CH4_43$HH)
+WNJ_22_CH4_43$datetime_combined <- paste(WNJ_22_CH4_43$DATE, WNJ_22_CH4_43$HH)
+WNJ_22_CH4_43$datetime_UTC <- as.POSIXct(WNJ_22_CH4_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_22_CH4_43$datetime_EDT <- with_tz(WNJ_22_CH4_43$datetime_UTC, tzone = "America/New_York")
 
-#___
-# SNJ_22_CH4_53 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 3/SNJ-2022-ch4-53m-1-hour-20230425.csv')
-# SNJ_22_CH4_53$DATE <- as.Date(SNJ_22_CH4_53$datetime_UTC)
-# SNJ_22_CH4_53$HH <- sprintf("%02d:00:00", SNJ_22_CH4_53$HH)
-# SNJ_22_CH4_53$datetime_combined <- paste(SNJ_22_CH4_53$DATE, SNJ_22_CH4_53$HH)
-# SNJ_22_CH4_53$datetime_UTC <- as.POSIXct(SNJ_22_CH4_53$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-# library(lubridate)
-# SNJ_22_CH4_53$datetime_EDT <- with_tz(SNJ_22_CH4_53$datetime_UTC, tzone = "America/New_York")
-#
-# SNJ_22_CH4_42 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 3/SNJ-2022-ch4-42m-1-hour-20230425.csv')
-# SNJ_22_CH4_42$DATE <- as.Date(SNJ_22_CH4_42$datetime_UTC)
-# SNJ_22_CH4_42$HH <- sprintf("%02d:00:00", SNJ_22_CH4_42$HH)
-# SNJ_22_CH4_42$datetime_combined <- paste(SNJ_22_CH4_42$DATE, SNJ_22_CH4_42$HH)
-# SNJ_22_CH4_42$datetime_UTC <- as.POSIXct(SNJ_22_CH4_42$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-# library(lubridate)
-# SNJ_22_CH4_42$datetime_EDT <- with_tz(SNJ_22_CH4_42$datetime_UTC, tzone = "America/New_York")
-#
-#  SNJ_22_CO2_53 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 3/SNJ-2022-co2-53m-1-hour-20230425.csv')
-#  SNJ_22_CO2_53$DATE <- as.Date(SNJ_22_CO2_53$datetime_UTC)
-#  SNJ_22_CO2_53$HH <- sprintf("%02d:00:00", SNJ_22_CO2_53$HH)
-#  SNJ_22_CO2_53$datetime_combined <- paste(SNJ_22_CO2_53$DATE, SNJ_22_CO2_53$HH)
-#  SNJ_22_CO2_53$datetime_UTC <- as.POSIXct(SNJ_22_CO2_53$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-#  library(lubridate)
-#  SNJ_22_CO2_53$datetime_EDT <- with_tz(SNJ_22_CO2_53$datetime_UTC, tzone = "America/New_York")
-#
-#  SNJ_22_CO2_42 <- read.csv('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/NEC towers/NIST-Data-2025-02-12T14-24-2/mds2-3012/csv 3/SNJ-2022-co2-42m-1-hour-20230425.csv')
-#  SNJ_22_CO2_42$DATE <- as.Date(SNJ_22_CO2_42$datetime_UTC)
-#  SNJ_22_CO2_42$HH <- sprintf("%02d:00:00", SNJ_22_CO2_42$HH)
-#  SNJ_22_CO2_42$datetime_combined <- paste(SNJ_22_CO2_42$DATE, SNJ_22_CO2_42$HH)
-#  SNJ_22_CO2_42$datetime_UTC <- as.POSIXct(SNJ_22_CO2_42$datetime_combined, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-#  library(lubridate)
-#  SNJ_22_CO2_42$datetime_EDT <- with_tz(SNJ_22_CO2_42$datetime_UTC, tzone = "America/New_York")
-#
+WNJ_22_CH4_98 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-ch4-98m-1-hour-v20250319.csv"
+)
+WNJ_22_CH4_98$DATE <- as.Date(WNJ_22_CH4_98$datetime_UTC)
+WNJ_22_CH4_98$HH <- sprintf("%02d:00:00", WNJ_22_CH4_98$HH)
+WNJ_22_CH4_98$datetime_combined <- paste(WNJ_22_CH4_98$DATE, WNJ_22_CH4_98$HH)
+WNJ_22_CH4_98$datetime_UTC <- as.POSIXct(WNJ_22_CH4_98$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_22_CH4_98$datetime_EDT <- with_tz(WNJ_22_CH4_98$datetime_UTC, tzone = "America/New_York")
+
+WNJ_22_CO2_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-co2-43m-1-hour-v20250319.csv"
+)
+WNJ_22_CO2_43$DATE <- as.Date(WNJ_22_CO2_43$datetime_UTC)
+WNJ_22_CO2_43$HH <- sprintf("%02d:00:00", WNJ_22_CO2_43$HH)
+WNJ_22_CO2_43$datetime_combined <- paste(WNJ_22_CO2_43$DATE, WNJ_22_CO2_43$HH)
+WNJ_22_CO2_43$datetime_UTC <- as.POSIXct(WNJ_22_CO2_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_22_CO2_43$datetime_EDT <- with_tz(WNJ_22_CO2_43$datetime_UTC, tzone = "America/New_York")
+
+WNJ_22_CO2_98 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-co2-98m-1-hour-v20250319.csv"
+)
+WNJ_22_CO2_98$DATE <- as.Date(WNJ_22_CO2_98$datetime_UTC)
+WNJ_22_CO2_98$HH <- sprintf("%02d:00:00", WNJ_22_CO2_98$HH)
+WNJ_22_CO2_98$datetime_combined <- paste(WNJ_22_CO2_98$DATE, WNJ_22_CO2_98$HH)
+WNJ_22_CO2_98$datetime_UTC <- as.POSIXct(WNJ_22_CO2_98$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_22_CO2_98$datetime_EDT <- with_tz(WNJ_22_CO2_98$datetime_UTC, tzone = "America/New_York")
+
 ##### Load in the 2023 NEC tower .csv files #####
 LEW_23_CH4_95 <- read.csv(
   "/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-ch4-95m-1-hour-v20250319.csv"
@@ -348,6 +344,59 @@ BVA_23_CO2_50$datetime_UTC <- as.POSIXct(BVA_23_CO2_50$datetime_combined,
                                          tz = "UTC")
 library(lubridate)
 BVA_23_CO2_50$datetime_EDT <- with_tz(BVA_23_CO2_50$datetime_UTC, tzone = "America/New_York")
+
+#
+WNJ_23_CH4_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-ch4-43m-1-hour-v20250319.csv"
+)
+WNJ_23_CH4_43$DATE <- as.Date(WNJ_23_CH4_43$datetime_UTC)
+WNJ_23_CH4_43$HH <- sprintf("%02d:00:00", WNJ_23_CH4_43$HH)
+WNJ_23_CH4_43$datetime_combined <- paste(WNJ_23_CH4_43$DATE, WNJ_23_CH4_43$HH)
+WNJ_23_CH4_43$datetime_UTC <- as.POSIXct(WNJ_23_CH4_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CH4_43$datetime_EDT <- with_tz(WNJ_23_CH4_43$datetime_UTC, tzone = "America/New_York")
+
+#
+WNJ_23_CH4_98 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-ch4-98m-1-hour-v20250319.csv"
+)
+WNJ_23_CH4_98$DATE <- as.Date(WNJ_23_CH4_98$datetime_UTC)
+WNJ_23_CH4_98$HH <- sprintf("%02d:00:00", WNJ_23_CH4_98$HH)
+WNJ_23_CH4_98$datetime_combined <- paste(WNJ_23_CH4_98$DATE, WNJ_23_CH4_98$HH)
+WNJ_23_CH4_98$datetime_UTC <- as.POSIXct(WNJ_23_CH4_98$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CH4_98$datetime_EDT <- with_tz(WNJ_23_CH4_98$datetime_UTC, tzone = "America/New_York")
+
+#
+WNJ_23_CO2_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-co2-43m-1-hour-v20250319.csv"
+)
+WNJ_23_CO2_43$DATE <- as.Date(WNJ_23_CO2_43$datetime_UTC)
+WNJ_23_CO2_43$HH <- sprintf("%02d:00:00", WNJ_23_CO2_43$HH)
+WNJ_23_CO2_43$datetime_combined <- paste(WNJ_23_CO2_43$DATE, WNJ_23_CO2_43$HH)
+WNJ_23_CO2_43$datetime_UTC <- as.POSIXct(WNJ_23_CO2_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CO2_43$datetime_EDT <- with_tz(WNJ_23_CO2_43$datetime_UTC, tzone = "America/New_York")
+
+#
+WNJ_23_CO2_98 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-co2-98m-1-hour-v20250319.csv"
+)
+WNJ_23_CO2_98$DATE <- as.Date(WNJ_23_CO2_98$datetime_UTC)
+WNJ_23_CO2_98$HH <- sprintf("%02d:00:00", WNJ_23_CO2_98$HH)
+WNJ_23_CO2_98$datetime_combined <- paste(WNJ_23_CO2_98$DATE, WNJ_23_CO2_98$HH)
+WNJ_23_CO2_98$datetime_UTC <- as.POSIXct(WNJ_23_CO2_98$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "America/New_York")
+
 
 ##### Set time limit for basic plots #####
 xlim_vals <- c(as.POSIXct("2023-10-12 10:00:00"),
@@ -1058,7 +1107,11 @@ all_data <- list(
   BVA_22_CH4_111 = BVA_22_CH4_111,
   BVA_22_CH4_50 = BVA_22_CH4_50,
   BVA_22_CO2_111 = BVA_22_CO2_111,
-  BVA_22_CO2_50 = BVA_22_CO2_50
+  BVA_22_CO2_50 = BVA_22_CO2_50,
+  WNJ_22_CO2_98 = WNJ_22_CO2_98,
+  WNJ_22_CO2_43 = WNJ_22_CO2_43,
+  WNJ_22_CH4_98 = WNJ_22_CH4_98,
+  WNJ_22_CH4_43 = WNJ_22_CH4_43
 )
 interval_labels <- c(
   "00:00–03:00 UTC",
@@ -1121,7 +1174,11 @@ all_data <- list(
   BVA_23_CH4_111 = BVA_23_CH4_111,
   BVA_23_CH4_50 = BVA_23_CH4_50,
   BVA_23_CO2_111 = BVA_23_CO2_111,
-  BVA_23_CO2_50 = BVA_23_CO2_50
+  BVA_23_CO2_50 = BVA_23_CO2_50,
+  WNJ_23_CO2_98 = WNJ_23_CO2_98,
+  WNJ_23_CO2_43 = WNJ_23_CO2_43,
+  WNJ_23_CH4_98 = WNJ_23_CH4_98,
+  WNJ_23_CH4_43 = WNJ_23_CH4_43
 )
 
 interval_labels <- c(
@@ -1161,7 +1218,7 @@ for (name in names(all_data)) {
 
 TOWER_LOCATIONS <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv")
 
-prefixes <- c("TMD", "LEW", "BVA")
+prefixes <- c("TMD", "LEW", "BVA", "WNJ")
 site_prefixes <- substr(as.character(TOWER_LOCATIONS$SiteCode), 1, 3)
 matched_rows <- TOWER_LOCATIONS[site_prefixes %in% prefixes, ]
 
@@ -1184,21 +1241,43 @@ datetime_filtered_data <- lapply(averaged_data, function(df) {
   df[df$date >= start_date & df$date <= end_date, ]
 })
 
+library(dplyr)
+big_df <- bind_rows(datetime_filtered_data, .id = "source")
+obs_co2 <- big_df %>% filter((exists("co2_ppm", where = .) & !is.na(co2_ppm))) %>% select(-ch4_ppb)
+obs_ch4 <- big_df %>% filter((exists("ch4_ppb", where = .) & !is.na(ch4_ppb)))  %>% select(-co2_ppm)
+
 ##### Loading in CarbonTracker #####
+
+# obs_co2 
+# obs_ch4
+
 library(raster)
 
 cruise <- "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
+
+#edit for laptop usage
 co2_files <- list.files(
   paste0(
-    '/Volumes/Seagate/',
-    cruise_squish,
-    '_eulerian/carbon_tracker_co2_total'
-  ),
+    "/Users/reneechabot-mehlin/Desktop/towers/models/",
+    cruise_squish, 
+    "/carbon_tracker_co2_total"
+  ), 
   pattern = '\\.nc$',
-  full.names = TRUE
-)
+  full.names =  TRUE
+  )
+
+
+# co2_files <- list.files(
+#   paste0(
+#     '/Volumes/Seagate/',
+#     cruise_squish,
+#     '_eulerian/carbon_tracker_co2_total'
+#   ),
+#   pattern = '\\.nc$',
+#   full.names = TRUE
+# )
 
 CT_CO2 <- lapply(co2_files, function(f) {
   brick(
@@ -1209,15 +1288,27 @@ CT_CO2 <- lapply(co2_files, function(f) {
   )
 })
 
+
+#edit for laptop usage
 ch4_files <- list.files(
   paste0(
-    '/Volumes/Seagate/',
-    cruise_squish,
-    '_eulerian/carbon_tracker_ch4_total'
-  ),
+    "/Users/reneechabot-mehlin/Desktop/towers/models/",
+    cruise_squish, 
+    "/carbon_tracker_ch4_total"
+  ), 
   pattern = '\\.nc$',
-  full.names = TRUE
+  full.names =  TRUE
 )
+
+# ch4_files <- list.files(
+#   paste0(
+#     '/Volumes/Seagate/',
+#     cruise_squish,
+#     '_eulerian/carbon_tracker_ch4_total'
+#   ),
+#   pattern = '\\.nc$',
+#   full.names = TRUE
+# )
 
 CT_CH4 <- lapply(ch4_files, function(f) {
   brick(
@@ -1228,117 +1319,141 @@ CT_CH4 <- lapply(ch4_files, function(f) {
   )
 })
 
-CTCO2_lists <- lapply(1:8, function(k)
-  lapply(CT_CO2, function(x)
-    x[[k]]))
-CTCH4_lists <- lapply(1:8, function(k)
-  lapply(CT_CH4, function(x)
-    x[[k]]))
 
-interval_labels <- c(
-  "00:00–03:00 UTC",
-  "03:00–06:00 UTC",
-  "06:00–09:00 UTC",
-  "09:00–12:00 UTC",
-  "12:00–15:00 UTC",
-  "15:00–18:00 UTC",
-  "18:00–21:00 UTC",
-  "21:00–00:00 UTC"
-)
+CT_CO2_cropped <- list()
+for (i in seq(CT_CO2)){
+ras_date <-as.Date(floor(as.numeric((getZ(CT_CO2[[i]])[1]))))
+if (ras_date >= start_date && ras_date <= end_date){
+  CT_CO2_cropped[[i]] <- CT_CO2[[i]]
+}
+  
+}
 
-datetime_with_ct <- lapply(datetime_filtered_data, function(df) {
-  if (!nrow(df))
-    return(NULL)  # skip empty
-  
-  co2_vals <- numeric(nrow(df))
-  ch4_vals <- numeric(nrow(df))
-  
-  for (j in seq_len(nrow(df))) {
-    date_j <- as.Date(df$date[j])
-    interval_j <- df$interval[j]
-    lat <- df$Lat[j]
-    lon <- df$Lon[j]
-    
-    interval_index <- match(interval_j, interval_labels)
-    if (is.na(interval_index))
-      next
-    
-    formatted_name <- format(date_j, "X%Y.%m.%d")
-    date_index <- which(sapply(CTCO2_lists[[interval_index]], function(r) {
-      grepl(formatted_name, names(r))
-    }))
-    
-    if (length(date_index) == 1) {
-      r_co2 <- CTCO2_lists[[interval_index]][[date_index]]
-      r_ch4 <- CTCH4_lists[[interval_index]][[date_index]]
-      co2_vals[j] <- raster::extract(r_co2, matrix(c(lon, lat), ncol = 2))
-      ch4_vals[j] <- raster::extract(r_ch4, matrix(c(lon, lat), ncol = 2))
-    } else {
-      co2_vals[j] <- NA
-      ch4_vals[j] <- NA
-    }
+CT_CO2_cropped <- CT_CO2_cropped[!sapply(CT_CO2_cropped, is.null)]
+
+CT_CH4_cropped <- list()
+for (i in seq(CT_CO2)){
+  ras_date <-as.Date(getZ(CT_CH4[[i]])[1])
+  if (ras_date >= start_date && ras_date <= end_date){
+    CT_CH4_cropped[[i]] <- CT_CH4[[i]]
   }
   
-  df$co2_ct <- co2_vals
-  df$ch4_ct <- ch4_vals
+}
+
+CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)]
+
+CTCO2_lists <- lapply(1:8, function(k)
+  lapply(CT_CO2_cropped, function(x)
+    x[[k]]))
+CTCH4_lists <- lapply(1:8, function(k)
+  lapply(CT_CH4_cropped, function(x)
+    x[[k]]))
+
+library(raster)
+CTCO2_lists <- unlist(CTCO2_lists, recursive = FALSE)
+coords <- unique(obs_co2[, c("Lon", "Lat")])
+all_results <- list()
+
+for (i in seq_along(CTCO2_lists)) {
+  r_brick <- CTCO2_lists[[i]]
   
-  na.omit(df)
-})
+  dates <- getZ(r_brick)
+  
+  if (is.null(dates)) {
+    dates <- 1:nlayers(r_brick)  
+  }
+  
+  dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
+  hours <- as.numeric(format(dates_posix, "%H"))
+  rounded_hours <- ceiling(hours / 3) * 3   
+  dates_posix_aligned <- as.POSIXct(
+    paste0(format(dates_posix, "%Y-%m-%d "), sprintf("%02d:00:00", rounded_hours)),
+    tz = "UTC"
+  )
+  
+  library(terra)
+  vals <- extract(r_brick, coords)
+  
+  df <- data.frame(
+    date = rep(as.POSIXct(dates_posix_aligned), each = nrow(coords)),
+    Lon  = rep(coords$Lon, times = nlayers(r_brick)),
+    Lat  = rep(coords$Lat, times = nlayers(r_brick)),
+    co2  = as.vector(t(vals))
+  )
+  
+  all_results[[i]] <- df
+}
 
-datetime_with_ct <- Filter(function(x)
-  ! is.null(x) && nrow(x) > 0, datetime_with_ct)
+CT_CO2_df <- do.call(rbind, all_results)
+CT_CO2_df <- merge(
+  CT_CO2_df,
+  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+  by = c("Lon", "Lat"),
+  all.x = TRUE
+)
 
-common_names <- Reduce(intersect, lapply(datetime_with_ct, names))
-datetime_with_ct <- lapply(datetime_with_ct, function(df)
-  df[, common_names, drop = FALSE])
+library(raster)
 
-final_df <- do.call(rbind, datetime_with_ct)
+CTCH4_lists <- unlist(CTCH4_lists, recursive = FALSE)
+coords <- unique(obs_co2[, c("Lon", "Lat")])
+all_results <- list()
+
+for (i in seq_along(CTCH4_lists)) {
+  r_brick <- CTCH4_lists[[i]]
+  
+  dates <- getZ(r_brick)
+  if (is.null(dates)) {
+    dates <- 1:nlayers(r_brick)  
+  }
+  
+  library(terra)
+  vals <- extract(r_brick, coords)
+  
+  df <- data.frame(
+    date = rep(as.POSIXct(dates), each = nrow(coords)),
+    Lon  = rep(coords$Lon, times = nlayers(r_brick)),
+    Lat  = rep(coords$Lat, times = nlayers(r_brick)),
+    ch4  = as.vector(t(vals))
+  )
+  
+  all_results[[i]] <- df
+}
+
+CT_CH4_df <- do.call(rbind, all_results)
+CT_CH4_df <- merge(
+  CT_CH4_df,
+  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+  by = c("Lon", "Lat"),
+  all.x = TRUE
+)
+
 
 ###### Loading in CAMS information ######
 
-## alt approach 8/11/25 ##
 library(raster)
 library(ncdf4)
 library(sf)
 library(dplyr)
 library(reshape2)
-cruise <- "Cruise 24" #add cruise number
-cruise_squish <- tolower(gsub(" ", "", cruise))
 CAMS <- list()
 all_timestamps <- list()
+# files <- list.files(
+#   paste0(
+#     '/Volumes/Seagate/',
+#     cruise_squish,
+#     '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
+#   ),
+#   pattern = '\\.nc$',
+#   full.names = TRUE
+# )
+
+#for computer usage
 files <- list.files(
-  paste0(
-    '/Volumes/Seagate/',
-    cruise_squish,
-    '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
-  ),
-  pattern = '\\.nc$',
-  full.names = TRUE
+  "/Users/reneechabot-mehlin/Desktop/towers/models/cruise24/cams_global_inversion_optimized_ghg_fluxes",
+  pattern = "\\.nc$",
+  full.names = T
 )
-states <- st_read(
-  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
-)
-east_coast_states <- c(
-  "Maine",
-  "New Hampshire",
-  "Massachusetts",
-  "Rhode Island",
-  "Connecticut",
-  "New York",
-  "New Jersey",
-  "Delaware",
-  "Maryland",
-  "Virginia",
-  "North Carolina",
-  "South Carolina",
-  "Georgia",
-  "Florida",
-  "Pennsylvania",
-  "Vermont"
-)
-east_states_sf <- states %>%
-  filter(NAME %in% east_coast_states)
-east_extent <- extent(-85, -65, 25, 47)
+
 
 for (f in files) {
   cat("Processing:", f, "\n")
@@ -1371,15 +1486,6 @@ for (f in files) {
   # Load all time layers
   r <- stack(f, varname = var_to_use)
   
-  # Ensure CRS matches shapefile
-  if (is.na(crs(r))) {
-    crs(r) <- st_crs(east_states_sf)$proj4string
-  }
-  
-  # Crop and mask
-  r <- crop(r, east_extent)
-  r <- mask(r, east_states_sf)
-  
   # Unit fix for CO2
   if (var_to_use == "CO2") {
     r <- calc(r, function(x)
@@ -1391,278 +1497,47 @@ for (f in files) {
   all_timestamps[[file_key]] <- timestamps
 }
 
+coords <- unique(obs_co2[, c("Lon", "Lat")])
 library(raster)
-library(lubridate)
 
-extract_cams_value <- function(lat, lon, datetime, raster_stack, layer_times) {
-  # Find closest layer index
-  time_diffs <- abs(difftime(layer_times, datetime, units = "secs"))
-  closest_layer <- which.min(time_diffs)
+extracted_list <- list()
+
+for (file_key in names(CAMS)) {
+  r_stack <- CAMS[[file_key]]           
+  timestamps <- all_timestamps[[file_key]]  
   
-  # Extract the raster layer
-  rast_layer <- raster_stack[[closest_layer]]
+  vals <- extract(r_stack, coords)
+  df <- data.frame(
+    Lon = rep(coords$Lon, each = nlayers(r_stack)),
+    Lat = rep(coords$Lat, each = nlayers(r_stack)),
+    Timestamp = rep(timestamps, times = nrow(coords)),
+    Value = as.vector(t(vals)),
+    File = file_key
+  )
   
-  # Extract value at (lon, lat) — order is (x=lon, y=lat)
-  value <- raster::extract(rast_layer, matrix(c(lon, lat), ncol = 2))
-  
-  return(value)
+  extracted_list[[file_key]] <- df
 }
 
-final_df$co2_cams <- mapply(
-  extract_cams_value,
-  lat = final_df$Lat,
-  lon = final_df$Lon,
-  datetime = final_df$date,
-  MoreArgs = list(
-    raster_stack = r,
-    layer_times = all_timestamps
-  )
+all_data_cams <- do.call(rbind, extracted_list)
+
+all_data_cams <-merge(
+  all_data_cams,
+  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+  by = c("Lon", "Lat"),
+  all.x = TRUE
 )
 
+cams_CO2 <- all_data_cams[grepl("CO2", all_data_cams$File, ignore.case = TRUE) &
+                            all_data_cams$Timestamp >= start_date &
+                            all_data_cams$Timestamp <= end_date, ]
 
-## end alt approach 8/11/25 ##
-  
-library(raster)
-library(ncdf4)
-library(sf)
-library(dplyr)
-library(reshape2)
-cruise <- "Cruise 24" #add cruise number
-cruise_squish <- tolower(gsub(" ", "", cruise))
-CAMS <- list()
-all_timestamps <- list()
-files <- list.files(
-  paste0(
-    '/Volumes/Seagate/',
-    cruise_squish,
-    '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
-  ),
-  pattern = '\\.nc$',
-  full.names = TRUE
-)
-states <- st_read(
-  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
-)
-east_coast_states <- c(
-  "Maine",
-  "New Hampshire",
-  "Massachusetts",
-  "Rhode Island",
-  "Connecticut",
-  "New York",
-  "New Jersey",
-  "Delaware",
-  "Maryland",
-  "Virginia",
-  "North Carolina",
-  "South Carolina",
-  "Georgia",
-  "Florida",
-  "Pennsylvania",
-  "Vermont"
-)
-east_states_sf <- states %>%
-  filter(NAME %in% east_coast_states)
-east_extent <- extent(-85, -65, 25, 47)
+cams_CH4 <- all_data_cams[grepl("CH4", all_data_cams$File, ignore.case = TRUE) &
+                            all_data_cams$Timestamp >= start_date &
+                            all_data_cams$Timestamp <= end_date, ]
+cams_CO2$File <- NULL
+cams_CH4$File <- NULL
 
-for (f in files) {
-  cat("Processing:", f, "\n")
-  nc <- nc_open(f)
-  var_names <- names(nc$var)
-  
-  if ("CH4" %in% var_names) {
-    var_to_use <- "CH4"
-  } else if ("CO2" %in% var_names) {
-    var_to_use <- "CO2"
-  } else {
-    warning("No CH4 or CO2 found in:", f)
-    nc_close(nc)
-    next
-  }
-  
-  # Read timestamps
-  if ("time" %in% names(nc$dim)) {
-    time_vals <- ncvar_get(nc, "time")
-    time_units <- ncatt_get(nc, "time", "units")$value
-    origin <- sub("hours since ", "", time_units)
-    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
-  } else {
-    warning("No time dimension in:", f)
-    nc_close(nc)
-    next
-  }
-  nc_close(nc)
-  
-  # Load all time layers
-  r <- stack(f, varname = var_to_use)
-  
-  # Ensure CRS matches shapefile
-  if (is.na(crs(r))) {
-    crs(r) <- st_crs(east_states_sf)$proj4string
-  }
-  
-  # Crop and mask
-  r <- crop(r, east_extent)
-  r <- mask(r, east_states_sf)
-  
-  # Unit fix for CO2
-  if (var_to_use == "CO2") {
-    r <- calc(r, function(x)
-      x * 1e6)
-  }
-  
-  file_key <- basename(f)  # Use file name as key
-  CAMS[[file_key]] <- r
-  all_timestamps[[file_key]] <- timestamps
-}
-east_states_sf <- st_transform(east_states_sf, crs = st_crs(CAMS[[1]]))
-CAMS_df_list <- lapply(names(CAMS), function(file_key) {
-  ras <- CAMS[[file_key]]
-  
-  if (is.null(ras)) {
-    message("[", file_key, "] Raster is NULL — skipping.")
-    return(NULL)
-  }
-  df <- as.data.frame(ras, xy = TRUE)
-  df <- na.omit(df)
-  # Example dataframe df with first two columns lon, lat and the rest timestamp columns
-  # Rename only from column 3 onward
-  if (ncol(df) < 3)
-    return(NULL)
-  
-  names(df)[3:ncol(df)] <- {
-    cn <- names(df)[3:ncol(df)]         # subset column names
-    cn <- sub("^X", "", cn)             # remove leading X
-    
-    # Use regmatches + regexec to extract date/time parts
-    parts <- regmatches(cn,
-                        regexec("^([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})(.*)$", cn))
-    
-    sapply(parts, function(p) {
-      if (length(p) == 0)
-        return(NA_character_)
-      date_part <- paste0(p[2], "-", p[3], "-", p[4])
-      time_part <- p[5]
-      if (time_part == "") {
-        time_part <- " 00:00:00"
-      } else {
-        time_part <- gsub("\\.", ":", sub("^\\.", " ", time_part))
-      }
-      paste0(date_part, time_part)
-    })
-  }
-  bad_cols <- which(is.na(names(df)))
-  if (length(bad_cols) > 0) {
-    df <- df[, -bad_cols, drop = FALSE]
-  }
-  
-  if (ncol(df) < 3)
-    return(NULL)  # no data columns left
-  
-  library(tidyr)
-  df_long <- pivot_longer(
-    df,
-    cols = -(1:2),
-    # all columns except lat and long
-    names_to = "date",
-    # new column name for former column headers
-    values_to = "concentration"  # new column name for values
-  )
- # df_long$date <- as.POSIXct(df_long$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-  df_long$gas <- ifelse(grepl("CO2", file_key, ignore.case = TRUE), "CO2", "CH4")
-  df_long$source <- file_key
-  
-  df_long
-})
-
-CAMS_combined <- do.call(rbind, CAMS_df_list)
-CAMS_combined$date <- as.POSIXct(CAMS_combined$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-CAMS_combined <- CAMS_combined[CAMS_combined$date >= start_date & CAMS_combined$date <= end_date, ]
-
-CAMS_combined <- CAMS_combined %>%
-  mutate(window_start = floor_date(date, unit = "6 hours"))
-
-CAMS_split <- split(CAMS_combined, CAMS_combined$gas)
-CAMS_CO2_df <- CAMS_split[["CO2"]]
-CAMS_CH4_df <- CAMS_split[["CH4"]]
-
-
-## edits below 8/11/25 ##
-
-names(CAMS_CO2_df)[names(CAMS_CO2_df) == "x"] <- "Lon"
-names(CAMS_CO2_df)[names(CAMS_CO2_df) == "y"] <- "Lat"
-
-names(CAMS_CH4_df)[names(CAMS_CH4_df) == "x"] <- "Lon"
-names(CAMS_CH4_df)[names(CAMS_CH4_df) == "y"] <- "Lat"
-
-library(dplyr)
-library(lubridate)
-library(stringr)
-
-# Prepare the CAMS_CH4 data: create window_start and keep lat/lon
-final_df$date <-as.POSIXct(final_df$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-final_df <- final_df %>%
-  mutate(window_start = floor_date(date, unit = "6 hours"))
-joined <- final_df %>%
-  left_join(CAMS_CH4_df, by = c("window_start", "Lat", "Lon"))
-
-
-###alt approach
-
-
-grid_data_ch4 <- CAMS_CH4_df %>%
-  mutate(
-    window_start_ch4 = floor_date(date, unit = "6 hours"),
-    Lon_round = round(Lon, 4),
-    Lat_round = round(Lat, 4)
-  ) %>%
-  group_by(window_start_ch4, Lon_round, Lat_round) %>%
-  summarise(ch4_conc_cams = mean(concentration, na.rm = TRUE) / 1000, .groups = "drop")
-grid_data_ch4$window_start_ch4 <- as.Date(grid_data_ch4$window_start_ch4)
-
-final_df <- final_df %>%
-  mutate(
-    window_start_ch4 = floor_date(date, unit = "6 hours")
-  )
-final_df$Lon_round <- round(final_df$Lon, 1)
-final_df$Lat_round <- round(final_df$Lat, 1)
-
-joined <- final_df %>%
-  left_join(grid_data_ch4, by = c("window_start_ch4", "Lon_round", "Lat_round"))
-
-
-## edits above 8/11/25 ##
-
-grid_data_co2 <- CAMS_CO2_df %>%
-  group_by(date) %>%
-  summarise(co2_conc_cams = mean(concentration, na.rm = TRUE)) %>%
-  rename(window_start_co2 = date)
-
-joined <- joined %>% mutate(window_start_co2 = floor_date(date, unit = "3 hours"))
-joined <- joined %>% left_join(grid_data_co2, by = "window_start_co2")
-
-joined <- joined[-c(2, 4, 5, 8, 10)]
 
 ##### Plotting against CT and CAMS #####
-library(data.table)
-joined_dt <- as.data.table(joined)
-filtered_dt_list <- mapply(function(df, nm) {
-  dt <- as.data.table(df)
-  setnames(dt,
-           old = setdiff(names(dt), "date"),
-           new = paste0(setdiff(names(dt), "date"), "_", nm))
-  dt
-}, filtered_list, names(filtered_list), SIMPLIFY = FALSE)
-
-big_dt <- rbindlist(filtered_dt_list, use.names = TRUE, fill = TRUE)
-
-joined_dt[, date := as.Date(date)]
-big_dt[, date := as.Date(date)]
-
-big_dt_agg <- big_dt[, lapply(.SD, mean, na.rm = TRUE), by = date]
-
-merged_dt <- merge(joined_dt, big_dt_agg, by = "date", all.x = TRUE)
-
-merged_df <- as.data.frame(merged_dt)
-
+# ADD PLOTS HERE
 ##### ____________________________________#####
