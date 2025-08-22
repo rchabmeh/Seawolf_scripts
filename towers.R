@@ -1243,14 +1243,14 @@ datetime_filtered_data <- lapply(averaged_data, function(df) {
 
 library(dplyr)
 big_df <- bind_rows(datetime_filtered_data, .id = "source")
-obs_co2 <- big_df[!is.na(big_df$co2_ppm), ]   
-obs_co2$ch4_ppb <- NULL 
+obs_co2 <- big_df[!is.na(big_df$co2_ppm), ]
+obs_co2$ch4_ppb <- NULL
 
-obs_ch4 <- big_df[!is.na(big_df$ch4_ppb), ]   
-obs_ch4$co2_ppm <- NULL    
+obs_ch4 <- big_df[!is.na(big_df$ch4_ppb), ]
+obs_ch4$co2_ppm <- NULL
 ##### Loading in CarbonTracker #####
 
-# obs_co2 
+# obs_co2
 # obs_ch4
 
 library(raster)
@@ -1263,12 +1263,12 @@ cruise_squish <- tolower(gsub(" ", "", cruise))
 co2_files <- list.files(
   paste0(
     "/Users/reneechabot-mehlin/Desktop/towers/models/",
-    cruise_squish, 
+    cruise_squish,
     "/carbon_tracker_co2_total"
-  ), 
+  ),
   pattern = '\\.nc$',
   full.names =  TRUE
-  )
+)
 
 
 # co2_files <- list.files(
@@ -1295,9 +1295,9 @@ CT_CO2 <- lapply(co2_files, function(f) {
 ch4_files <- list.files(
   paste0(
     "/Users/reneechabot-mehlin/Desktop/towers/models/",
-    cruise_squish, 
+    cruise_squish,
     "/carbon_tracker_ch4_total"
-  ), 
+  ),
   pattern = '\\.nc$',
   full.names =  TRUE
 )
@@ -1323,26 +1323,28 @@ CT_CH4 <- lapply(ch4_files, function(f) {
 
 
 CT_CO2_cropped <- list()
-for (i in seq(CT_CO2)){
-ras_date <-as.Date(floor(as.numeric((getZ(CT_CO2[[i]])[1]))))
-if (ras_date >= start_date && ras_date <= end_date){
-  CT_CO2_cropped[[i]] <- CT_CO2[[i]]
-}
+for (i in seq(CT_CO2)) {
+  ras_date <- as.Date(floor(as.numeric((getZ(
+    CT_CO2[[i]]
+  )[1]))))
+  if (ras_date >= start_date && ras_date <= end_date) {
+    CT_CO2_cropped[[i]] <- CT_CO2[[i]]
+  }
   
 }
 
 CT_CO2_cropped <- CT_CO2_cropped[!sapply(CT_CO2_cropped, is.null)]
 
 CT_CH4_cropped <- list()
-for (i in seq(CT_CO2)){
-  ras_date <-as.Date(getZ(CT_CH4[[i]])[1])
-  if (ras_date >= start_date && ras_date <= end_date){
-    CT_CH4_cropped[[i]] <- CT_CH4[[i]]
+for (i in seq(CT_CO2)) {
+  ras_date <- as.Date(getZ(CT_CH4[[i]])[1]) #starts at 03:00 and ends the next day at 00:00
+  if (ras_date >= start_date && ras_date <= end_date) { #this is why it is mismatched later on and can't be fixed
+    CT_CH4_cropped[[i]] <- CT_CH4[[i]] #but why CT_CO2 can and has been fixed 
   }
   
 }
 
-CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)]
+CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)] 
 
 CTCO2_lists <- lapply(1:8, function(k)
   lapply(CT_CO2_cropped, function(x)
@@ -1362,16 +1364,16 @@ for (i in seq_along(CTCO2_lists)) {
   dates <- getZ(r_brick)
   
   if (is.null(dates)) {
-    dates <- 1:nlayers(r_brick)  
+    dates <- 1:nlayers(r_brick)
   }
   
   dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   hours <- as.numeric(format(dates_posix, "%H"))
-  rounded_hours <- ceiling(hours / 3) * 3   
-  dates_posix_aligned <- as.POSIXct(
-    paste0(format(dates_posix, "%Y-%m-%d "), sprintf("%02d:00:00", rounded_hours)),
-    tz = "UTC"
-  )
+  rounded_hours <- floor(hours / 3) * 3 #chosing floor instead of ceiling so 01:30 -> 00:00
+  dates_posix_aligned <- as.POSIXct(paste0(
+    format(dates_posix, "%Y-%m-%d "),
+    sprintf("%02d:00:00", rounded_hours)
+  ), tz = "UTC")
   
   library(terra)
   vals <- extract(r_brick, coords)
@@ -1387,14 +1389,12 @@ for (i in seq_along(CTCO2_lists)) {
 }
 
 CT_CO2_df <- do.call(rbind, all_results)
-CT_CO2_df <- merge(
-  CT_CO2_df,
-  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
-  by = c("Lon", "Lat"),
-  all.x = TRUE
-)
+CT_CO2_df <- merge(CT_CO2_df,
+                   unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+                   by = c("Lon", "Lat"),
+                   all.x = TRUE)
 
-library(raster)
+library(raster) 
 
 CTCH4_lists <- unlist(CTCH4_lists, recursive = FALSE)
 coords <- unique(obs_co2[, c("Lon", "Lat")])
@@ -1405,14 +1405,15 @@ for (i in seq_along(CTCH4_lists)) {
   
   dates <- getZ(r_brick)
   if (is.null(dates)) {
-    dates <- 1:nlayers(r_brick)  
+    dates <- 1:nlayers(r_brick)
   }
   
   library(terra)
   vals <- extract(r_brick, coords)
+  dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   
   df <- data.frame(
-    date = rep(as.POSIXct(dates), each = nrow(coords)),
+    date = rep(as.POSIXct(dates_posix), each = nrow(coords)),
     Lon  = rep(coords$Lon, times = nlayers(r_brick)),
     Lat  = rep(coords$Lat, times = nlayers(r_brick)),
     ch4  = as.vector(t(vals))
@@ -1422,12 +1423,10 @@ for (i in seq_along(CTCH4_lists)) {
 }
 
 CT_CH4_df <- do.call(rbind, all_results)
-CT_CH4_df <- merge(
-  CT_CH4_df,
-  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
-  by = c("Lon", "Lat"),
-  all.x = TRUE
-)
+CT_CH4_df <- merge(CT_CH4_df,
+                   unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+                   by = c("Lon", "Lat"),
+                   all.x = TRUE)
 
 
 ###### Loading in CAMS information ######
@@ -1505,8 +1504,8 @@ library(raster)
 extracted_list <- list()
 
 for (file_key in names(CAMS)) {
-  r_stack <- CAMS[[file_key]]           
-  timestamps <- all_timestamps[[file_key]]  
+  r_stack <- CAMS[[file_key]]
+  timestamps <- all_timestamps[[file_key]]
   
   vals <- extract(r_stack, coords)
   df <- data.frame(
@@ -1522,15 +1521,15 @@ for (file_key in names(CAMS)) {
 
 all_data_cams <- do.call(rbind, extracted_list)
 
-all_data_cams <-merge(
+all_data_cams <- merge(
   all_data_cams,
   unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
   by = c("Lon", "Lat"),
   all.x = TRUE
 )
 
-start_datetime <- as.POSIXct(start_date, tz = "UTC")                  
-end_datetime   <- as.POSIXct(end_date + 1, tz = "UTC") - 1            
+start_datetime <- as.POSIXct(start_date, tz = "UTC")
+end_datetime   <- as.POSIXct(end_date + 1, tz = "UTC") - 1
 
 
 cams_CO2 <- all_data_cams[grepl("CO2", all_data_cams$File, ignore.case = TRUE) &
@@ -1544,103 +1543,125 @@ cams_CO2$File <- NULL
 cams_CH4$File <- NULL
 
 
-##### Plotting against CT and CAMS #####
+##### Plotting against CT and CAMS & saving .csv files #####
 #CO2
 merged_co2_list <- list()
-for (abriv in unique(matched_rows$SiteCode)){
-site = abriv
-filtered_cams_co2 <- cams_CO2 %>% filter(SiteCode == site)
-filtered_obs_co2 <- obs_co2 %>% filter(substr(source, 1, 3) == site)
-filtered_ct_co2 <- CT_CO2_df %>% filter(SiteCode == site)
-
-interval_starts <- c(
-  "00:00–03:00 UTC" = "00:00:00",
-  "03:00–06:00 UTC" = "03:00:00",
-  "06:00–09:00 UTC" = "06:00:00",
-  "09:00–12:00 UTC" = "09:00:00",
-  "12:00–15:00 UTC" = "12:00:00",
-  "15:00–18:00 UTC" = "15:00:00",
-  "18:00–21:00 UTC" = "18:00:00",
-  "21:00–00:00 UTC" = "21:00:00"
-)
-
-filtered_obs_co2$datetime <- as.POSIXct(
-  paste(
-    filtered_obs_co2$date,
-    interval_starts[filtered_obs_co2$interval]
-  ),
-  tz = "UTC"
-)
-filtered_obs_co2$height <- sub(".*_(\\d+)$", "\\1", filtered_obs_co2$source)
-heights <- unique(filtered_obs_co2$height)
-colors <- c("cyan", "green")
-
-filtered_cams_co2 <- filtered_cams_co2[order(filtered_cams_co2$Timestamp), ]
-filtered_obs_co2  <- filtered_obs_co2[order(filtered_obs_co2$datetime), ]
-filtered_ct_co2 <- filtered_ct_co2[order(filtered_ct_co2$date), ]
-
-all_y <- c(
-  filtered_cams_co2$Value,
-  filtered_ct_co2$co2,
-  filtered_obs_co2$co2_ppm
-)  
-y_pad <- diff(range(all_y, na.rm = T)) * 0.05
-
-par(mfrow = c(2,1), mar = c(2,2,2,2))
-plot(
-  filtered_cams_co2$Timestamp,
-  filtered_cams_co2$Value,
-  col = "darkblue",
-  type = "b",
-  pch = 20,
-  xlab = "Date",
-  ylab = "CO2 (ppm)",
-  main = paste(cruise,"-", "A comparison of models v obs. CO2 at", site),
-  ylim = range(all_y, na.rm =T)
-)
-for (i in seq_along(heights)) {
-  subset_obs <- filtered_obs_co2[filtered_obs_co2$height == heights[i], ]
-  lines(subset_obs$datetime, subset_obs$co2_ppm,
-        col = colors[i], type = "b", pch = 20)
+for (abriv in unique(matched_rows$SiteCode)) {
+  site = abriv
+  filtered_cams_co2 <- cams_CO2 %>% filter(SiteCode == site)
+  filtered_obs_co2 <- obs_co2 %>% filter(substr(source, 1, 3) == site)
+  filtered_ct_co2 <- CT_CO2_df %>% filter(SiteCode == site)
+  
+  interval_starts <- c(
+    "00:00–03:00 UTC" = "00:00:00",
+    "03:00–06:00 UTC" = "03:00:00",
+    "06:00–09:00 UTC" = "06:00:00",
+    "09:00–12:00 UTC" = "09:00:00",
+    "12:00–15:00 UTC" = "12:00:00",
+    "15:00–18:00 UTC" = "15:00:00",
+    "18:00–21:00 UTC" = "18:00:00",
+    "21:00–00:00 UTC" = "21:00:00"
+  )
+  
+  filtered_obs_co2$datetime <- as.POSIXct(paste(filtered_obs_co2$date, interval_starts[filtered_obs_co2$interval]), tz = "UTC")
+  filtered_obs_co2$height <- sub(".*_(\\d+)$", "\\1", filtered_obs_co2$source)
+  heights <- unique(filtered_obs_co2$height)
+  colors <- c("cyan", "green")
+  
+  filtered_cams_co2 <- filtered_cams_co2[order(filtered_cams_co2$Timestamp), ]
+  filtered_obs_co2  <- filtered_obs_co2[order(filtered_obs_co2$datetime), ]
+  filtered_ct_co2 <- filtered_ct_co2[order(filtered_ct_co2$date), ]
+  
+  all_y <- c(filtered_cams_co2$Value,
+             filtered_ct_co2$co2,
+             filtered_obs_co2$co2_ppm)
+  y_pad <- diff(range(all_y, na.rm = T)) * 0.05
+  
+  par(mfrow = c(2, 1), mar = c(2, 2, 2, 2))
+  plot(
+    filtered_cams_co2$Timestamp,
+    filtered_cams_co2$Value,
+    col = "darkblue",
+    type = "b",
+    pch = 20,
+    xlab = "Date",
+    ylab = "CO2 (ppm)",
+    main = paste(cruise, "-", "A comparison of models v obs. CO2 at", site),
+    ylim = range(all_y, na.rm = T)
+  )
+  for (i in seq_along(heights)) {
+    subset_obs <- filtered_obs_co2[filtered_obs_co2$height == heights[i], ]
+    lines(
+      subset_obs$datetime,
+      subset_obs$co2_ppm,
+      col = colors[i],
+      type = "b",
+      pch = 20
+    )
+  }
+  lines(
+    filtered_ct_co2$date,
+    filtered_ct_co2$co2,
+    col = "red",
+    type = "b",
+    pch = 20
+  )
+  
+  plot.new()
+  legend(
+    "center",
+    legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
+    col    = c("darkblue", colors[seq_along(heights)], "red"),
+    pch    = 20,
+    lty    = 1,
+    cex    = 0.55,
+    title  = "Legend",
+    horiz = T
+  )
+  
+  
+  filtered_cams_co2$DATE <- filtered_cams_co2$Timestamp
+  filtered_obs_co2$DATE  <- filtered_obs_co2$datetime
+  filtered_ct_co2$DATE <- filtered_ct_co2$date
+  
+  names(filtered_cams_co2)[names(filtered_cams_co2) == "Value"] <- "CAMs_CO2"
+  names(filtered_obs_co2)[names(filtered_obs_co2) == "co2_ppm"] <- "Obs_CO2_ppm"
+  names(filtered_ct_co2)[names(filtered_ct_co2) == "co2"] <- "CT_CO2"
+  
+  filtered_cams_co2$SiteCode <- site
+  filtered_ct_co2$SiteCode   <- site
+  filtered_obs_co2$SiteCode  <- site
+  
+  merged_temp <- merge(filtered_cams_co2,
+                       filtered_ct_co2,
+                       by = "DATE",
+                       all = TRUE)
+  merged_co2 <- merge(merged_temp,
+                      filtered_obs_co2,
+                      by = "DATE",
+                      all = TRUE)
+  
+  merged_co2 <- merged_co2[, c("DATE", "SiteCode", "CAMs_CO2", "Obs_CO2_ppm", "CT_CO2")]
+  
+  merged_co2_list[[site]] <- merged_co2
+  
 }
-lines(filtered_ct_co2$date, filtered_ct_co2$co2, col = "red", type = "b", pch = 20)
 
-plot.new()
-legend("center",
-       legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
-       col    = c("darkblue", colors[seq_along(heights)], "red"),
-       pch    = 20,
-       lty    = 1,
-       cex    = 0.55,
-       title  = "Legend",
-       horiz = T
-       )
-
-
-filtered_cams_co2$DATE <- filtered_cams_co2$Timestamp
-filtered_obs_co2$DATE  <- filtered_obs_co2$datetime
-filtered_ct_co2$DATE <- filtered_ct_co2$date
-
-names(filtered_cams_co2)[names(filtered_cams_co2) == "Value"] <- "CAMs_CO2"
-names(filtered_obs_co2)[names(filtered_obs_co2) == "co2_ppm"] <- "Obs_CO2_ppm"
-names(filtered_ct_co2)[names(filtered_ct_co2) == "co2"] <- "CT_CO2"
-
-filtered_cams_co2$SiteCode <- site
-filtered_ct_co2$SiteCode   <- site
-filtered_obs_co2$SiteCode  <- site
-
-merged_temp <- merge(filtered_cams_co2, filtered_ct_co2, by = "DATE", all = TRUE)
-merged_co2 <- merge(merged_temp, filtered_obs_co2, by = "DATE", all = TRUE)
-
-merged_co2 <- merged_co2[, c("DATE", "SiteCode", "CAMs_CO2", "Obs_CO2_ppm", "CT_CO2")]
-
-merged_co2_list[[site]] <- merged_co2
-
+for (abriv in unique(matched_rows$SiteCode)) {
+  write.csv(
+    merged_co2_list[[abriv]],
+    paste0(
+      "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_",
+      abriv,
+      ".csv"
+    ),
+    row.names =  F
+  )
 }
 
 #CH4
 merged_ch4_list <- list()
-for (abriv in unique(matched_rows$SiteCode)){
+for (abriv in unique(matched_rows$SiteCode)) {
   site = abriv
   filtered_cams_ch4 <- cams_CH4 %>% filter(SiteCode == site)
   filtered_obs_ch4 <- obs_ch4 %>% filter(substr(source, 1, 3) == site)
@@ -1657,13 +1678,7 @@ for (abriv in unique(matched_rows$SiteCode)){
     "21:00–00:00 UTC" = "21:00:00"
   )
   
-  filtered_obs_ch4$datetime <- as.POSIXct(
-    paste(
-      filtered_obs_ch4$date,
-      interval_starts[filtered_obs_ch4$interval]
-    ),
-    tz = "UTC"
-  )
+  filtered_obs_ch4$datetime <- as.POSIXct(paste(filtered_obs_ch4$date, interval_starts[filtered_obs_ch4$interval]), tz = "UTC")
   filtered_obs_ch4$height <- sub(".*_(\\d+)$", "\\1", filtered_obs_ch4$source)
   heights <- unique(filtered_obs_ch4$height)
   colors <- c("cyan", "green")
@@ -1672,14 +1687,12 @@ for (abriv in unique(matched_rows$SiteCode)){
   filtered_obs_ch4  <- filtered_obs_ch4[order(filtered_obs_ch4$datetime), ]
   filtered_ct_ch4 <- filtered_ct_ch4[order(filtered_ct_ch4$date), ]
   
-  all_y <- c(
-    filtered_cams_ch4$Value,
-    filtered_ct_ch4$ch4,
-    filtered_obs_ch4$ch4_ppb
-  )  
+  all_y <- c(filtered_cams_ch4$Value,
+             filtered_ct_ch4$ch4,
+             filtered_obs_ch4$ch4_ppb)
   y_pad <- diff(range(all_y, na.rm = T)) * 0.05
   
-  par(mfrow = c(2,1), mar = c(2,2,2,2))
+  par(mfrow = c(2, 1), mar = c(2, 2, 2, 2))
   plot(
     filtered_cams_ch4$Timestamp,
     filtered_cams_ch4$Value,
@@ -1688,28 +1701,39 @@ for (abriv in unique(matched_rows$SiteCode)){
     pch = 20,
     xlab = "Date",
     ylab = "CH4 (ppb)",
-    main = paste(cruise,"-", "A comparison of models v obs. CH4 at", site),
-    ylim = range(all_y, na.rm =T)
+    main = paste(cruise, "-", "A comparison of models v obs. CH4 at", site),
+    ylim = range(all_y, na.rm = T)
   )
   for (i in seq_along(heights)) {
     subset_obs <- filtered_obs_ch4[filtered_obs_ch4$height == heights[i], ]
-    lines(subset_obs$datetime, subset_obs$ch4_ppb,
-          col = colors[i], type = "b", pch = 20)
+    lines(
+      subset_obs$datetime,
+      subset_obs$ch4_ppb,
+      col = colors[i],
+      type = "b",
+      pch = 20
+    )
   }
-  lines(filtered_ct_ch4$date, filtered_ct_ch4$ch4, col = "red", type = "b", pch = 20)
-  
-  plot.new()
-  legend("center",
-         legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
-         col    = c("darkblue", colors[seq_along(heights)], "red"),
-         pch    = 20,
-         lty    = 1,
-         cex    = 0.55,
-         title  = "Legend",
-         horiz = T
+  lines(
+    filtered_ct_ch4$date,
+    filtered_ct_ch4$ch4,
+    col = "red",
+    type = "b",
+    pch = 20
   )
   
-  ## MERGED CH4 LIST IS FUNKY-- CAMS AND OBS ALIGN BUT NOT CT
+  plot.new()
+  legend(
+    "center",
+    legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
+    col    = c("darkblue", colors[seq_along(heights)], "red"),
+    pch    = 20,
+    lty    = 1,
+    cex    = 0.55,
+    title  = "Legend",
+    horiz = T
+  )
+  
   
   filtered_cams_ch4$DATE <- filtered_cams_ch4$Timestamp
   filtered_obs_ch4$DATE  <- filtered_obs_ch4$datetime
@@ -1723,8 +1747,14 @@ for (abriv in unique(matched_rows$SiteCode)){
   filtered_ct_ch4$SiteCode   <- site
   filtered_obs_ch4$SiteCode  <- site
   
-  merged_temp <- merge(filtered_cams_ch4, filtered_ct_ch4, by = "DATE", all = TRUE) #this is the problem
-  merged_ch4 <- merge(merged_temp, filtered_obs_ch4, by = "DATE", all = TRUE)
+  merged_temp <- merge(filtered_cams_ch4,
+                       filtered_ct_ch4,
+                       by = "DATE",
+                       all = TRUE)
+  merged_ch4 <- merge(merged_temp,
+                      filtered_obs_ch4,
+                      by = "DATE",
+                      all = TRUE)
   
   merged_ch4 <- merged_ch4[, c("DATE", "SiteCode", "CAMs_CH4", "Obs_CH4_ppb", "CT_CH4")]
   
@@ -1732,4 +1762,15 @@ for (abriv in unique(matched_rows$SiteCode)){
   
 }
 
+for (abriv in unique(matched_rows$SiteCode)) {
+  write.csv(
+    merged_ch4_list[[abriv]],
+    paste0(
+      "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_",
+      abriv,
+      ".csv"
+    ),
+    row.names =  F
+  )
+}
 ##### ____________________________________#####
