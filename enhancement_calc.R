@@ -1,5 +1,5 @@
 #Run towers.R first to generate tower .csv files if not already
-#Updated last on August 24, 2025
+#Updated last on August 25, 2025
 #####_____________________________________________________________________ #####
 ##### 1. Loading in completed tower .csv files ####
 
@@ -1040,7 +1040,8 @@ keep <- c(
   "tower_df_ch4_obs",
   "cruise",
   "final_obs_long_co2",
-  "final_obs_long_ch4"
+  "final_obs_long_ch4",
+  "interval_labels"
 )
 rm(list = setdiff(ls(), keep))
 
@@ -1139,6 +1140,7 @@ ggplot(final_obs_long_co2, aes(x = date, y = CO2, color = Tower)) +
     x = "Date UTC",
     y = "CO2 (ppm)"
   ) +
+  geom_hline(yintercept = 0) +
   theme_minimal() +
   theme(
     axis.text = element_text(size = 14),
@@ -1161,6 +1163,7 @@ ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
     x = "Date UTC",
     y = "CO2 (ppm)"
   ) +
+  geom_hline(yintercept = 0) +
   theme_minimal() +
   theme(
     axis.text = element_text(size = 14),
@@ -1169,5 +1172,807 @@ ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
   )
 
 #####___________________6. CT comparisons_________________________ #####
+##### Creating combined ship and tower carbon tracker data frames #####
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+joined$date <- joined$Date_UTC
+
+ship_df_co2_ct <- joined %>%
+  select(date, CT_CO2) %>%
+  mutate(Source = "Ship", CO2 = CT_CO2) %>%
+  select(date, CO2, Source)
+
+
+tower_df_co2_ct <- map_df(names(tower_data), function(tower_name) {
+  df <- tower_data[[tower_name]]
+  if (!is.data.frame(df))
+    return(NULL)
+  if (!"CT_CO2" %in% names(df))
+    return(NULL)
+  tower_code <- gsub("_co2$", "", tower_name)
+  
+  df %>%
+    mutate(Source = tower_code, CO2 = CT_CO2) %>%
+    select(DATE, CO2, Source) %>%
+    rename(date = DATE)
+})
+
+all_data_co2_ct <- bind_rows(ship_df_co2_ct, tower_df_co2_ct)
+
+ship_unique <- ship_df_co2_ct %>%
+  group_by(date) %>%
+  summarise(CO2 = mean(CO2, na.rm = TRUE)) %>%
+  mutate(Source_id = "Ship")
+
+tower_numbered <- tower_df_co2_ct %>%
+  group_by(Source, date) %>%
+  mutate(id = row_number()) %>%
+  ungroup() %>%
+  unite("Source_id", Source, id, sep = "_")
+
+combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_id))
+
+wide_data_co2_ct <- combined %>%
+  pivot_wider(names_from = Source_id, values_from = CO2) %>%
+  arrange(date)
+#need to make automated- comment 8/24/25
+wide_data_co2_ct$mean_BVA <- (wide_data_co2_ct$BVA_1 + wide_data_co2_ct$BVA_2) /
+  2
+wide_data_co2_ct$mean_TMD <- (wide_data_co2_ct$TMD_1 + wide_data_co2_ct$TMD_2) /
+  2
+wide_data_co2_ct$mean_WNJ <- (wide_data_co2_ct$WNJ_1 + wide_data_co2_ct$WNJ_2) /
+  2
+
+final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 9, 10, 11)]
+
+#need to automate - comment 8/24/25
+final_ct_co2$enh_via_BVA <- final_ct_co2$Ship - final_ct_co2$mean_BVA
+final_ct_co2$enh_via_TMD <- final_ct_co2$Ship - final_ct_co2$mean_TMD
+final_ct_co2$enh_via_WNJ <- final_ct_co2$Ship - final_ct_co2$mean_WNJ
+
+library(reshape2)
+final_ct_long_co2 <- melt(
+  final_ct_co2,
+  id.vars = "date",
+  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  variable.name = "Tower",
+  value.name = "CO2"
+)
+
+final_ct_long_co2$Tower <- gsub("enh_via_", "", final_ct_long_co2$Tower)
+
+
+#CH4
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+joined$date <- joined$Date_UTC
+
+ship_df_ch4_ct <- joined %>%
+  select(date, CT_CH4) %>%
+  mutate(Source = "Ship", CH4 = CT_CH4) %>%
+  select(date, CH4, Source)
+
+
+tower_df_ch4_ct <- map_df(names(tower_data), function(tower_name) {
+  df <- tower_data[[tower_name]]
+  if (!is.data.frame(df))
+    return(NULL)
+  if (!"CT_CH4" %in% names(df))
+    return(NULL)
+  tower_code <- gsub("_ch4$", "", tower_name)
+  
+  df %>%
+    mutate(Source = tower_code, CH4 = CT_CH4) %>%
+    select(DATE, CH4, Source) %>%
+    rename(date = DATE)
+})
+
+all_data_ch4_ct <- bind_rows(ship_df_ch4_ct, tower_df_ch4_ct)
+
+ship_unique <- ship_df_ch4_ct %>%
+  group_by(date) %>%
+  summarise(CH4 = mean(CH4, na.rm = TRUE)) %>%
+  mutate(Source_id = "Ship")
+
+tower_numbered <- tower_df_ch4_ct %>%
+  group_by(Source, date) %>%
+  mutate(id = row_number()) %>%
+  ungroup() %>%
+  unite("Source_id", Source, id, sep = "_")
+
+combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CH4, Source_id))
+
+wide_data_ch4_ct <- combined %>%
+  pivot_wider(names_from = Source_id, values_from = CH4) %>%
+  arrange(date)
+
+#need to make automated- comment 8/24/25
+wide_data_ch4_ct$mean_BVA <- (wide_data_ch4_ct$BVA_1 + wide_data_ch4_ct$BVA_2) /
+  2
+wide_data_ch4_ct$mean_TMD <- (wide_data_ch4_ct$TMD_1 + wide_data_ch4_ct$TMD_2) /
+  2
+wide_data_ch4_ct$mean_WNJ <- (wide_data_ch4_ct$WNJ_1 + wide_data_ch4_ct$WNJ_2) /
+  2
+
+final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 9, 10, 11)]
+
+#make automated - comment 8/24/25
+final_ct_ch4$enh_via_BVA <- final_ct_ch4$Ship - final_ct_ch4$mean_BVA
+final_ct_ch4$enh_via_TMD <- final_ct_ch4$Ship - final_ct_ch4$mean_TMD
+final_ct_ch4$enh_via_WNJ <- final_ct_ch4$Ship - final_ct_ch4$mean_WNJ
+
+library(reshape2)
+final_ct_long_ch4 <- melt(
+  final_ct_ch4,
+  id.vars = "date",
+  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  variable.name = "Tower",
+  value.name = "CH4"
+)
+
+final_ct_long_ch4$Tower <- gsub("enh_via_", "", final_ct_long_ch4$Tower)
+
+View(final_ct_co2)
+View(final_ct_ch4)
+
+##### Plotting tower carbon tracker against ship carbon tracker #####
+#CO2 obs plot comparison
+ggplot() +
+  geom_ribbon(
+    data = ship_df_co2_ct,
+    aes(x = date, ymin = 415, ymax = CO2),
+    fill = "darkgrey",
+    alpha = 0.5
+  ) +
+  geom_line(data = ship_df_co2_ct,
+            aes(x = date, y = CO2, color = Source),
+            linewidth = 1) +
+  geom_point(data = ship_df_co2_ct,
+             aes(x = date, y = CO2, color = Source),
+             size = 2) +
+  geom_line(data = tower_df_co2_ct,
+            aes(x = date, y = CO2, color = Source),
+            linewidth = 1) +
+  geom_point(data = tower_df_co2_ct,
+             aes(x = date, y = CO2, color = Source),
+             size = 2) +
+  scale_color_manual(values = c(
+    "Ship" = "black",
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: Carbon Tracker comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CH4 obs plot comparison
+ggplot() +
+  geom_ribbon(
+    data = ship_df_ch4_ct,
+    aes(x = date, ymin = 1975, ymax = CH4),
+    fill = "darkgrey",
+    alpha = 0.5
+  ) +
+  geom_line(data = ship_df_ch4_ct,
+            aes(x = date, y = CH4, color = Source),
+            linewidth = 1) +
+  geom_point(data = ship_df_ch4_ct,
+             aes(x = date, y = CH4, color = Source),
+             size = 2) +
+  geom_line(data = tower_df_ch4_ct,
+            aes(x = date, y = CH4, color = Source),
+            linewidth = 1) +
+  geom_point(data = tower_df_ch4_ct,
+             aes(x = date, y = CH4, color = Source),
+             size = 2) +
+  scale_color_manual(values = c(
+    "Ship" = "black",
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: Carbon Tracker comparison for", cruise),
+    x = "Date UTC",
+    y = "CH4 (ppb)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CO2 enhancement comparison
+library(ggplot2)
+ggplot(final_ct_long_co2, aes(x = date, y = CO2, color = Tower)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c(
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: Carbon Tracker enhancement comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  geom_hline(yintercept = 0) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CH4 enhancement comparison
+library(ggplot2)
+ggplot(final_ct_long_ch4, aes(x = date, y = CH4, color = Tower)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c(
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: Carbon Tracker enhancement comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  geom_hline(yintercept = 0) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
 #####___________________7. CAMS comparisons_________________________ #####
-#####___________________7. Cross-model comparisons________________________ #####
+##### Creating combined ship and tower CAMS data frames #####
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+joined$date <- joined$Date_UTC
+
+ship_df_co2_cams <- joined %>%
+  select(date, CAMS_CO2) %>%
+  mutate(Source = "Ship", CO2 = CAMS_CO2) %>%
+  select(date, CO2, Source)
+
+
+tower_df_co2_cams <- map_df(names(tower_data), function(tower_name) {
+  df <- tower_data[[tower_name]]
+  if (!is.data.frame(df))
+    return(NULL)
+  if (!"CAMs_CO2" %in% names(df))
+    return(NULL)
+  tower_code <- gsub("_co2$", "", tower_name)
+  
+  df %>%
+    mutate(Source = tower_code, CO2 = CAMs_CO2) %>%
+    select(DATE, CO2, Source) %>%
+    rename(date = DATE)
+})
+
+all_data_co2_cams <- bind_rows(ship_df_co2_cams, tower_df_co2_cams)
+
+ship_unique <- ship_df_co2_cams %>%
+  group_by(date) %>%
+  summarise(CO2 = mean(CO2, na.rm = TRUE)) %>%
+  mutate(Source_id = "Ship")
+
+tower_numbered <- tower_df_co2_cams %>%
+  group_by(Source, date) %>%
+  mutate(id = row_number()) %>%
+  ungroup() %>%
+  unite("Source_id", Source, id, sep = "_")
+
+combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_id))
+
+wide_data_co2_cams <- combined %>%
+  pivot_wider(names_from = Source_id, values_from = CO2) %>%
+  arrange(date)
+#need to make automated- comment 8/24/25
+wide_data_co2_cams$mean_BVA <- (wide_data_co2_cams$BVA_1 + wide_data_co2_cams$BVA_2) /
+  2
+wide_data_co2_cams$mean_TMD <- (wide_data_co2_cams$TMD_1 + wide_data_co2_cams$TMD_2) /
+  2
+wide_data_co2_cams$mean_WNJ <- (wide_data_co2_cams$WNJ_1 + wide_data_co2_cams$WNJ_2) /
+  2
+
+final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 9, 10, 11)]
+
+#need to automate - comment 8/24/25
+final_cams_co2$enh_via_BVA <- final_cams_co2$Ship - final_cams_co2$mean_BVA
+final_cams_co2$enh_via_TMD <- final_cams_co2$Ship - final_cams_co2$mean_TMD
+final_cams_co2$enh_via_WNJ <- final_cams_co2$Ship - final_cams_co2$mean_WNJ
+
+library(reshape2)
+final_cams_long_co2 <- melt(
+  final_cams_co2,
+  id.vars = "date",
+  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  variable.name = "Tower",
+  value.name = "CO2"
+)
+
+final_cams_long_co2$Tower <- gsub("enh_via_", "", final_cams_long_co2$Tower)
+
+
+#CH4
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+joined$date <- joined$Date_UTC
+joined$CAMS_CH4 <- joined$CAMS_CH4 * 1000
+ship_df_ch4_cams <- joined %>%
+  select(date, CAMS_CH4) %>%
+  mutate(Source = "Ship", CH4 = CAMS_CH4) %>%
+  select(date, CH4, Source)
+
+
+tower_df_ch4_cams <- map_df(names(tower_data), function(tower_name) {
+  df <- tower_data[[tower_name]]
+  if (!is.data.frame(df))
+    return(NULL)
+  if (!"CAMs_CH4" %in% names(df))
+    return(NULL)
+  tower_code <- gsub("_ch4$", "", tower_name)
+  
+  df %>%
+    mutate(Source = tower_code, CH4 = CAMs_CH4) %>%
+    select(DATE, CH4, Source) %>%
+    rename(date = DATE)
+})
+
+all_data_ch4_ct <- bind_rows(ship_df_ch4_cams, tower_df_ch4_cams)
+
+ship_unique <- ship_df_ch4_cams %>%
+  group_by(date) %>%
+  summarise(CH4 = mean(CH4, na.rm = TRUE)) %>%
+  mutate(Source_id = "Ship")
+
+tower_numbered <- tower_df_ch4_cams %>%
+  group_by(Source, date) %>%
+  mutate(id = row_number()) %>%
+  ungroup() %>%
+  unite("Source_id", Source, id, sep = "_")
+
+combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CH4, Source_id))
+
+wide_data_ch4_cams <- combined %>%
+  pivot_wider(names_from = Source_id, values_from = CH4) %>%
+  arrange(date)
+
+#need to make automated- comment 8/24/25
+wide_data_ch4_cams$mean_BVA <- (wide_data_ch4_cams$BVA_1 + wide_data_ch4_cams$BVA_2) /
+  2
+wide_data_ch4_cams$mean_TMD <- (wide_data_ch4_cams$TMD_1 + wide_data_ch4_cams$TMD_2) /
+  2
+wide_data_ch4_cams$mean_WNJ <- (wide_data_ch4_cams$WNJ_1 + wide_data_ch4_cams$WNJ_2) /
+  2
+
+final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 9, 10, 11)]
+
+#make automated - comment 8/24/25
+final_cams_ch4$enh_via_BVA <- final_cams_ch4$Ship - final_cams_ch4$mean_BVA
+final_cams_ch4$enh_via_TMD <- final_cams_ch4$Ship - final_cams_ch4$mean_TMD
+final_cams_ch4$enh_via_WNJ <- final_cams_ch4$Ship - final_cams_ch4$mean_WNJ
+
+library(reshape2)
+final_cams_long_ch4 <- melt(
+  final_cams_ch4,
+  id.vars = "date",
+  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  variable.name = "Tower",
+  value.name = "CH4"
+)
+
+final_cams_long_ch4$Tower <- gsub("enh_via_", "", final_cams_long_ch4$Tower)
+
+#this is just for CAMS as its 6 hour resolution
+final_cams_ch4 <- na.omit(final_cams_ch4)
+final_cams_long_ch4 <- na.omit(final_cams_long_ch4)
+tower_df_ch4_cams <- na.omit(tower_df_ch4_cams)
+
+View(final_cams_co2)
+View(final_cams_ch4)
+
+##### Plotting tower CAMS against ship CAMS #####
+#CO2 obs plot comparison
+ggplot() +
+  geom_ribbon(
+    data = ship_df_co2_cams,
+    aes(x = date, ymin = 415, ymax = CO2),
+    fill = "darkgrey",
+    alpha = 0.5
+  ) +
+  geom_line(data = ship_df_co2_cams,
+            aes(x = date, y = CO2, color = Source),
+            linewidth = 1) +
+  geom_point(data = ship_df_co2_cams,
+             aes(x = date, y = CO2, color = Source),
+             size = 2) +
+  geom_line(data = tower_df_co2_cams,
+            aes(x = date, y = CO2, color = Source),
+            linewidth = 1) +
+  geom_point(data = tower_df_co2_cams,
+             aes(x = date, y = CO2, color = Source),
+             size = 2) +
+  scale_color_manual(values = c(
+    "Ship" = "black",
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: CAMS comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CH4 obs plot comparison
+ggplot() +
+  geom_ribbon(
+    data = ship_df_ch4_cams,
+    aes(x = date, ymin = 1975, ymax = CH4),
+    fill = "darkgrey",
+    alpha = 0.5
+  ) +
+  geom_line(data = ship_df_ch4_cams,
+            aes(x = date, y = CH4, color = Source),
+            linewidth = 1) +
+  geom_point(data = ship_df_ch4_cams,
+             aes(x = date, y = CH4, color = Source),
+             size = 2) +
+  geom_line(data = tower_df_ch4_cams,
+            aes(x = date, y = CH4, color = Source),
+            linewidth = 1) +
+  geom_point(data = tower_df_ch4_cams,
+             aes(x = date, y = CH4, color = Source),
+             size = 2) +
+  scale_color_manual(values = c(
+    "Ship" = "black",
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: CAMS comparison for", cruise),
+    x = "Date UTC",
+    y = "CH4 (ppb)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CO2 enhancement comparison
+library(ggplot2)
+ggplot(final_cams_long_co2, aes(x = date, y = CO2, color = Tower)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c(
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: CAMS enhancement comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  geom_hline(yintercept = 0) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+#CH4 enhancement comparison
+library(ggplot2)
+ggplot(final_cams_long_ch4, aes(x = date, y = CH4, color = Tower)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c(
+    "BVA" = "purple",
+    "TMD" = "blue",
+    "WNJ" = "red"
+  )) +
+  labs(
+    title = paste("Ship v Tower: CAMS enhancement comparison for", cruise),
+    x = "Date UTC",
+    y = "CO2 (ppm)"
+  ) +
+  geom_hline(yintercept = 0) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+
+#####___________________8. Cross-model comparisons________________________ #####
+##### Combining enhancement data sets for comparison #####
+keep <- c(
+  "final_cams_ch4",
+  "final_cams_co2",
+  "final_ct_ch4",
+  "final_ct_co2",
+  "final_obs_ch4",
+  "final_obs_co2",
+  "cruise",
+  "joined",
+  "towers",
+  "interval_labels"
+)
+rm(list = setdiff(ls(), keep))
+
+#want to make this part automated - 8/25/25
+names(final_cams_ch4) <- c(
+  "date",
+  "ship_ch4_cams",
+  "cams_mean_ch4_BVA",
+  "cams_mean_ch4_TMD",
+  "cams_mean_ch4_WNJ",
+  "cams_ch4_enh_via_BVA",
+  "cams_ch4_enh_via_TMD",
+  "cams_ch4_enh_via_WNJ"
+)
+
+
+names(final_cams_co2) <- c(
+  "date",
+  "ship_co2_cams",
+  "cams_mean_co2_BVA",
+  "cams_mean_co2_TMD",
+  "cams_mean_co2_WNJ",
+  "cams_co2_enh_via_BVA",
+  "cams_co2_enh_via_TMD",
+  "cams_co2_enh_via_WNJ"
+)
+
+names(final_ct_ch4) <- c(
+  "date",
+  "ship_ch4_ct",
+  "ct_mean_ch4_BVA",
+  "ct_mean_ch4_TMD",
+  "ct_mean_ch4_WNJ",
+  "ct_ch4_enh_via_BVA",
+  "ct_ch4_enh_via_TMD",
+  "ct_ch4_enh_via_WNJ"
+)
+
+names(final_ct_co2) <- c(
+  "date",
+  "ship_co2_ct",
+  "ct_mean_co2_BVA",
+  "ct_mean_co2_TMD",
+  "ct_mean_co2_WNJ",
+  "ct_co2_enh_via_BVA",
+  "ct_co2_enh_via_TMD",
+  "ct_co2_enh_via_WNJ"
+)
+
+names(final_obs_ch4) <- c(
+  "date",
+  "ship_ch4_obs",
+  "obs_mean_ch4_BVA",
+  "obs_mean_ch4_TMD",
+  "obs_mean_ch4_WNJ",
+  "obs_ch4_enh_via_BVA",
+  "obs_ch4_enh_via_TMD",
+  "obs_ch4_enh_via_WNJ"
+)
+
+names(final_obs_co2) <- c(
+  "date",
+  "ship_co2_obs",
+  "obs_mean_co2_BVA",
+  "obs_mean_co2_TMD",
+  "obs_mean_co2_WNJ",
+  "obs_co2_enh_via_BVA",
+  "obs_co2_enh_via_TMD",
+  "obs_co2_enh_via_WNJ"
+)
+
+
+
+merge_obs <- merge(final_obs_co2, final_obs_ch4, by = "date", all = T)
+merge_ct <- merge(final_ct_co2, final_ct_ch4, by = "date", all = T)
+merge_cams <- merge(final_cams_co2, final_cams_ch4, by = "date", all = T)
+
+merged_obs_ct <- merge(merge_obs, merge_ct, by = "date", all = T)
+merged_all <- merge(merged_obs_ct, merge_cams, by = "date", all = T)
+
+View(merged_all)
+
+##Grouping by time, then plotting
+library(lubridate)
+merged_all$hour_only <- hour(merged_all$date)
+
+View(interval_labels)
+breaks <- c(0, 3, 6, 9, 12, 15, 18, 21, 24)
+labels <- interval_labels$Times_UTC
+
+merged_all$Times_UTC <- cut(
+  merged_all$hour_only,
+  breaks = breaks,
+  labels = labels,
+  include.lowest = TRUE,
+  right = FALSE
+)
+
+merged_all$Grouping <- as.integer(merged_all$Times_UTC)
+
+##maybe split into towers as well:
+
+enh_cols_ch4 <- c(
+  "cams_ch4_enh_via_BVA",
+  "cams_ch4_enh_via_TMD",
+  "cams_ch4_enh_via_WNJ",
+  "ct_ch4_enh_via_BVA",
+  "ct_ch4_enh_via_TMD",
+  "ct_ch4_enh_via_WNJ",
+  "obs_ch4_enh_via_BVA",
+  "obs_ch4_enh_via_TMD",
+  "obs_ch4_enh_via_WNJ"
+)
+
+
+long_data_ch4 <- melt(
+  merged_all,
+  id.vars = c("date", "Grouping", "Times_UTC"),
+  measure.vars = enh_cols_ch4,
+  variable.name = "Enhancement_Type",
+  value.name   = "Enhancement"
+)
+
+library(tidyr)
+long_data_ch4 <- separate(
+  long_data_ch4,
+  col = Enhancement_Type,
+  into = c("Source", "Gas", "tmp1", "tmp2", "Tower"),
+  sep = "_",
+  remove = FALSE
+)
+
+long_data_ch4 <- long_data_ch4[, c("date",
+                                   "Grouping",
+                                   "Times_UTC",
+                                   "Source",
+                                   "Gas",
+                                   "Tower",
+                                   "Enhancement")]
+
+ggplot(long_data_ch4, aes(x = Grouping, y = Enhancement, color = Source)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.7) +
+  geom_boxplot(aes(group = interaction(Grouping, Source)),
+               outlier.shape = NA,
+               alpha = 0.3) +
+  scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
+  facet_wrap( ~ Tower, nrow = 1) +
+  labs(
+    x = "UTC Interval",
+    y = "CH4 Enhancement (ppb)",
+    color = "Source",
+    title = paste("Enhancement Comparison CH4 for", cruise)
+  ) +
+  scale_color_manual(values = c(
+    "cams" = "red",
+    "ct"   = "blue",
+    "obs"  = "black"
+  )) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 14
+    ),
+    axis.text.y = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
+
+
+
+enh_cols_co2 <- c(
+  "cams_co2_enh_via_BVA",
+  "cams_co2_enh_via_TMD",
+  "cams_co2_enh_via_WNJ",
+  "ct_co2_enh_via_BVA",
+  "ct_co2_enh_via_TMD",
+  "ct_co2_enh_via_WNJ",
+  "obs_co2_enh_via_BVA",
+  "obs_co2_enh_via_TMD",
+  "obs_co2_enh_via_WNJ"
+)
+
+
+
+long_data_co2 <- melt(
+  merged_all,
+  id.vars = c("date", "Grouping", "Times_UTC"),
+  measure.vars = enh_cols_co2,
+  variable.name = "Enhancement_Type",
+  value.name   = "Enhancement"
+)
+
+library(tidyr)
+long_data_co2 <- separate(
+  long_data_co2,
+  col = Enhancement_Type,
+  into = c("Source", "Gas", "tmp1", "tmp2", "Tower"),
+  sep = "_",
+  remove = FALSE
+)
+
+long_data_co2 <- long_data_co2[, c("date",
+                                   "Grouping",
+                                   "Times_UTC",
+                                   "Source",
+                                   "Gas",
+                                   "Tower",
+                                   "Enhancement")]
+
+ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.7) +
+  geom_boxplot(aes(group = interaction(Grouping, Source)),
+               outlier.shape = NA,
+               alpha = 0.3) +
+  scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
+  facet_wrap( ~ Tower, nrow = 1) +
+  labs(
+    x = "UTC Interval",
+    y = "CH4 Enhancement (ppb)",
+    color = "Source",
+    title = paste("Enhancement Comparison CO2 for", cruise)
+  ) +
+  scale_color_manual(values = c(
+    "cams" = "red",
+    "ct"   = "blue",
+    "obs"  = "black"
+  )) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 14
+    ),
+    axis.text.y = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    plot.title = element_text(size = 20, hjust = 0.5)
+  )
