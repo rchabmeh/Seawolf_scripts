@@ -1,4 +1,12 @@
-##### ____________________________________#####
+#Analyzing tower data: observations and models comparison
+#Updated last on August 26, 2025
+
+#You will have to manually change items in:
+# 1.3 (xlim_vals) 
+# 2.3 (start_date, end_date)
+# 2.6 (write.csv for loop output)
+
+##### ________________________ 1. Just Towers _____________________________#####
 ##### Load in the 2022 NEC tower .csv files #####
 #____
 LEW_22_CH4_95 <- read.csv(
@@ -1092,7 +1100,7 @@ legend(
 par(xpd = FALSE)
 
 
-##### ____________________________________#####
+##### _____________________2. Adding Models _______________________________#####
 ##### Averaging data for 3 hour intervals 2022 #####
 #3 hr avg__
 all_data <- list(
@@ -1260,26 +1268,26 @@ cruise_squish <- tolower(gsub(" ", "", cruise))
 
 
 #edit for laptop usage
-co2_files <- list.files(
-  paste0(
-    "/Users/reneechabot-mehlin/Desktop/towers/models/",
-    cruise_squish,
-    "/carbon_tracker_co2_total"
-  ),
-  pattern = '\\.nc$',
-  full.names =  TRUE
-)
-
-
 # co2_files <- list.files(
 #   paste0(
-#     '/Volumes/Seagate/',
+#     "/Users/reneechabot-mehlin/Desktop/towers/models/",
 #     cruise_squish,
-#     '_eulerian/carbon_tracker_co2_total'
+#     "/carbon_tracker_co2_total"
 #   ),
 #   pattern = '\\.nc$',
-#   full.names = TRUE
+#   full.names =  TRUE
 # )
+
+
+co2_files <- list.files(
+  paste0(
+    '/Volumes/Seagate/',
+    cruise_squish,
+    '_eulerian/carbon_tracker_co2_total'
+  ),
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
 
 CT_CO2 <- lapply(co2_files, function(f) {
   brick(
@@ -1292,25 +1300,25 @@ CT_CO2 <- lapply(co2_files, function(f) {
 
 
 #edit for laptop usage
-ch4_files <- list.files(
-  paste0(
-    "/Users/reneechabot-mehlin/Desktop/towers/models/",
-    cruise_squish,
-    "/carbon_tracker_ch4_total"
-  ),
-  pattern = '\\.nc$',
-  full.names =  TRUE
-)
-
 # ch4_files <- list.files(
 #   paste0(
-#     '/Volumes/Seagate/',
+#     "/Users/reneechabot-mehlin/Desktop/towers/models/",
 #     cruise_squish,
-#     '_eulerian/carbon_tracker_ch4_total'
+#     "/carbon_tracker_ch4_total"
 #   ),
 #   pattern = '\\.nc$',
-#   full.names = TRUE
+#   full.names =  TRUE
 # )
+
+ch4_files <- list.files(
+  paste0(
+    '/Volumes/Seagate/',
+    cruise_squish,
+    '_eulerian/carbon_tracker_ch4_total'
+  ),
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
 
 CT_CH4 <- lapply(ch4_files, function(f) {
   brick(
@@ -1338,13 +1346,15 @@ CT_CO2_cropped <- CT_CO2_cropped[!sapply(CT_CO2_cropped, is.null)]
 CT_CH4_cropped <- list()
 for (i in seq(CT_CO2)) {
   ras_date <- as.Date(getZ(CT_CH4[[i]])[1]) #starts at 03:00 and ends the next day at 00:00
-  if (ras_date >= start_date && ras_date <= end_date) { #this is why it is mismatched later on and can't be fixed
-    CT_CH4_cropped[[i]] <- CT_CH4[[i]] #but why CT_CO2 can and has been fixed 
+  if (ras_date >= start_date &&
+      ras_date <= end_date) {
+    #this is why it is mismatched later on and can't be fixed
+    CT_CH4_cropped[[i]] <- CT_CH4[[i]] #but why CT_CO2 can and has been fixed
   }
   
 }
 
-CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)] 
+CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)]
 
 CTCO2_lists <- lapply(1:8, function(k)
   lapply(CT_CO2_cropped, function(x)
@@ -1394,7 +1404,7 @@ CT_CO2_df <- merge(CT_CO2_df,
                    by = c("Lon", "Lat"),
                    all.x = TRUE)
 
-library(raster) 
+library(raster)
 
 CTCH4_lists <- unlist(CTCH4_lists, recursive = FALSE)
 coords <- unique(obs_co2[, c("Lon", "Lat")])
@@ -1773,4 +1783,4 @@ for (abriv in unique(matched_rows$SiteCode)) {
     row.names =  F
   )
 }
-##### ____________________________________#####
+##### _____________________________________________________________________#####

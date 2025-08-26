@@ -1,5 +1,20 @@
 #Run towers.R first to generate tower .csv files if not already
-#Updated last on August 25, 2025
+#Updated last on August 26, 2025
+
+#You will have to manually change items in:
+# 2.0 (background_towers) 
+# 3.0 (start_date, end_date)
+# 4.1 (cruise)
+
+#I want to automate:
+#  wide_data_VARIABLE_obs$mean_TOWER and final_obs_VARIABLE$enh_via_TOWER in section 5.1
+# + scale_color_manual() + in section 5.2
+#  wide_data_VARIABLE_ct$mean_TOWER and final_ct_VARIABLE$enh_via_TOWER in section 6.1
+# + scale_color_manual() + in section 6.2
+#  wide_data_VARIABLE_cams$mean_TOWER and final_cams_VARIABLE$enh_via_TOWER in section 7.1
+# + scale_color_manual() + in section 7.2
+# names(final_MODEL_VARIABLE) and enh_cols_VARIABLE in section 8
+#####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
 ##### 1. Loading in completed tower .csv files ####
 
@@ -928,6 +943,7 @@ combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_i
 wide_data_co2_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
+
 #need to make automated- comment 8/24/25
 wide_data_co2_obs$mean_BVA <- (wide_data_co2_obs$BVA_1 + wide_data_co2_obs$BVA_2) /
   2
@@ -1882,7 +1898,7 @@ ggplot(long_data_ch4, aes(x = Grouping, y = Enhancement, color = Source)) +
                outlier.shape = NA,
                alpha = 0.3) +
   scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
-  facet_wrap( ~ Tower, nrow = 1) +
+  facet_wrap(~ Tower, nrow = 1) +
   labs(
     x = "UTC Interval",
     y = "CH4 Enhancement (ppb)",
@@ -1953,7 +1969,7 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
                outlier.shape = NA,
                alpha = 0.3) +
   scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
-  facet_wrap( ~ Tower, nrow = 1) +
+  facet_wrap(~ Tower, nrow = 1) +
   labs(
     x = "UTC Interval",
     y = "CH4 Enhancement (ppb)",
@@ -1976,3 +1992,6 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
     axis.title = element_text(size = 16),
     plot.title = element_text(size = 20, hjust = 0.5)
   )
+
+#####_____________________________________________________________________ #####
+#####_____________________________________________________________________ #####
