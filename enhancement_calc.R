@@ -1,41 +1,45 @@
 #Run towers.R first to generate tower .csv files if not already
-#Updated last on August 26, 2025
+#Updated last on August 27, 2025
 
 #You will have to manually change items in:
 # 2.0 (background_towers) 
 # 3.0 (start_date, end_date)
-# 4.1 (cruise)
 
-#I want to automate:
-#  wide_data_VARIABLE_obs$mean_TOWER and final_obs_VARIABLE$enh_via_TOWER in section 5.1
-# + scale_color_manual() + in section 5.2
-#  wide_data_VARIABLE_ct$mean_TOWER and final_ct_VARIABLE$enh_via_TOWER in section 6.1
-# + scale_color_manual() + in section 6.2
-#  wide_data_VARIABLE_cams$mean_TOWER and final_cams_VARIABLE$enh_via_TOWER in section 7.1
-# + scale_color_manual() + in section 7.2
-# names(final_MODEL_VARIABLE) and enh_cols_VARIABLE in section 8
+#NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
+cruise = "Cruise 4"
+cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
 ##### 1. Loading in completed tower .csv files ####
 
-#TOWERS CO2- MAKE THIS AUTOMATIC PROB BASED ON CRUISE #
-LEW_co2 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_LEW.csv")
-BVA_co2 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_BVA.csv")
-TMD_co2 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_TMD.csv")
-WNJ_co2 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_WNJ.csv")
+# TOWERS CO2
+LEW_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_LEW.csv"))
+BVA_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_BVA.csv"))
+TMD_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_TMD.csv"))
+WNJ_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_WNJ.csv"))
 
-#TOWERS CH4- MAKE THIS AUTOMATIC PROB BASED ON CRUISE #
-LEW_ch4 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_LEW.csv")
-BVA_ch4 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_BVA.csv")
-TMD_ch4 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_TMD.csv")
-WNJ_ch4 <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_WNJ.csv")
+# TOWERS CH4
+LEW_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_LEW.csv"))
+BVA_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_BVA.csv"))
+TMD_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_TMD.csv"))
+WNJ_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_WNJ.csv"))
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
 background_towers <- c("BVA", "TMD", "WNJ") #"LEW"
 
-rm(list = ls()[!grepl(paste0("^(", paste(background_towers, collapse = "|"), ")"), ls())])
+rm(list = ls()[!grepl(paste0("^(", paste(
+  c(
+    background_towers,
+    "background_towers",
+    "cruise",
+    "cruise_squish"
+  ),
+  collapse = "|"
+), ")"), ls())])
 
-tower_data <- mget(ls())
+tower_data <- mget(setdiff(ls(), c(
+  "background_towers", "cruise", "cruise_squish"
+)))
 
 for (nm in names(tower_data)) {
   tower_data[[nm]]$DATE <- as.POSIXct(ifelse(
@@ -47,17 +51,12 @@ for (nm in names(tower_data)) {
   tz = "UTC")
 }
 
-
-
-
 ##### 3. Set time limit #####
 start_date <- as.Date("2023-10-12")
 end_date <- as.Date("2023-10-17")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
-cruise = "Cruise 24"
-cruise_squish <- tolower(gsub(" ", "", cruise))
 cruise_info <- read.delim(
   paste0(
     "/Volumes/Seagate/",
@@ -944,32 +943,36 @@ wide_data_co2_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
 
-#need to make automated- comment 8/24/25
-wide_data_co2_obs$mean_BVA <- (wide_data_co2_obs$BVA_1 + wide_data_co2_obs$BVA_2) /
-  2
-wide_data_co2_obs$mean_TMD <- (wide_data_co2_obs$TMD_1 + wide_data_co2_obs$TMD_2) /
-  2
-wide_data_co2_obs$mean_WNJ <- (wide_data_co2_obs$WNJ_1 + wide_data_co2_obs$WNJ_2) /
-  2
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_co2_obs[[newcol]] <- rowMeans(
+    wide_data_co2_obs[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 9, 10, 11)]
 
-#need to automate - comment 8/24/25
-final_obs_co2$enh_via_BVA <- final_obs_co2$Ship - final_obs_co2$mean_BVA
-final_obs_co2$enh_via_TMD <- final_obs_co2$Ship - final_obs_co2$mean_TMD
-final_obs_co2$enh_via_WNJ <- final_obs_co2$Ship - final_obs_co2$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_obs_co2[[newcol]] <- final_obs_co2$Ship - final_obs_co2[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_obs_co2), value = TRUE)
+
 final_obs_long_co2 <- melt(
   final_obs_co2,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CO2"
 )
-
-final_obs_long_co2$Tower <- gsub("enh_via_", "", final_obs_long_co2$Tower)
-
+final_obs_long_co2$Tower <- sub("^enh_via_", "", final_obs_long_co2$Tower)
 
 #CH4
 library(ggplot2)
@@ -1018,31 +1021,36 @@ wide_data_ch4_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-#need to make automated- comment 8/24/25
-wide_data_ch4_obs$mean_BVA <- (wide_data_ch4_obs$BVA_1 + wide_data_ch4_obs$BVA_2) /
-  2
-wide_data_ch4_obs$mean_TMD <- (wide_data_ch4_obs$TMD_1 + wide_data_ch4_obs$TMD_2) /
-  2
-wide_data_ch4_obs$mean_WNJ <- (wide_data_ch4_obs$WNJ_1 + wide_data_ch4_obs$WNJ_2) /
-  2
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_ch4_obs[[newcol]] <- rowMeans(
+    wide_data_ch4_obs[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 9, 10, 11)]
 
-#make automated - comment 8/24/25
-final_obs_ch4$enh_via_BVA <- final_obs_ch4$Ship - final_obs_ch4$mean_BVA
-final_obs_ch4$enh_via_TMD <- final_obs_ch4$Ship - final_obs_ch4$mean_TMD
-final_obs_ch4$enh_via_WNJ <- final_obs_ch4$Ship - final_obs_ch4$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_obs_ch4[[newcol]] <- final_obs_ch4$Ship - final_obs_ch4[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_obs_ch4), value = TRUE)
+
 final_obs_long_ch4 <- melt(
   final_obs_ch4,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CH4"
 )
-
-final_obs_long_ch4$Tower <- gsub("enh_via_", "", final_obs_long_ch4$Tower)
+final_obs_long_ch4$Tower <- sub("^enh_via_", "", final_obs_long_ch4$Tower)
 
 
 keep <- c(
@@ -1057,7 +1065,8 @@ keep <- c(
   "cruise",
   "final_obs_long_co2",
   "final_obs_long_ch4",
-  "interval_labels"
+  "interval_labels",
+  "background_towers"
 )
 rm(list = setdiff(ls(), keep))
 
@@ -1066,6 +1075,10 @@ View(final_obs_ch4)
 
 ##### Plotting tower observation against ship observation #####
 #CO2 obs plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_co2_obs,
@@ -1085,12 +1098,7 @@ ggplot() +
   geom_point(data = tower_df_co2_obs,
              aes(x = date, y = CO2, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Observation comparison for", cruise),
     x = "Date UTC",
@@ -1104,6 +1112,10 @@ ggplot() +
   )
 
 #CH4 obs plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_ch4_obs,
@@ -1123,12 +1135,7 @@ ggplot() +
   geom_point(data = tower_df_ch4_obs,
              aes(x = date, y = CH4, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Observation comparison for", cruise),
     x = "Date UTC",
@@ -1142,15 +1149,15 @@ ggplot() +
   )
 
 #CO2 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_obs_long_co2, aes(x = date, y = CO2, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Observed enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1164,16 +1171,17 @@ ggplot(final_obs_long_co2, aes(x = date, y = CO2, color = Tower)) +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
+
 #CH4 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Observed enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1234,31 +1242,37 @@ combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_i
 wide_data_co2_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
-#need to make automated- comment 8/24/25
-wide_data_co2_ct$mean_BVA <- (wide_data_co2_ct$BVA_1 + wide_data_co2_ct$BVA_2) /
-  2
-wide_data_co2_ct$mean_TMD <- (wide_data_co2_ct$TMD_1 + wide_data_co2_ct$TMD_2) /
-  2
-wide_data_co2_ct$mean_WNJ <- (wide_data_co2_ct$WNJ_1 + wide_data_co2_ct$WNJ_2) /
-  2
+
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_co2_ct[[newcol]] <- rowMeans(
+    wide_data_co2_ct[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 9, 10, 11)]
 
-#need to automate - comment 8/24/25
-final_ct_co2$enh_via_BVA <- final_ct_co2$Ship - final_ct_co2$mean_BVA
-final_ct_co2$enh_via_TMD <- final_ct_co2$Ship - final_ct_co2$mean_TMD
-final_ct_co2$enh_via_WNJ <- final_ct_co2$Ship - final_ct_co2$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_ct_co2[[newcol]] <- final_ct_co2$Ship - final_ct_co2[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_ct_co2), value = TRUE)
+
 final_ct_long_co2 <- melt(
   final_ct_co2,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CO2"
 )
-
-final_ct_long_co2$Tower <- gsub("enh_via_", "", final_ct_long_co2$Tower)
+final_ct_long_co2$Tower <- sub("^enh_via_", "", final_ct_long_co2$Tower)
 
 
 #CH4
@@ -1308,37 +1322,47 @@ wide_data_ch4_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-#need to make automated- comment 8/24/25
-wide_data_ch4_ct$mean_BVA <- (wide_data_ch4_ct$BVA_1 + wide_data_ch4_ct$BVA_2) /
-  2
-wide_data_ch4_ct$mean_TMD <- (wide_data_ch4_ct$TMD_1 + wide_data_ch4_ct$TMD_2) /
-  2
-wide_data_ch4_ct$mean_WNJ <- (wide_data_ch4_ct$WNJ_1 + wide_data_ch4_ct$WNJ_2) /
-  2
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_ch4_ct[[newcol]] <- rowMeans(
+    wide_data_ch4_ct[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 9, 10, 11)]
 
-#make automated - comment 8/24/25
-final_ct_ch4$enh_via_BVA <- final_ct_ch4$Ship - final_ct_ch4$mean_BVA
-final_ct_ch4$enh_via_TMD <- final_ct_ch4$Ship - final_ct_ch4$mean_TMD
-final_ct_ch4$enh_via_WNJ <- final_ct_ch4$Ship - final_ct_ch4$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_ct_ch4[[newcol]] <- final_ct_ch4$Ship - final_ct_ch4[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_ct_ch4), value = TRUE)
+
 final_ct_long_ch4 <- melt(
   final_ct_ch4,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CH4"
 )
-
-final_ct_long_ch4$Tower <- gsub("enh_via_", "", final_ct_long_ch4$Tower)
+final_ct_long_ch4$Tower <- sub("^enh_via_", "", final_ct_long_ch4$Tower)
 
 View(final_ct_co2)
 View(final_ct_ch4)
 
 ##### Plotting tower carbon tracker against ship carbon tracker #####
-#CO2 obs plot comparison
+
+#CO2 ct plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_co2_ct,
@@ -1358,12 +1382,7 @@ ggplot() +
   geom_point(data = tower_df_co2_ct,
              aes(x = date, y = CO2, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Carbon Tracker comparison for", cruise),
     x = "Date UTC",
@@ -1376,7 +1395,11 @@ ggplot() +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
-#CH4 obs plot comparison
+#CH4 ct plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_ch4_ct,
@@ -1396,12 +1419,7 @@ ggplot() +
   geom_point(data = tower_df_ch4_ct,
              aes(x = date, y = CH4, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Carbon Tracker comparison for", cruise),
     x = "Date UTC",
@@ -1415,15 +1433,15 @@ ggplot() +
   )
 
 #CO2 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_ct_long_co2, aes(x = date, y = CO2, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Carbon Tracker enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1438,15 +1456,15 @@ ggplot(final_ct_long_co2, aes(x = date, y = CO2, color = Tower)) +
   )
 
 #CH4 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_ct_long_ch4, aes(x = date, y = CH4, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: Carbon Tracker enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1507,31 +1525,37 @@ combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_i
 wide_data_co2_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
-#need to make automated- comment 8/24/25
-wide_data_co2_cams$mean_BVA <- (wide_data_co2_cams$BVA_1 + wide_data_co2_cams$BVA_2) /
-  2
-wide_data_co2_cams$mean_TMD <- (wide_data_co2_cams$TMD_1 + wide_data_co2_cams$TMD_2) /
-  2
-wide_data_co2_cams$mean_WNJ <- (wide_data_co2_cams$WNJ_1 + wide_data_co2_cams$WNJ_2) /
-  2
+
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_co2_cams[[newcol]] <- rowMeans(
+    wide_data_co2_cams[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 9, 10, 11)]
 
-#need to automate - comment 8/24/25
-final_cams_co2$enh_via_BVA <- final_cams_co2$Ship - final_cams_co2$mean_BVA
-final_cams_co2$enh_via_TMD <- final_cams_co2$Ship - final_cams_co2$mean_TMD
-final_cams_co2$enh_via_WNJ <- final_cams_co2$Ship - final_cams_co2$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_cams_co2[[newcol]] <- final_cams_co2$Ship - final_cams_co2[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_cams_co2), value = TRUE)
+
 final_cams_long_co2 <- melt(
   final_cams_co2,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CO2"
 )
-
-final_cams_long_co2$Tower <- gsub("enh_via_", "", final_cams_long_co2$Tower)
+final_cams_long_co2$Tower <- sub("^enh_via_", "", final_cams_long_co2$Tower)
 
 
 #CH4
@@ -1581,31 +1605,36 @@ wide_data_ch4_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-#need to make automated- comment 8/24/25
-wide_data_ch4_cams$mean_BVA <- (wide_data_ch4_cams$BVA_1 + wide_data_ch4_cams$BVA_2) /
-  2
-wide_data_ch4_cams$mean_TMD <- (wide_data_ch4_cams$TMD_1 + wide_data_ch4_cams$TMD_2) /
-  2
-wide_data_ch4_cams$mean_WNJ <- (wide_data_ch4_cams$WNJ_1 + wide_data_ch4_cams$WNJ_2) /
-  2
+for (twr in background_towers) {
+  col1 <- paste0(twr, "_1")
+  col2 <- paste0(twr, "_2")
+  newcol <- paste0(twr, "_mean")
+  
+  wide_data_ch4_cams[[newcol]] <- rowMeans(
+    wide_data_ch4_cams[, c(col1, col2)], 
+    na.rm = TRUE
+  )
+}
 
 final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 9, 10, 11)]
 
-#make automated - comment 8/24/25
-final_cams_ch4$enh_via_BVA <- final_cams_ch4$Ship - final_cams_ch4$mean_BVA
-final_cams_ch4$enh_via_TMD <- final_cams_ch4$Ship - final_cams_ch4$mean_TMD
-final_cams_ch4$enh_via_WNJ <- final_cams_ch4$Ship - final_cams_ch4$mean_WNJ
+for (twr in background_towers) {
+  mean_col <- paste0(twr, "_mean")
+  newcol   <- paste0("enh_via_", twr)
+  
+  final_cams_ch4[[newcol]] <- final_cams_ch4$Ship - final_cams_ch4[[mean_col]]
+}
 
-library(reshape2)
+enh_cols <- grep("^enh_via_", names(final_cams_ch4), value = TRUE)
+
 final_cams_long_ch4 <- melt(
   final_cams_ch4,
   id.vars = "date",
-  measure.vars = c("enh_via_BVA", "enh_via_TMD", "enh_via_WNJ"),
+  measure.vars = enh_cols,
   variable.name = "Tower",
   value.name = "CH4"
 )
-
-final_cams_long_ch4$Tower <- gsub("enh_via_", "", final_cams_long_ch4$Tower)
+final_cams_long_ch4$Tower <- sub("^enh_via_", "", final_cams_long_ch4$Tower)
 
 #this is just for CAMS as its 6 hour resolution
 final_cams_ch4 <- na.omit(final_cams_ch4)
@@ -1616,7 +1645,12 @@ View(final_cams_co2)
 View(final_cams_ch4)
 
 ##### Plotting tower CAMS against ship CAMS #####
-#CO2 obs plot comparison
+
+#CO2 cams plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_co2_cams,
@@ -1636,12 +1670,7 @@ ggplot() +
   geom_point(data = tower_df_co2_cams,
              aes(x = date, y = CO2, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: CAMS comparison for", cruise),
     x = "Date UTC",
@@ -1654,7 +1683,11 @@ ggplot() +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
-#CH4 obs plot comparison
+#CH4 cams plot comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 ggplot() +
   geom_ribbon(
     data = ship_df_ch4_cams,
@@ -1674,12 +1707,7 @@ ggplot() +
   geom_point(data = tower_df_ch4_cams,
              aes(x = date, y = CH4, color = Source),
              size = 2) +
-  scale_color_manual(values = c(
-    "Ship" = "black",
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: CAMS comparison for", cruise),
     x = "Date UTC",
@@ -1693,15 +1721,15 @@ ggplot() +
   )
 
 #CO2 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_cams_long_co2, aes(x = date, y = CO2, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: CAMS enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1716,15 +1744,15 @@ ggplot(final_cams_long_co2, aes(x = date, y = CO2, color = Tower)) +
   )
 
 #CH4 enhancement comparison
+tower_colors <- rainbow(length(background_towers))
+tower_colors <- setNames(tower_colors, background_towers)
+all_colors <- c("Ship" = "black", tower_colors)
+
 library(ggplot2)
 ggplot(final_cams_long_ch4, aes(x = date, y = CH4, color = Tower)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = c(
-    "BVA" = "purple",
-    "TMD" = "blue",
-    "WNJ" = "red"
-  )) +
+  scale_color_manual(values = all_colors) +
   labs(
     title = paste("Ship v Tower: CAMS enhancement comparison for", cruise),
     x = "Date UTC",
@@ -1751,80 +1779,66 @@ keep <- c(
   "cruise",
   "joined",
   "towers",
-  "interval_labels"
+  "interval_labels",
+  "background_towers"
 )
 rm(list = setdiff(ls(), keep))
 
-#want to make this part automated - 8/25/25
-names(final_cams_ch4) <- c(
+#cams
+final_cams_ch4_names <- c(
   "date",
   "ship_ch4_cams",
-  "cams_mean_ch4_BVA",
-  "cams_mean_ch4_TMD",
-  "cams_mean_ch4_WNJ",
-  "cams_ch4_enh_via_BVA",
-  "cams_ch4_enh_via_TMD",
-  "cams_ch4_enh_via_WNJ"
+  paste0("cams_mean_ch4_", background_towers),
+  paste0("cams_ch4_enh_via_", background_towers)
 )
+names(final_cams_ch4) <- final_cams_ch4_names
 
 
-names(final_cams_co2) <- c(
+final_cams_co2_names <- c(
   "date",
   "ship_co2_cams",
-  "cams_mean_co2_BVA",
-  "cams_mean_co2_TMD",
-  "cams_mean_co2_WNJ",
-  "cams_co2_enh_via_BVA",
-  "cams_co2_enh_via_TMD",
-  "cams_co2_enh_via_WNJ"
+  paste0("cams_mean_co2_", background_towers),
+  paste0("cams_co2_enh_via_", background_towers)
 )
+names(final_cams_co2) <- final_cams_co2_names
 
-names(final_ct_ch4) <- c(
+#ct
+final_ct_ch4_names <- c(
   "date",
   "ship_ch4_ct",
-  "ct_mean_ch4_BVA",
-  "ct_mean_ch4_TMD",
-  "ct_mean_ch4_WNJ",
-  "ct_ch4_enh_via_BVA",
-  "ct_ch4_enh_via_TMD",
-  "ct_ch4_enh_via_WNJ"
+  paste0("ct_mean_ch4_", background_towers),
+  paste0("ct_ch4_enh_via_", background_towers)
 )
+names(final_ct_ch4) <- final_ct_ch4_names
 
-names(final_ct_co2) <- c(
+
+final_ct_co2_names <- c(
   "date",
   "ship_co2_ct",
-  "ct_mean_co2_BVA",
-  "ct_mean_co2_TMD",
-  "ct_mean_co2_WNJ",
-  "ct_co2_enh_via_BVA",
-  "ct_co2_enh_via_TMD",
-  "ct_co2_enh_via_WNJ"
+  paste0("ct_mean_co2_", background_towers),
+  paste0("ct_co2_enh_via_", background_towers)
 )
+names(final_ct_co2) <- final_ct_co2_names
 
-names(final_obs_ch4) <- c(
+#obs
+final_obs_ch4_names <- c(
   "date",
-  "ship_ch4_obs",
-  "obs_mean_ch4_BVA",
-  "obs_mean_ch4_TMD",
-  "obs_mean_ch4_WNJ",
-  "obs_ch4_enh_via_BVA",
-  "obs_ch4_enh_via_TMD",
-  "obs_ch4_enh_via_WNJ"
+  "ship_ch4_cams",
+  paste0("obs_mean_ch4_", background_towers),
+  paste0("obs_ch4_enh_via_", background_towers)
 )
+names(final_obs_ch4) <- final_obs_ch4_names
 
-names(final_obs_co2) <- c(
+
+final_obs_co2_names <- c(
   "date",
   "ship_co2_obs",
-  "obs_mean_co2_BVA",
-  "obs_mean_co2_TMD",
-  "obs_mean_co2_WNJ",
-  "obs_co2_enh_via_BVA",
-  "obs_co2_enh_via_TMD",
-  "obs_co2_enh_via_WNJ"
+  paste0("obs_mean_co2_", background_towers),
+  paste0("obs_co2_enh_via_", background_towers)
 )
+names(final_obs_co2) <- final_obs_co2_names
 
-
-
+#combining all
 merge_obs <- merge(final_obs_co2, final_obs_ch4, by = "date", all = T)
 merge_ct <- merge(final_ct_co2, final_ct_ch4, by = "date", all = T)
 merge_cams <- merge(final_cams_co2, final_cams_ch4, by = "date", all = T)
@@ -1854,17 +1868,11 @@ merged_all$Grouping <- as.integer(merged_all$Times_UTC)
 
 ##maybe split into towers as well:
 
-enh_cols_ch4 <- c(
-  "cams_ch4_enh_via_BVA",
-  "cams_ch4_enh_via_TMD",
-  "cams_ch4_enh_via_WNJ",
-  "ct_ch4_enh_via_BVA",
-  "ct_ch4_enh_via_TMD",
-  "ct_ch4_enh_via_WNJ",
-  "obs_ch4_enh_via_BVA",
-  "obs_ch4_enh_via_TMD",
-  "obs_ch4_enh_via_WNJ"
-)
+sources <- c("cams", "ct", "obs")
+enh_cols_ch4 <- as.vector(sapply(sources, function(src) {
+  paste0(src, "_ch4_enh_via_", background_towers)
+}))
+
 
 
 long_data_ch4 <- melt(
@@ -1924,18 +1932,10 @@ ggplot(long_data_ch4, aes(x = Grouping, y = Enhancement, color = Source)) +
 
 
 
-enh_cols_co2 <- c(
-  "cams_co2_enh_via_BVA",
-  "cams_co2_enh_via_TMD",
-  "cams_co2_enh_via_WNJ",
-  "ct_co2_enh_via_BVA",
-  "ct_co2_enh_via_TMD",
-  "ct_co2_enh_via_WNJ",
-  "obs_co2_enh_via_BVA",
-  "obs_co2_enh_via_TMD",
-  "obs_co2_enh_via_WNJ"
-)
-
+sources <- c("cams", "ct", "obs")
+enh_cols_co2 <- as.vector(sapply(sources, function(src) {
+  paste0(src, "_co2_enh_via_", background_towers)
+}))
 
 
 long_data_co2 <- melt(

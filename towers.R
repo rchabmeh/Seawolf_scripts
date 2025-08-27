@@ -1,9 +1,10 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on August 26, 2025
+#Updated last on August 27, 2025
 
 #You will have to manually change items in:
-# 1.3 (xlim_vals) 
+# 1.3 (xlim_vals)
 # 2.3 (start_date, end_date)
+# 2.4 (cruise)
 # 2.6 (write.csv for loop output)
 
 ##### ________________________ 1. Just Towers _____________________________#####
@@ -407,15 +408,15 @@ WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "Ameri
 
 
 ##### Set time limit for basic plots #####
-xlim_vals <- c(as.POSIXct("2023-10-12 10:00:00"),
-               as.POSIXct("2023-10-17 13:00:00"))
+xlim_vals <- c(as.POSIXct("2022-04-09 15:00:00"),
+               as.POSIXct("2022-04-12 17:00:00"))
 ##### Basic Plotting 2022 #####
 #ch4____
 plot(
   x = LEW_22_CH4_95$datetime_EDT,
   y = LEW_22_CH4_95$ch4_ppb,
   xlim = xlim_vals,
-  ylim = c(2020, 2100),
+  ylim = c(1950, 2250),
   xlab = "Date (ETD)",
   ylab = "CH4 (ppb)",
   main = "NEC TOWER DATA",
@@ -590,7 +591,7 @@ plot(
   x = LEW_22_CO2_95$datetime_EDT,
   y = LEW_22_CO2_95$co2_ppm,
   xlim = xlim_vals,
-  ylim = c(420, 430),
+  ylim = c(420, 460),
   xlab = "Date (ETD)",
   ylab = "CO2 (ppm)",
   main = "NEC TOWER DATA",
@@ -1157,7 +1158,7 @@ for (name in names(all_data)) {
 
 TOWER_LOCATIONS <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv")
 
-prefixes <- c("TMD", "LEW", "BVA")
+prefixes <- c("TMD", "LEW", "BVA", "WNJ")
 site_prefixes <- substr(as.character(TOWER_LOCATIONS$SiteCode), 1, 3)
 matched_rows <- TOWER_LOCATIONS[site_prefixes %in% prefixes, ]
 
@@ -1240,8 +1241,8 @@ for (i in names(averaged_data)) {
 }
 
 ##### Set time limit for model comparison #####
-start_date <- as.Date("2023-10-12")
-end_date <- as.Date("2023-10-17")
+start_date <- as.Date("2022-04-09")
+end_date <- as.Date("2022-04-12")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1263,7 +1264,7 @@ obs_ch4$co2_ppm <- NULL
 
 library(raster)
 
-cruise <- "Cruise 24"
+cruise <- "Cruise 4"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 
@@ -1448,22 +1449,22 @@ library(dplyr)
 library(reshape2)
 CAMS <- list()
 all_timestamps <- list()
-# files <- list.files(
-#   paste0(
-#     '/Volumes/Seagate/',
-#     cruise_squish,
-#     '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
-#   ),
-#   pattern = '\\.nc$',
-#   full.names = TRUE
-# )
+files <- list.files(
+  paste0(
+    '/Volumes/Seagate/',
+    cruise_squish,
+    '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
+  ),
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
 
 #for computer usage
-files <- list.files(
-  "/Users/reneechabot-mehlin/Desktop/towers/models/cruise24/cams_global_inversion_optimized_ghg_fluxes",
-  pattern = "\\.nc$",
-  full.names = T
-)
+# files <- list.files(
+#   "/Users/reneechabot-mehlin/Desktop/towers/models/cruise24/cams_global_inversion_optimized_ghg_fluxes",
+#   pattern = "\\.nc$",
+#   full.names = T
+# )
 
 
 for (f in files) {
@@ -1662,6 +1663,8 @@ for (abriv in unique(matched_rows$SiteCode)) {
     merged_co2_list[[abriv]],
     paste0(
       "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_",
+      cruise_squish,
+      "_",
       abriv,
       ".csv"
     ),
@@ -1777,6 +1780,8 @@ for (abriv in unique(matched_rows$SiteCode)) {
     merged_ch4_list[[abriv]],
     paste0(
       "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_",
+      cruise_squish,
+      "_",
       abriv,
       ".csv"
     ),
