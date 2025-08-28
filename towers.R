@@ -1,11 +1,11 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on August 27, 2025
+#Updated last on August 28, 2025
 
 #You will have to manually change items in:
 # 1.3 (xlim_vals)
 # 2.3 (start_date, end_date)
 # 2.4 (cruise)
-# 2.6 (write.csv for loop output)
+# 2.7 (write.csv for loop output)
 
 ##### ________________________ 1. Just Towers _____________________________#####
 ##### Load in the 2022 NEC tower .csv files #####
@@ -1554,7 +1554,7 @@ cams_CO2$File <- NULL
 cams_CH4$File <- NULL
 
 
-##### Plotting against CT and CAMS & saving .csv files #####
+##### Plotting against CT and CAMS #####
 #CO2
 merged_co2_list <- list()
 for (abriv in unique(matched_rows$SiteCode)) {
@@ -1656,20 +1656,6 @@ for (abriv in unique(matched_rows$SiteCode)) {
   
   merged_co2_list[[site]] <- merged_co2
   
-}
-
-for (abriv in unique(matched_rows$SiteCode)) {
-  write.csv(
-    merged_co2_list[[abriv]],
-    paste0(
-      "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_",
-      cruise_squish,
-      "_",
-      abriv,
-      ".csv"
-    ),
-    row.names =  F
-  )
 }
 
 #CH4
@@ -1775,17 +1761,34 @@ for (abriv in unique(matched_rows$SiteCode)) {
   
 }
 
+##### Saving .csv files #####
+
+output_dir <- paste0("/Volumes/Seagate/", cruise_squish, "_eulerian/towers")
+
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+for (abriv in unique(matched_rows$SiteCode)) {
+  write.csv(
+    merged_co2_list[[abriv]],
+    paste0(
+      output_dir, "/merged_co2_",
+      cruise_squish, "_", abriv, ".csv"
+    ),
+    row.names = FALSE
+  )
+}
+
 for (abriv in unique(matched_rows$SiteCode)) {
   write.csv(
     merged_ch4_list[[abriv]],
     paste0(
-      "/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_",
-      cruise_squish,
-      "_",
-      abriv,
-      ".csv"
+      output_dir, "/merged_ch4_",
+      cruise_squish, "_", abriv, ".csv"
     ),
-    row.names =  F
+    row.names = FALSE
   )
 }
+
 ##### _____________________________________________________________________#####

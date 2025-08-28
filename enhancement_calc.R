@@ -1,28 +1,34 @@
 #Run towers.R first to generate tower .csv files if not already
-#Updated last on August 27, 2025
+#Updated last on August 28, 2025
 
 #You will have to manually change items in:
 # 2.0 (background_towers) 
 # 3.0 (start_date, end_date)
 
 #NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
+#NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well 
+
 cruise = "Cruise 4"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
 ##### 1. Loading in completed tower .csv files ####
 
-# TOWERS CO2
-LEW_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_LEW.csv"))
-BVA_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_BVA.csv"))
-TMD_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_TMD.csv"))
-WNJ_co2 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_co2_", cruise_squish, "_WNJ.csv"))
+setwd(paste0("/Volumes/Seagate/",cruise_squish,"_eulerian/towers"))
 
-# TOWERS CH4
-LEW_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_LEW.csv"))
-BVA_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_BVA.csv"))
-TMD_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_TMD.csv"))
-WNJ_ch4 <- read.csv(paste0("/Users/reneechabot-mehlin/Desktop/towers/final_csv_files/merged_ch4_", cruise_squish, "_WNJ.csv"))
+temp = list.files(pattern="\\.csv$")
+
+myfiles = lapply(temp, read.csv)
+
+base_names <- tools::file_path_sans_ext(basename(temp))
+
+clean_names <- sub(paste0("merged_(co2|ch4)_", cruise_squish, "_(.*)"), "\\2_\\1", base_names)
+
+myfiles <- setNames(
+  lapply(temp, read.csv),
+  clean_names
+)
+list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
 background_towers <- c("BVA", "TMD", "WNJ") #"LEW"
@@ -52,8 +58,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2023-10-12")
-end_date <- as.Date("2023-10-17")
+start_date <- as.Date("2022-04-09")
+end_date <- as.Date("2022-04-12")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -91,14 +97,16 @@ cruise_info_3hr <- timeAverage(
   statistic = "mean"
 )
 
+cruise_info_3hr$CH4_dry_cal_moving_day = cruise_info_3hr$CH4_dry_cal_moving_day *
+  1000
+
 library(hms)
 cruise_info_3hr$time_only <- as_hms(cruise_info_3hr$date)
 
 cruise_info_3hr <- cruise_info_3hr[cruise_info_3hr$date >= as.POSIXct(start_date) &
                                      cruise_info_3hr$date <= as.POSIXct(end_date) + 86400 - 1, ]
 
-cruise_info_3hr$CH4_dry_cal_moving_day = cruise_info_3hr$CH4_dry_cal_moving_day *
-  1000
+
 
 ##### Loading in basic CT files ######
 library(raster)
@@ -895,7 +903,7 @@ joined$Bias_CT_CH4_SD <- sd(joined$Bias_CT_CH4, na.rm = T)
 joined$Bias_CAMS_CO2_SD <- sd(joined$Bias_CAMS_CO2, na.rm = T)
 joined$Bias_CAMS_CH4_SD <- sd(joined$Bias_CAMS_CH4, na.rm = T)
 
-#####___________________5. Observation comparisons_________________________ #####
+#####___________________5. Observation comparisons _______________________ #####
 ##### Creating combined ship and tower observation data frames #####
 library(ggplot2)
 library(dplyr)
@@ -1195,7 +1203,7 @@ ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
-#####___________________6. CT comparisons_________________________ #####
+#####___________________6. CT comparisons _________________________________#####
 ##### Creating combined ship and tower carbon tracker data frames #####
 library(ggplot2)
 library(dplyr)
@@ -1478,7 +1486,7 @@ ggplot(final_ct_long_ch4, aes(x = date, y = CH4, color = Tower)) +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
-#####___________________7. CAMS comparisons_________________________ #####
+#####___________________7. CAMS comparisons ______________________________ #####
 ##### Creating combined ship and tower CAMS data frames #####
 library(ggplot2)
 library(dplyr)
@@ -1780,7 +1788,8 @@ keep <- c(
   "joined",
   "towers",
   "interval_labels",
-  "background_towers"
+  "background_towers,
+  cruise_squish"
 )
 rm(list = setdiff(ls(), keep))
 
@@ -1993,5 +2002,7 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
+#####_________________________9. Saving .csv _____________________________ #####
+write.csv(merged_all, paste0("/Volumes/Seagate/",cruise_squish,"_eulerian/all_models_merged_",cruise_squish,".csv"))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
