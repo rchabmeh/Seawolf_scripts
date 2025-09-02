@@ -1,0 +1,935 @@
+---
+title: "Seawolf Inventory"
+author: "Renée Chabot-Mehlin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(rsconnect)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Table of Contents: {#toc}
+
+[File description](#description)
+
+[Tasks](#tasks)
+
+[Picarro problem/replacement](#picarro)
+
+[Calibration](#cal)
+
+[Table of cruise information](#table)
+
+[Baoshan Chen Correspondence](#bao)
+
+**Cruises:**
+
+-   [1](#1)
+
+-   [2](#2)
+
+-   [3](#3)
+
+-   [4](#4)
+
+-   [5](#5)
+
+-   [6](#6)
+
+-   [7](#7)
+
+-   [8](#8)
+
+-   [9](#9)
+
+-   [10](#10)
+
+-   [11](#11)
+
+-   [12](#12)
+
+-   [13](#13)
+
+-   [14](#14)
+
+-   [15](#15)
+
+-   [16](#16)
+
+-   [17](#17)
+
+-   [18](#18)
+
+-   [19](#19)
+
+-   [20](#20)
+
+-   [21](#21)
+
+-   [22](#22)
+
+-   [23](#23)
+
+-   [24](#24)
+
+-   [25](#25)
+
+-   [26](#26)
+
+-   [27](#27)
+
+-   [28](#28)
+
+## Description of file: {#description}
+
+This is an R Markdown document that will be used to organize Seawolf cruises to identify cruises of interest. A cruise of interest would be a NJ Trawl with W winds (Philadelphia, Washington D.C./Baltimore) or a NY Trawl with SW winds (NYC or CT). To learn more about the Seawolf see: [RV Seawolf](https://you.stonybrook.edu/somas/about/facilities/researchvessels/rv-seawolf/).
+
+## Tasks: {#tasks}
+
+-   ID cruises of interest
+-   HYSPLIT backtraj **AND** wind vector models
+-   talk with Israel *regularly*
+-   create an inventory with cruises
+-   check and update research journal daily
+
+[back to the table of contents](#toc)
+
+### Picarro problem/replacement {#picarro}
+
+**Note:** This picarro (serial no. 613-CFBD52021) was removed from the Seawolf in early May and was replaced with an alternative picarro replaced it on July 5th, 2024. 
+
+```{r picarro problems, echo =F}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page1.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page2.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page3.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page4.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page5.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page01.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page02.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page03.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page04.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page05.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page06.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page07.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page08.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page09.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page10.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page11.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page12.jpg")
+```
+
+[back to the table of contents](#toc)
+
+## Calibrations: {#cal}
+
+```{r calibrations, echo=FALSE}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page1-cal.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page2-cal.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page3-cal.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/email_kris_cal.jpeg")
+```
+[back to the table of contents](#toc)
+
+## Cruises: {#table}
+
+```{r load_cruises, echo= FALSE}
+library(flextable)
+library(magrittr)  
+  data <-read.csv("/Users/reneechabot/Desktop/Seawolf/CRUISES.csv", check.names = F)
+   ft <- flextable(data) %>%
+    bold(part = "header") %>%
+    bold(j=1, part = "body") %>%
+    border_inner(part = "all") %>%
+    border_outer(part = "all") %>%
+    align(align = "center", part = "all")
+  ft
+```
+
+**Note** Unless otherwise specified, time is in UTC.
+
+The data for these cruises are saved in [Google Drive](https://drive.google.com/drive/folders/19m8oNmr-iL5Ns86GKEzK-MDxqx-Lhgbv?usp=drive_link) under their corresponding names. Only people with access can open the link.
+
+The Seawolf's live and archived tracks/location are mapped on [Garmin](https://share.garmin.com/SeawolfLocation) and [MarineTraffic](https://www.marinetraffic.com/en/ais/details/ships/shipid:443286/mmsi:367390740/imo:8853489/vessel:SEAWOLF).
+
+[back to the table of contents](#toc)
+
+## Baoshan Chen Correspondence: {#bao}
+ 
+_"I appreciate your help in sharing the data for comparison purposes only. Below is a list of my cruise dates. Due to the boat/weather issues, we couldn't monitor the entire NYB in many cruises, so some cruise dates are short. The 1 Hz filtered data is good enough for comparison. We use Licor-7000 (infrared method) taking air pCO2 measurements for 2 minutes every 2-3 hours. We also use CO2 std gas to calibrate the detector every several hours due to its more considerable drift than Picarro. We also account for the time that air goes to the instrument using your approach."_
+
+_"There is no hurry to share the data. Feel free to share when you have time..._ 
+
+_**A combination of UTC time, longitude, latitude, and CO2 (either in ppm or uatm) will be very helpful.**"_
+ 
+**Dates of interested:**
+
+1. 2/1/22-2/7/22
+2. 5/12/22 - 5/14/22
+3. 7/26/22-7/30/22
+4. 9/27/22-9/30/22
+5. 5/14/2023-5/19/2023 
+6. 10/2/2023 -10/5/2023 
+
+**Cruise comparison**
+
+- _cruise 1 and date 1 -> all dates align_
+- cruise 7 and date 2 -> cruise 7 has one extra date at the end
+- cruise 10 and date 3 -> cruise 10 has 5 extra dates in the beginning
+- _cruise 13 and date 4 -> all dates align_
+- cruise 20 and date 5 -> cruise 20 has 13 extra dates in the beginning 
+- cruise 23 and date 6 -> cruise 23 has 12 extra dates in the beginning
+
+**Sending data:**
+
+- check each for data spikes -> need to manually clip out (first half of previous email)
+- then run the function in IGOR
+
+Kris already sent Cruise #1 to Baoshan, I will just need to send 10, 13, 20, & 23.
+Cruise #10 is giving me some problems with the csv- fixed my issue!
+
+**_Function Save_1hz_data_baoshan()_**  (AIRPORT DATA)
+
+	//store GPS, MET, and Picarro data
+	wave groundspeed,time_utc
+	duplicate/o groundspeed,GPS_time_only
+	GPS_time_only= numtype(groundspeed)==0 ? Time_UTC : nan
+	wavestats/Q GPS_time_only
+	variable startpt=V_minrowloc
+	variable endpt=v_maxrowloc
+
+
+	string all_possible_waves="time_UTC;latitude_deg;longitude_deg;CO2;CO2_dry;CO2_dry_cal;CO2_dry_cal_moving_day;CO2_dry_cal_moving_night;H2O"
+
+	// string all_possible_waves="time_UTC;time_local;Latitude_deg;Longitude_deg;height_of_geoid_m;Altitude_m;groundspeed;track;" //GPS
+	// all_possible_waves+="magnetic_variation;fix_quality;N_satellites;HDOP;water_temp_C;heading;pitch;roll;pressure;temperature;w_dir;w_spd;" //GPS - MET
+	// all_possible_waves+="ALARM_STATUS;INST_STATUS;solenoid_valves;MPVPosition;OutletValve;CavityPressure;CavityTemp;WarmBoxTemp;" //Picarro
+	// all_possible_waves+="EtalonTemp;DasTemp;mid_k;low_k;high_k;meas_k;CO2_dry_cal_all;CO2_dry_cal;CH4_dry_cal_all;CH4_dry_cal;CO2_dry_cal_all_OS;" //Picarro
+	// all_possible_waves+="CO2_dry_cal_OS;CH4_dry_cal_all_OS;CH4_dry_cal_OS;CO2;CO2_dry;CH4;CH4_dry;Meas_H2O;H2O;CO;CO_dry;CO_dry_cal;CO_dry_cal_all" //Picarro
+	wave cal_time
+
+	string waves2save=""
+	variable i, n=itemsinList(all_possible_waves)
+
+	for(i=0;i<n;i+=1) //Loop through all_possible_waves and if the wave exists add it to waves2save
+		if(exists(stringfromlist(i,all_possible_waves)))
+			if(whichlistitem(stringfromlist(i,all_possible_waves),"mid_k;low_k;high_k;meas_k;CO2_dry_cal_all;CH4_dry_cal_all;Meas_H2O;")!=-1)
+				if(numpnts(cal_time)>0)
+					waves2save+=stringfromlist(i,all_possible_waves)+";"
+				endif
+				//only save these if there is cal data during the cruise
+			else
+				duplicate/o/R=(startpt,endpt) $stringfromlist(i,all_possible_waves), $stringfromlist(i,all_possible_waves)+"temp"
+				waves2save+=stringfromlist(i,all_possible_waves)+"temp;"
+			endif
+		endif
+	endfor
+
+	wave groundspeed,time_utc
+	duplicate groundspeed,GPS_time_only
+	GPS_time_only= numtype(groundspeed)==0 ? Time_UTC : nan
+	wavestats/Q GPS_time_only
+
+	string filename=Secs2Date(V_min,-2)+"__"+Secs2Date(V_max,-2)+"_Seawolf_1hz.csv"
+
+	Save/J/DLIM=","/B/M="\r\n"/W waves2save as filename
+
+	NVAR gps_time_offset, local_time_offset, picarro_lag_s
+	NVAR co2_slope, co2_offs, ch4_slope, ch4_offs
+	NVAR/Z co2_slope_OS, co2_offs_OS, ch4_slope_OS, ch4_offs_OS
+	SVAR script_version, CO2_scale, CH4_scale, CO2_scale_OS, CH4_scale_OS
+
+	variable lgr_flag=0, o3_flag=0, OS_CO2_cal_flag=0, OS_CH4_cal_flag=0, grimm_flag=0
+
+	if(NVAR_Exists(co2_slope_OS))
+		OS_CO2_cal_flag=1  //we did calibrate CO2 on an old scale too
+	endif
+	if(NVAR_Exists(ch4_slope_OS))
+		OS_CH4_cal_flag=1  //we did calibrate CH4 on an old scale too
+	endif
+
+	string co2_slope_str, co2_offs_str, ch4_slope_str, ch4_offs_str, co2_slope_OS_str, co2_offs_OS_str, ch4_slope_OS_str, ch4_offs_OS_str
+	sprintf co2_slope_str, "%.6f", co2_slope
+	sprintf co2_offs_str, "%.6f", co2_offs
+	sprintf ch4_slope_str, "%.6f", ch4_slope
+	sprintf ch4_offs_str, "%.6f", ch4_offs
+	if(OS_CO2_cal_flag)
+		sprintf co2_slope_OS_str, "%.6f", co2_slope_OS
+		sprintf co2_offs_OS_str, "%.6f", co2_offs_OS
+	endif
+	if(OS_CH4_cal_flag)
+		sprintf ch4_slope_OS_str, "%.6f", ch4_slope_OS
+		sprintf ch4_offs_OS_str, "%.6f", ch4_offs_OS
+	endif
+
+	make/O/T/n=1000 metadata // make large text wave to put metadata in - will trim down later
+	i=0 // index counter
+	metadata[i]="IGOR processing script used: Seawolf_processing_v"+script_version+".ipf"; i+=1
+	metadata[i]=""; i+=1
+	metadata[i]="Corrections applied to data:"; i+=1
+	metadata[i]="Local time offset (relative to UTC) = "+num2str(local_time_offset)+" hr"; i+=1
+	metadata[i]="Picarro inlet lag time = "+num2str(picarro_lag_s)+" s"; i+=1
+	metadata[i]=""; i+=1
+	metadata[i]="Calibration coefficients with convention:    calibrated_data = (raw_data - offset)/slope"; i+=1
+	metadata[i]="Picarro CO2 calibration scale = "+CO2_scale; i+=1
+	metadata[i]="Picarro CH4 calibration scale = "+CH4_scale; i+=1
+	metadata[i]="Picarro CO2 calibration slope = "+co2_slope_str; i+=1
+	metadata[i]="Picarro CO2 calibration offset = "+co2_offs_str+" ppm"; i+=1
+	metadata[i]="Picarro CH4 calibration slope = "+ch4_slope_str; i+=1
+	metadata[i]="Picarro CH4 calibration offset = "+ch4_offs_str+" ppm"; i+=1
+	if(OS_CO2_cal_flag)
+		metadata[i]="Picarro original CO2 calibration scale (\"_OS\" data) = "+CO2_scale_OS; i+=1
+		metadata[i]="Picarro original scale CO2 calibration slope = "+co2_slope_OS_str; i+=1
+		metadata[i]="Picarro original scale CO2 calibration offset = "+co2_offs_OS_str+" ppm"; i+=1
+	endif
+	if(OS_CH4_cal_flag)
+		metadata[i]="Picarro original CH4 calibration scale (\"_OS\" data) = "+CH4_scale_OS; i+=1
+		metadata[i]="Picarro original scale CH4 calibration slope = "+ch4_slope_OS_str; i+=1
+		metadata[i]="Picarro original scale CH4 calibration offset = "+ch4_offs_OS_str+" ppm"; i+=1
+	endif
+	metadata[i]=""; i+=1
+	metadata[i]="Notes:"; i+=1
+
+	SVAR/Z Picarro_lag_date,Picarro_cal_date
+	if(Svar_exists(Picarro_lag_date))
+		metadata[i]="Using breath test from "+Picarro_lag_date+" for lag adjustment"; i+=1
+		metadata[i]=""; i+=1
+	endif
+	if(Svar_exists(Picarro_cal_date))
+		metadata[i]="Using lab calibration from "+Picarro_cal_date+" for Picarro data"; i+=1
+	endif
+
+	deletepoints i, (1000-i), metadata
+
+	wavestats/Q GPS_time_only
+	killwaves GPS_time_only
+	string meta_filename=Secs2Date(V_min,-2)+"__"+Secs2Date(V_max,-2)+"_Seawolf_metadata.txt"
+	Save/G/M="\r\n" metadata as meta_filename
+
+	DoAlert 0, "Add notes manually to the metadata file"
+
+	killwaves/Z metadata 
+	End
+
+
+_**Function Save_1hz_data_baoshan()**_  (MET DATA)
+
+	//store GPS, MET, and Picarro data
+	wave MET_groundspeed,time_utc
+	duplicate/o MET_groundspeed,GPS_time_only
+	GPS_time_only= numtype(groundspeed)==0 ? Time_UTC : nan
+	wavestats/Q GPS_time_only
+	variable startpt=V_minrowloc
+	variable endpt=v_maxrowloc
+
+
+	string all_possible_waves="time_UTC;latitude_deg;longitude_deg;CO2;CO2_dry;CO2_dry_cal;CO2_dry_cal_moving_day;CO2_dry_cal_moving_night;H2O"
+
+	// string all_possible_waves="time_UTC;time_local;Latitude_deg;Longitude_deg;height_of_geoid_m;Altitude_m;groundspeed;track;" //GPS
+	// all_possible_waves+="magnetic_variation;fix_quality;N_satellites;HDOP;water_temp_C;heading;pitch;roll;pressure;temperature;w_dir;w_spd;" //GPS - MET
+	// all_possible_waves+="ALARM_STATUS;INST_STATUS;solenoid_valves;MPVPosition;OutletValve;CavityPressure;CavityTemp;WarmBoxTemp;" //Picarro
+	// all_possible_waves+="EtalonTemp;DasTemp;mid_k;low_k;high_k;meas_k;CO2_dry_cal_all;CO2_dry_cal;CH4_dry_cal_all;CH4_dry_cal;CO2_dry_cal_all_OS;" //Picarro
+	// all_possible_waves+="CO2_dry_cal_OS;CH4_dry_cal_all_OS;CH4_dry_cal_OS;CO2;CO2_dry;CH4;CH4_dry;Meas_H2O;H2O;CO;CO_dry;CO_dry_cal;CO_dry_cal_all" //Picarro
+	wave cal_time
+
+	string waves2save=""
+	variable i, n=itemsinList(all_possible_waves)
+
+	for(i=0;i<n;i+=1) //Loop through all_possible_waves and if the wave exists add it to waves2save
+		if(exists(stringfromlist(i,all_possible_waves)))
+			if(whichlistitem(stringfromlist(i,all_possible_waves),"mid_k;low_k;high_k;meas_k;CO2_dry_cal_all;CH4_dry_cal_all;Meas_H2O;")!=-1)
+				if(numpnts(cal_time)>0)
+					waves2save+=stringfromlist(i,all_possible_waves)+";"
+				endif
+				//only save these if there is cal data during the cruise
+			else
+				duplicate/o/R=(startpt,endpt) $stringfromlist(i,all_possible_waves), $stringfromlist(i,all_possible_waves)+"temp"
+				waves2save+=stringfromlist(i,all_possible_waves)+"temp;"
+			endif
+		endif
+	endfor
+
+	wave MET_groundspeed,time_utc
+	duplicate MET_groundspeed,GPS_time_only
+	GPS_time_only= numtype(groundspeed)==0 ? Time_UTC : nan
+	wavestats/Q GPS_time_only
+
+	string filename=Secs2Date(V_min,-2)+"__"+Secs2Date(V_max,-2)+"_Seawolf_1hz.csv"
+
+	Save/J/DLIM=","/B/M="\r\n"/W waves2save as filename
+
+	NVAR gps_time_offset, local_time_offset, picarro_lag_s
+	NVAR co2_slope, co2_offs, ch4_slope, ch4_offs
+	NVAR/Z co2_slope_OS, co2_offs_OS, ch4_slope_OS, ch4_offs_OS
+	SVAR script_version, CO2_scale, CH4_scale, CO2_scale_OS, CH4_scale_OS
+
+	variable lgr_flag=0, o3_flag=0, OS_CO2_cal_flag=0, OS_CH4_cal_flag=0, grimm_flag=0
+
+	if(NVAR_Exists(co2_slope_OS))
+		OS_CO2_cal_flag=1  //we did calibrate CO2 on an old scale too
+	endif
+	if(NVAR_Exists(ch4_slope_OS))
+		OS_CH4_cal_flag=1  //we did calibrate CH4 on an old scale too
+	endif
+
+	string co2_slope_str, co2_offs_str, ch4_slope_str, ch4_offs_str, co2_slope_OS_str, co2_offs_OS_str, ch4_slope_OS_str, ch4_offs_OS_str
+	sprintf co2_slope_str, "%.6f", co2_slope
+	sprintf co2_offs_str, "%.6f", co2_offs
+	sprintf ch4_slope_str, "%.6f", ch4_slope
+	sprintf ch4_offs_str, "%.6f", ch4_offs
+	if(OS_CO2_cal_flag)
+		sprintf co2_slope_OS_str, "%.6f", co2_slope_OS
+		sprintf co2_offs_OS_str, "%.6f", co2_offs_OS
+	endif
+	if(OS_CH4_cal_flag)
+		sprintf ch4_slope_OS_str, "%.6f", ch4_slope_OS
+		sprintf ch4_offs_OS_str, "%.6f", ch4_offs_OS
+	endif
+
+	make/O/T/n=1000 metadata // make large text wave to put metadata in - will trim down later
+	i=0 // index counter
+	metadata[i]="IGOR processing script used: Seawolf_processing_v"+script_version+".ipf"; i+=1
+	metadata[i]=""; i+=1
+	metadata[i]="Corrections applied to data:"; i+=1
+	metadata[i]="Local time offset (relative to UTC) = "+num2str(local_time_offset)+" hr"; i+=1
+	metadata[i]="Picarro inlet lag time = "+num2str(picarro_lag_s)+" s"; i+=1
+	metadata[i]=""; i+=1
+	metadata[i]="Calibration coefficients with convention:    calibrated_data = (raw_data - offset)/slope"; i+=1
+	metadata[i]="Picarro CO2 calibration scale = "+CO2_scale; i+=1
+	metadata[i]="Picarro CH4 calibration scale = "+CH4_scale; i+=1
+	metadata[i]="Picarro CO2 calibration slope = "+co2_slope_str; i+=1
+	metadata[i]="Picarro CO2 calibration offset = "+co2_offs_str+" ppm"; i+=1
+	metadata[i]="Picarro CH4 calibration slope = "+ch4_slope_str; i+=1
+	metadata[i]="Picarro CH4 calibration offset = "+ch4_offs_str+" ppm"; i+=1
+	if(OS_CO2_cal_flag)
+		metadata[i]="Picarro original CO2 calibration scale (\"_OS\" data) = "+CO2_scale_OS; i+=1
+		metadata[i]="Picarro original scale CO2 calibration slope = "+co2_slope_OS_str; i+=1
+		metadata[i]="Picarro original scale CO2 calibration offset = "+co2_offs_OS_str+" ppm"; i+=1
+	endif
+	if(OS_CH4_cal_flag)
+		metadata[i]="Picarro original CH4 calibration scale (\"_OS\" data) = "+CH4_scale_OS; i+=1
+		metadata[i]="Picarro original scale CH4 calibration slope = "+ch4_slope_OS_str; i+=1
+		metadata[i]="Picarro original scale CH4 calibration offset = "+ch4_offs_OS_str+" ppm"; i+=1
+	endif
+	metadata[i]=""; i+=1
+	metadata[i]="Notes:"; i+=1
+
+	SVAR/Z Picarro_lag_date,Picarro_cal_date
+	if(Svar_exists(Picarro_lag_date))
+		metadata[i]="Using breath test from "+Picarro_lag_date+" for lag adjustment"; i+=1
+		metadata[i]=""; i+=1
+	endif
+	if(Svar_exists(Picarro_cal_date))
+		metadata[i]="Using lab calibration from "+Picarro_cal_date+" for Picarro data"; i+=1
+	endif
+
+	deletepoints i, (1000-i), metadata
+
+	wavestats/Q GPS_time_only
+	killwaves GPS_time_only
+	string meta_filename=Secs2Date(V_min,-2)+"__"+Secs2Date(V_max,-2)+"_Seawolf_metadata.txt"
+	Save/G/M="\r\n" metadata as meta_filename
+
+	DoAlert 0, "Add notes manually to the metadata file"
+
+	killwaves/Z metadata 
+	End
+
+
+[back to the table of contents](#toc)
+
+
+## Cruise 1: {#1}
+
+```{r plot_of_cruises_01, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 2: {#2}
+
+```{r plot_of_cruises_02, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 3: {#3}
+
+```{r plot_of_cruises_03, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/trajectory_hrrr.jpeg")
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 4: {#4}
+
+```{r plot_of_cruises_04, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 5: {#5}
+
+```{r plot_of_cruises_05, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/timeseries_filtered.png")
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 6: {#6}
+
+```{r plot_of_cruises_06, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 7: {#7}
+
+```{r plot_of_cruises_07, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 8: {#8}
+
+```{r plot_of_cruises_08, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 9: {#9}
+
+```{r plot_of_cruises_09, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 10: {#10}
+
+```{r plot_of_cruises_10, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 11: {#11}
+
+```{r plot_of_cruises_11, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 12: {#12}
+
+```{r plot_of_cruises_12, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 13: {#13}
+
+```{r plot_of_cruises_13, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 14: {#14}
+
+```{r plot_of_cruises_14, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 15: {#15}
+
+```{r plot_of_cruises_15, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 16: {#16}
+
+```{r plot_of_cruises_16, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 17: {#17}
+```{r plot_of_cruises_17, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 18: {#18}
+```{r plot_of_cruises_18, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 19: {#19}
+```{r plot_of_cruises_19, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 20: {#20}
+
+```{r plot_of_cruises_20, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 21: {#21}
+
+```{r plot_of_cruises_21, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 22: {#22}
+
+```{r plot_of_cruises_22, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 23: {#23}
+
+```{r plot_of_cruises_23, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/trajectory_hrrr.jpeg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 24: {#24}
+
+```{r plot_of_cruises_24, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+
+## Cruise 25: {#25}
+
+```{r plot_of_cruises_25, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/Flight_track_by_day_with_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 26: {#26}
+
+```{r plot_of_cruises_26, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/interesting_fetch.png")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 27: {#27}
+
+```{r plot_of_cruises_27, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/trajectory.jpg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+## Cruise 28: {#28}
+
+```{r plot_of_cruises_28, echo = F, fig.show="hold", out.width="50%"}
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/trajectory.jpg")
+
+#this works well with desktop stuff, google drive not so much 
+```
+
+[back to the table of contents](#toc)
+
+
+
+

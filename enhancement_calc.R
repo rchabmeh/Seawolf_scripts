@@ -1,14 +1,22 @@
 #Run towers.R first to generate tower .csv files if not already
-#Updated last on August 28, 2025
+#Updated last on September 2, 2025
 
 #You will have to manually change items in:
 # 2.0 (background_towers) 
 # 3.0 (start_date, end_date)
+# 5.1 (final_obs_co2 <- wide_data_co2_obs[, c(NUMBERS HERE)]) <- would like to automate
 
 #NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
 #NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well 
 
-cruise = "Cruise 4"
+##losing background_towers by section 8 ?? looking into now 8/28/25
+
+#New goals via 1:1 meeting w/ Shep:
+# 1. Choose carefully which towers represent background
+# 2. Use WNJ not as a background but as a comparison to ship data
+# 3. Add scatter plots to compare modeled v enhancement 
+
+cruise = "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -31,7 +39,7 @@ myfiles <- setNames(
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("BVA", "TMD", "WNJ") #"LEW"
+background_towers <- c("WNJ", "LEW") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -58,8 +66,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2022-04-09")
-end_date <- as.Date("2022-04-12")
+start_date <- as.Date("2023-10-12")
+end_date <- as.Date("2023-10-17")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -883,7 +891,8 @@ grid_data_co2 <- CAMS_CO2_df %>%
 joined <- joined %>% mutate(window_start_co2 = floor_date(date, unit = "3 hours"))
 joined <- joined %>% left_join(grid_data_co2, by = "window_start_co2")
 
-joined <- joined %>% select(-window_start_co2, -window_start_ch4, -time_only, -Day)
+library(dplyr)
+joined <- joined %>% dplyr::select(-window_start_co2, -window_start_ch4, -time_only, -Day)
 
 names(joined)[names(joined) == "date"] <- "Date_UTC"
 names(joined)[names(joined) == "CO2_dry_cal_moving_day"] <- "Observed_CO2"
@@ -913,9 +922,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 
 ship_df_co2_obs <- joined %>%
-  select(date, Observed_CO2) %>%
+  dplyr::select(date, Observed_CO2) %>%
   mutate(Source = "Ship", CO2 = Observed_CO2) %>%
-  select(date, CO2, Source)
+  dplyr::select(date, CO2, Source)
 
 
 tower_df_co2_obs <- map_df(names(tower_data), function(tower_name) {
@@ -928,7 +937,7 @@ tower_df_co2_obs <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CO2 = Obs_CO2_ppm) %>%
-    select(DATE, CO2, Source) %>%
+    dplyr::select(DATE, CO2, Source) %>%
     rename(date = DATE)
 })
 
@@ -945,7 +954,7 @@ tower_numbered <- tower_df_co2_obs %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -962,7 +971,8 @@ for (twr in background_towers) {
   )
 }
 
-final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 9, 10, 11)]
+#this needs to be dynamic - 8/28/25
+final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -991,9 +1001,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 
 ship_df_ch4_obs <- joined %>%
-  select(date, Observed_CH4) %>%
+  dplyr::select(date, Observed_CH4) %>%
   mutate(Source = "Ship", CH4 = Observed_CH4) %>%
-  select(date, CH4, Source)
+  dplyr::select(date, CH4, Source)
 
 
 tower_df_ch4_obs <- map_df(names(tower_data), function(tower_name) {
@@ -1006,7 +1016,7 @@ tower_df_ch4_obs <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CH4 = Obs_CH4_ppb) %>%
-    select(DATE, CH4, Source) %>%
+    dplyr::select(DATE, CH4, Source) %>%
     rename(date = DATE)
 })
 
@@ -1023,7 +1033,7 @@ tower_numbered <- tower_df_ch4_obs %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1040,7 +1050,7 @@ for (twr in background_towers) {
   )
 }
 
-final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 9, 10, 11)]
+final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1193,7 +1203,7 @@ ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
   labs(
     title = paste("Ship v Tower: Observed enhancement comparison for", cruise),
     x = "Date UTC",
-    y = "CO2 (ppm)"
+    y = "CH4 (ppb)"
   ) +
   geom_hline(yintercept = 0) +
   theme_minimal() +
@@ -1213,9 +1223,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 
 ship_df_co2_ct <- joined %>%
-  select(date, CT_CO2) %>%
+  dplyr::select(date, CT_CO2) %>%
   mutate(Source = "Ship", CO2 = CT_CO2) %>%
-  select(date, CO2, Source)
+  dplyr::select(date, CO2, Source)
 
 
 tower_df_co2_ct <- map_df(names(tower_data), function(tower_name) {
@@ -1228,7 +1238,7 @@ tower_df_co2_ct <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CO2 = CT_CO2) %>%
-    select(DATE, CO2, Source) %>%
+    dplyr::select(DATE, CO2, Source) %>%
     rename(date = DATE)
 })
 
@@ -1245,7 +1255,7 @@ tower_numbered <- tower_df_co2_ct %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -1262,7 +1272,7 @@ for (twr in background_towers) {
   )
 }
 
-final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 9, 10, 11)]
+final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1292,9 +1302,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 
 ship_df_ch4_ct <- joined %>%
-  select(date, CT_CH4) %>%
+  dplyr::select(date, CT_CH4) %>%
   mutate(Source = "Ship", CH4 = CT_CH4) %>%
-  select(date, CH4, Source)
+  dplyr::select(date, CH4, Source)
 
 
 tower_df_ch4_ct <- map_df(names(tower_data), function(tower_name) {
@@ -1307,7 +1317,7 @@ tower_df_ch4_ct <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CH4 = CT_CH4) %>%
-    select(DATE, CH4, Source) %>%
+    dplyr::select(DATE, CH4, Source) %>%
     rename(date = DATE)
 })
 
@@ -1324,7 +1334,7 @@ tower_numbered <- tower_df_ch4_ct %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1341,7 +1351,7 @@ for (twr in background_towers) {
   )
 }
 
-final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 9, 10, 11)]
+final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1496,9 +1506,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 
 ship_df_co2_cams <- joined %>%
-  select(date, CAMS_CO2) %>%
+  dplyr::select(date, CAMS_CO2) %>%
   mutate(Source = "Ship", CO2 = CAMS_CO2) %>%
-  select(date, CO2, Source)
+  dplyr::select(date, CO2, Source)
 
 
 tower_df_co2_cams <- map_df(names(tower_data), function(tower_name) {
@@ -1511,7 +1521,7 @@ tower_df_co2_cams <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CO2 = CAMs_CO2) %>%
-    select(DATE, CO2, Source) %>%
+    dplyr::select(DATE, CO2, Source) %>%
     rename(date = DATE)
 })
 
@@ -1528,7 +1538,7 @@ tower_numbered <- tower_df_co2_cams %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -1545,7 +1555,7 @@ for (twr in background_towers) {
   )
 }
 
-final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 9, 10, 11)]
+final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1575,9 +1585,9 @@ library(purrr)
 joined$date <- joined$Date_UTC
 joined$CAMS_CH4 <- joined$CAMS_CH4 * 1000
 ship_df_ch4_cams <- joined %>%
-  select(date, CAMS_CH4) %>%
+  dplyr::select(date, CAMS_CH4) %>%
   mutate(Source = "Ship", CH4 = CAMS_CH4) %>%
-  select(date, CH4, Source)
+  dplyr::select(date, CH4, Source)
 
 
 tower_df_ch4_cams <- map_df(names(tower_data), function(tower_name) {
@@ -1590,7 +1600,7 @@ tower_df_ch4_cams <- map_df(names(tower_data), function(tower_name) {
   
   df %>%
     mutate(Source = tower_code, CH4 = CAMs_CH4) %>%
-    select(DATE, CH4, Source) %>%
+    dplyr::select(DATE, CH4, Source) %>%
     rename(date = DATE)
 })
 
@@ -1607,7 +1617,7 @@ tower_numbered <- tower_df_ch4_cams %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1624,7 +1634,7 @@ for (twr in background_towers) {
   )
 }
 
-final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 9, 10, 11)]
+final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1923,9 +1933,9 @@ ggplot(long_data_ch4, aes(x = Grouping, y = Enhancement, color = Source)) +
     title = paste("Enhancement Comparison CH4 for", cruise)
   ) +
   scale_color_manual(values = c(
-    "cams" = "red",
-    "ct"   = "blue",
-    "obs"  = "black"
+    "CAMS" = "red",
+    "CT"   = "blue",
+    "Obs"  = "black"
   )) +
   theme_minimal() +
   theme(
@@ -1981,14 +1991,14 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
   facet_wrap(~ Tower, nrow = 1) +
   labs(
     x = "UTC Interval",
-    y = "CH4 Enhancement (ppb)",
+    y = "CO2 Enhancement (ppm)",
     color = "Source",
     title = paste("Enhancement Comparison CO2 for", cruise)
   ) +
   scale_color_manual(values = c(
-    "cams" = "red",
-    "ct"   = "blue",
-    "obs"  = "black"
+    "CAMS" = "red",
+    "CT"   = "blue",
+    "Obs"  = "black"
   )) +
   theme_minimal() +
   theme(
@@ -2002,7 +2012,9 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
     plot.title = element_text(size = 20, hjust = 0.5)
   )
 
-#####_________________________9. Saving .csv _____________________________ #####
+#####_________________________9. Saving .csv files _______________________ #####
+##### Saving all .csv files #####
 write.csv(merged_all, paste0("/Volumes/Seagate/",cruise_squish,"_eulerian/all_models_merged_",cruise_squish,".csv"))
+
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####

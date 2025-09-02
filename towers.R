@@ -5,7 +5,6 @@
 # 1.3 (xlim_vals)
 # 2.3 (start_date, end_date)
 # 2.4 (cruise)
-# 2.7 (write.csv for loop output)
 
 ##### ________________________ 1. Just Towers _____________________________#####
 ##### Load in the 2022 NEC tower .csv files #####
@@ -408,8 +407,8 @@ WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "Ameri
 
 
 ##### Set time limit for basic plots #####
-xlim_vals <- c(as.POSIXct("2022-04-09 15:00:00"),
-               as.POSIXct("2022-04-12 17:00:00"))
+xlim_vals <- c(as.POSIXct("2023-10-12 08:00:00"),
+               as.POSIXct("2023-10-17 18:00:00"))
 ##### Basic Plotting 2022 #####
 #ch4____
 plot(
@@ -1241,8 +1240,8 @@ for (i in names(averaged_data)) {
 }
 
 ##### Set time limit for model comparison #####
-start_date <- as.Date("2022-04-09")
-end_date <- as.Date("2022-04-12")
+start_date <- as.Date("2023-10-12")
+end_date <- as.Date("2023-10-17")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1264,7 +1263,7 @@ obs_ch4$co2_ppm <- NULL
 
 library(raster)
 
-cruise <- "Cruise 4"
+cruise <- "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 

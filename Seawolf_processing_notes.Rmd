@@ -1,0 +1,320 @@
+---
+title: "Seawolf_processing_notes"
+author: "Renée Chabot-Mehlin"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# **Contact information:**
+            
+                    renee.chabot@stonybrook.edu
+                    
+                    860-806-1554
+                    
+                    Discovery #129
+                    
+                    Stony Brook University
+                    
+                    100 Nicolls Rd, Stony Brook, NY 11794
+
+# Description of file
+This is an R-Markdown document to add notes/comments/questions/reminders  about the Seawolf cruise processing etc. 
+
+## Notes:
+Thomas Wilson in an email to Shep, Kris, Lucas Merlo and I (6/5/23):
+
+"Note that the old Airmar 120WX station used before November 2022 had major compass problems.  We upgraded to an Airmar 220WX in November 2022 **but the compass was not satisfactorily compensated until March 2023.**
+
+Data with compass problems will have correct data except for vessel heading, true wind direction, and true wind speed."
+
+### MET System Specs:
+- old MET instrument was an Airmar PB100
+- new MET instrument is an Airmar 200WX
+
+They were/are mounted in the same location, on a crossarm of the main mass of the Seawolf. 
+
+Height of instrument (measured by Chris Harter on 7/31/23): 36'6" AKA **11.1 meters above the water.** A picture of the MET system mounted on the Seawolf is saved in the document folder as a .jpg. 
+
+The manuals for both instruments are saved in the document folder as .pdf(s). 
+
+## R-scripts information
+
+The scripts used to evaluate the Seawolf data is saved in the scripts folder. I am working on this project under Israel Lopez-Coto's guidance.
+
+**His current email addresses are:**
+
+                israel.lopez-coto@stonybrook.edu 
+
+                israel.lopezcoto@nist.gov 
+                
+The airport winds data is downloaded from [NOAA](https://www.ncei.noaa.gov/products/land-based-station/automated-surface-weather-observing-systems). When we don't have MET data from the boat, we use airport winds. The airport winds are a good comparison to the MET winds.  
+
+```{r  load_airport_files, echo = F}
+
+airport_winds_2022 <- read.delim("Airport_winds-2022.txt")
+
+airport_winds_2023 <- read.delim("Airport_winds-2023.txt")
+
+```
+
+
+```{r find_recent_date, echo= F}
+
+last_line_2022 <- tail(airport_winds_2022, 1)
+
+filedate_2022 <- tail(substring(last_line_2022[1,4],1,10))
+
+last_line_2023 <- tail(airport_winds_2023, 1)
+
+filedate_2023 <- substring(last_line_2023[1,4],1,10)
+
+today_date <- Sys.Date()
+
+```
+
+
+```{r print_recent_date, echo =F}
+
+#I manually chose 2023, in the future want to fully automate.
+
+cat(filedate_2023, "is the most current date collected for airport data.\n")
+
+```
+
+
+## Inventories Used:
+
+- GEPA
+- EDGAR
+
+### Goals:
+
+- (will fill in)
+
+
+
+
+
+
+
+
+
+
+
+
+# To Do List: 
+
+- redo cruises #1-9, #19, & #20 w/ new IGOR script
+- run [HYSPLIT back trajectories](https://www.ready.noaa.gov/hypub-bin/trajtype.pl?runtype=archive) for the plume on cruise #2 and #4 (NYC)
+- reread Kris's [powerplant paper](https://pubs.acs.org/doi/10.1021/acs.est.9b01875)
+- update IGOR code to disregard plotting when ship is stationary
+- **fine-tune each cruise AKA make sure you understand everything for each cruise so there are no questions.**
+- fix the IGOR code to get ride of some of the notebook stuff
+- fix the IGOR code to add tick marks every 6 hrs for timeseries_filtered
+- fix the IGOR code--when running Plot_Timeseries_filtered() there was an attempt to use a null string variable _(look into this!)_ 
+- In IGOR change the "Flight_track_by_day" to "Cruise_track_by_day"--we aren't flying 
+- read the new MET system manual
+
+# Cruises
+## Seawolf Cruise Dates
+
+**Note** ALL TIMES UTC!!
+
+
+The data for these cruises are saved in [Google Drive](https://drive.google.com/drive/folders/19m8oNmr-iL5Ns86GKEzK-MDxqx-Lhgbv?usp=drive_link) under their corresponding names. Only people with access can open the link.  
+
+1. **2/1/22 to 2/7/22**
+2. **2/23/22 to 2/27/22**
+3. **3/10/22 to 3/14/22**
+4. **4/5/22 to 4/16/22**
+5. **4/22/22**
+6. **4/28/22 to 5/4/22**
+7. **5/12/22 to 5/15/22**
+8. **6/1/22 to 6/11/22**
+9. **6/16/22 to 6/21/22**
+10. 7/20/22 to 7/31/22
+11. 8/4/22 to 8/14/22
+12. 9/6/22 to 9/21/22
+13. 9/27/22 to 9/30/22
+14. 10/11/22 to 11/3/22
+15. 11/9/22 to 11/14/22
+16. 11/17/22 to 11/30/22
+17. 12/1/22 to 12/31/22
+18. 1/1/23 to 1/31/23
+19. **3/22/23 to 4/19/23**
+20. **5/1/23 to 5/19/23**
+21. **7/16/23 to 7/26/23**
+22. **8/24/23 to 9/11/23**
+23. **9/20/23 to 10/6/23**
+24. **10/11/23 to 11/7/23**
+
+This list and the Google Drive folder will be updated as more cruises are downloaded. Anything **bolded** within the list needs to be processed or reprocessed. The Seawolf's live and archived tracks/location are mapped on  [Garmin](https://share.garmin.com/SeawolfLocation) and [MarineTraffic](https://www.marinetraffic.com/en/ais/details/ships/shipid:443286/mmsi:367390740/imo:8853489/vessel:SEAWOLF). 
+
+
+### Cruise #1 (2/1/22-2/7/22)
+
+See powerpoint on Cruises 1 and 2 in presentations folder.
+
+Kris modded GPS data: Final_GPS1-2022-02-04_conv_KH_mod.txt
+
+- 2/1: peaks seen in CO2 around 650-ish ppm at 
+(40.960, -73.6) & (40.975,-73.4) between the hours of 4:00 PM and 5:30 PM.
+- similar increases in CH4 seen at those locations, however there is also enhancement before and after as well. 
+- There is also enhancement along the tracks on 2/5 to the end of the cruise with a spike between the hours of 11:00 PM (on 2/6) and 2:00 AM (on 2/7) which incidentally follows the same path that the peaks are seen on 2/1 and is seen in CO2.
+- spike in CO2 seen during nighttime hours of 2/1 at (40.9499, -73.0713)
+
+**the boat is not moving btwn the hours:**
+
+- 10:30 PM (1/31) and 2:15 PM (2/1)
+- 10:00 pm (2/3) and 11:00 AM (2/6) _small movement 6:20ish PM to 7:00 PM (2/5)_
+- 6:00 AM (2/7) to end of cruise (2/8- 3:00ish AM)
+
+**days of the cruise with westerly winds:**
+
+- 2/1
+- 2/2
+- 2/5
+
+**HYSPLIT**
+
+- next step is to use HYSPLIT and get the back trajectories
+- heights are: 0 m, 50 m, 100 m AGL
+- 8 hr back traj, with 3 locations, starting at 22 UTC 
+
+let's try:
+
+- HRRR 3km (sigma, U.S., 06/2019-present) 
+- NAM 12km (hybrid sigma-pressure, U.S., 03/2010-present)
+
+The back trajectories are saved in the cruises folder.
+
+
+### Cruise #2 (2/23/22-2/27/22)
+
+See powerpoint on Cruises 1 and 2 in presentations folder.
+
+- there is exhaust from the ship (high CO2, no CH4) around 2/23 at 10:30 PM and the ship is not moving 
+- both spikes in CO2 and CH4 2/24 from 6:00 AM to around 11:00 AM
+- 2/25 larger spike in CO2 and smaller spike in CH4 from 12:00 PM to 12:00 AM on 2/26
+
+back trajectory on (40.786, -73.918) 2/24/2022
+
+These too: (40.55, -73.65) (40.63, -73.14) 2/25/22
+
+**HYSPLIT**
+
+- next step is to use HYSPLIT and get the back trajectories
+- heights are: 0 m, 50 m, 100 m AGL
+- 8 hr back traj, with 3 locations, starting at 22 UTC 
+
+let's try:
+
+- HRRR 3km (sigma, U.S., 06/2019-present) 
+- NAM 12km (hybrid sigma-pressure, U.S., 03/2010-present)
+
+The back trajectories are saved in the cruises folder.
+
+
+### Cruise #3 (3/10/22-3/14/22)
+
+Something to note for this cruise is that there is MET winds data.
+
+Kris modded GPS data: Final_GPS1-2022-03-13_conv_KH_mod.txt
+
+I've decided to plot a comparison of the MET v.s. airport winds data for this cruise.
+
+
+- large spike of CO2 at (41.055, -72.569) most likely own exhaust (moving in circles, no spike of CH4) 3/10 3:00 PM 
+- spike of CO2 at (40.991, -73.084) 3/14 12:30 PM 
+-  spike seen most clearly on daytime CO2 map (40.956, -73.461) is on 3/11 4:00 PM and has a concurrent spike with CH4 as well.
+
+
+The ship **did not move** during the periods of:
+
+- 3/9 around 5:00 PM to 3/10 around 11:00 AM
+- 3/10 around 10:00 PM to 3/11 around 11:00 AM
+- 3/11 around 11:15 PM to 3/14 around 12:15 PM
+- 3/14 around 5:00 PM to end of cruise
+
+
+# After meeting with Shep about cruises, he wants me to prioritize the NJ trawls 
+
+## Cruises that are NJ trawls: 
+
+- Cruise 1 - **on ppt-only see NYC good**
+- Cruise 4 **on ppt-look into a bit more**
+- Cruise 7  **on ppt-only see NYC good**
+- Cruise 8 **INTEREST**
+- Cruise 13 **INTEREST**
+- Cruise 14
+- Cruise 19
+
+
+### Organizational Update (9/7/2023)- emailed 9/8
+
+**Questions for Tom Wilson:**
+1. Is there radiometer data on the ship?
+2. Is there any usable winds data before March 2023?
+
+
+**To do list (from ppt on cruises 1 & 2):**
+
+- change timeseries to local times instead of UTC
+- Filter out errors post interpolation 
+- Ask Joe Pitt to use his inventory (natural gas) _read his paper!_
+- sharp peak on 2/25 could be a refinery (look up!)
+- remember that broad signals are cities 
+- plot cruise 2 CH4 v.s. distance (day) like curtain plots
+- plot calc enhancement v.s. observed enhancement
+- calc footprint value * joe pitt's emission for that pixel, then you can do a regression of predicted v.s. observed
+- study Kris's SF paper to talk with Israel about- _meeting with Israel on Wednesday 9/13 at 2:00 PM_
+- put colored cruise trakes on the GEPA emission maps and make the colors go to 75 degrees W
+
+
+### Email from Israel (9/6/2023):
+
+"Hi Renne,
+
+I won't be able to meet today at 2 pm, sorry about that. Let's meet next week instead. Wed 2 pm may work for me moving forward but weekly meetings will likely be overkill if you are going to be busy. I'd rather continue to follow your progress with the daily research journal, although we may need to change a bit what's reported there and what's not.  
+We can talk more next week but at a glance, here some answers:
+
+- I am a bit concerned because it has passed a very long time since we started "working" with the Seawolf data and there is almost no progress on the ship analysis. Can we discuss in our next meeting your seawolf presentation that included just the 2 trips and what's holding you back to make progress on it?
+- Before moving to footprints calculations, and much less emissions quantification, I'd like to see the **full** seawolf dataset very well analyzed, from an observational perspective. Then, we will start doing some footprints calculations to help interpret some of the observational features.
+- My main expectation is that you are genuinely committed to the analysis we are doing, and that that shows in the amount of though that you put into your work.
+
+Best,
+
+Israel" 
+
+## Update 5/1/2024
+Picarro on Seawolf keeps shutting off, first recorded 4/18/24:
+
+"Hi Kris,
+
+Lucas texted me that you reported the Picarro was offline.  I had left the Seawolf by that time but I verified it was offline and rebooted the Picarro by power cycling it as per the instructions below.
+
+I don't know whether the PC was actually shut down or just hung up.  The Picarro is back online now and seems to be waking up. Please let me know if it seems to be working. 
+
+The offshore cruise will be loading tomorrow so it will be crowded, so if you need to go aboard it will probably be better to go Monday. The cruise is scheduled to leave Wednesday. Please let me know if you need us to arrange access to the boat or want us to do anything aboard.
+
+Thanks,
+Tom"
+
+MET DATA IS UPDATED UP TO CRUISE 23.
+
+### Suggestions when access to Picarro is available: 
+- check for loose wires/USBS/connectors
+- PC is up to date software wise
+- Give the Picarro box and all wires a general once over and make sure things look like they should.
+
+### From Kris to me (5/1/24):
+
+"According to the calendar, not until Mon/Tues next week _(when SeaWolf is docked in the harbor)_.  You are on that calendar, right?  I think the plan is to discuss what we want to do when it docks _(in GM)_, not discuss any progress per se.  Of course, there might have been progress in processing or some discussion of that guy who wants the data. I don't know how up to date the GPS/winds data is from Tom/Lucas.  The main planning points to me are how you're moving the Picarro (Captain Chris, Tom, and Lucas should probably help or at least be there), you'll want to take some notes/photos of the setup (did something fall lose?  Did it slide out of the box?  Is the water trap totally full?  etc.), and what we want to do in the lab (my guess - run with breathing air or room air and possibly calibrate to troubleshoot that it stays on).  The Picarro is pretty big and a little heavy for 1 person, plus I don't know if you have the permission to drive the van or are comfortable/have room in your car." 
+
+
+
+
+
+
+
+
