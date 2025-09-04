@@ -101,23 +101,23 @@ This is an R Markdown document that will be used to organize Seawolf cruises to 
 **Note:** This picarro (serial no. 613-CFBD52021) was removed from the Seawolf in early May and was replaced with an alternative picarro replaced it on July 5th, 2024. 
 
 ```{r picarro problems, echo =F}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page1.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page2.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page3.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page4.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page5.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page01.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page02.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page03.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page04.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page05.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page06.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page07.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page08.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page09.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page10.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page11.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Page12.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page1.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page2.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page3.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page4.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page5.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page01.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page02.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page03.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page04.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page05.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page06.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page07.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page08.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page09.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page10.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page11.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/replace_power_fan/Page12.jpg")
 ```
 
 [back to the table of contents](#toc)
@@ -125,10 +125,10 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/replace_power_fan/Pa
 ## Calibrations: {#cal}
 
 ```{r calibrations, echo=FALSE}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page1-cal.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page2-cal.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/Page3-cal.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/email_kris_cal.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page1-cal.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page2-cal.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/Page3-cal.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/email_kris_cal.jpeg")
 ```
 [back to the table of contents](#toc)
 
@@ -137,7 +137,7 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/email_kris_cal.jpeg"
 ```{r load_cruises, echo= FALSE}
 library(flextable)
 library(magrittr)  
-  data <-read.csv("/Users/reneechabot/Desktop/Seawolf/CRUISES.csv", check.names = F)
+  data <-read.csv("/Users/reneechabot-mehlin/Desktop/Seawolf/CRUISES.csv", check.names = F)
    ft <- flextable(data) %>%
     bold(part = "header") %>%
     bold(j=1, part = "body") %>%
@@ -443,16 +443,16 @@ _**Function Save_1hz_data_baoshan()**_  (MET DATA)
 ## Cruise 1: {#1}
 
 ```{r plot_of_cruises_01, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/01/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -462,16 +462,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/01/interesting_fetch
 ## Cruise 2: {#2}
 
 ```{r plot_of_cruises_02, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/02/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -481,15 +481,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/02/interesting_fetch
 ## Cruise 3: {#3}
 
 ```{r plot_of_cruises_03, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/03/trajectory_hrrr.jpeg")
 #this works well with desktop stuff, google drive not so much 
 ```
 
@@ -498,16 +498,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/03/trajectory_hrrr.j
 ## Cruise 4: {#4}
 
 ```{r plot_of_cruises_04, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/04/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -517,10 +517,10 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/04/interesting_fetch
 ## Cruise 5: {#5}
 
 ```{r plot_of_cruises_05, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/05/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/05/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/05/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/05/timeseries_filtered.png")
 #this works well with desktop stuff, google drive not so much 
 ```
 
@@ -529,15 +529,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/05/timeseries_filter
 ## Cruise 6: {#6}
 
 ```{r plot_of_cruises_06, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/06/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -547,14 +547,14 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/06/interesting_fetch
 ## Cruise 7: {#7}
 
 ```{r plot_of_cruises_07, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/07/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -564,15 +564,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/07/trajectory_hrrr.j
 ## Cruise 8: {#8}
 
 ```{r plot_of_cruises_08, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/08/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -582,14 +582,14 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/08/interesting_fetch
 ## Cruise 9: {#9}
 
 ```{r plot_of_cruises_09, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/09/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -599,16 +599,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/09/trajectory_hrrr.j
 ## Cruise 10: {#10}
 
 ```{r plot_of_cruises_10, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/10/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -618,15 +618,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/10/interesting_fetch
 ## Cruise 11: {#11}
 
 ```{r plot_of_cruises_11, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/11/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -636,15 +636,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/11/trajectory_hrrr.j
 ## Cruise 12: {#12}
 
 ```{r plot_of_cruises_12, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/12/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -654,16 +654,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/12/trajectory_hrrr.j
 ## Cruise 13: {#13}
 
 ```{r plot_of_cruises_13, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/13/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -673,16 +673,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/13/interesting_fetch
 ## Cruise 14: {#14}
 
 ```{r plot_of_cruises_14, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/14/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -692,16 +692,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/14/interesting_fetch
 ## Cruise 15: {#15}
 
 ```{r plot_of_cruises_15, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/15/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -711,15 +711,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/15/interesting_fetch
 ## Cruise 16: {#16}
 
 ```{r plot_of_cruises_16, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/16/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -728,15 +728,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/16/trajectory_hrrr.j
 
 ## Cruise 17: {#17}
 ```{r plot_of_cruises_17, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/17/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -745,15 +745,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/17/trajectory_hrrr.j
 
 ## Cruise 18: {#18}
 ```{r plot_of_cruises_18, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/18/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -762,16 +762,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/18/trajectory_hrrr.j
 
 ## Cruise 19: {#19}
 ```{r plot_of_cruises_19, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -781,16 +781,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch
 ## Cruise 20: {#20}
 
 ```{r plot_of_cruises_20, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/20/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/20/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/19/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -800,15 +800,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/19/interesting_fetch
 ## Cruise 21: {#21}
 
 ```{r plot_of_cruises_21, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/21/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -818,16 +818,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/21/trajectory_hrrr.j
 ## Cruise 22: {#22}
 
 ```{r plot_of_cruises_22, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/22/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -837,15 +837,15 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/22/interesting_fetch
 ## Cruise 23: {#23}
 
 ```{r plot_of_cruises_23, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/23/trajectory_hrrr.jpeg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -855,16 +855,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/23/trajectory_hrrr.j
 ## Cruise 24: {#24}
 
 ```{r plot_of_cruises_24, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/24/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -875,16 +875,16 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/24/interesting_fetch
 ## Cruise 25: {#25}
 
 ```{r plot_of_cruises_25, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CH4_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CH4_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CO2_track_night.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/CO2_track_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/Flight_track_by_day_with_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/CH4_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/CH4_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/CO2_track_night.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/CO2_track_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/Flight_track_by_day_with_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/25/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -894,12 +894,12 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/25/interesting_fetch
 ## Cruise 26: {#26}
 
 ```{r plot_of_cruises_26, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/timeseries_filtered.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/trajectory.jpg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/trajectory_hrrr.jpeg")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/interesting_fetch.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/timeseries_filtered.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/trajectory_hrrr.jpeg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/26/interesting_fetch.png")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -909,9 +909,9 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/26/interesting_fetch
 ## Cruise 27: {#27}
 
 ```{r plot_of_cruises_27, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/27/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/27/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/27/trajectory.jpg")
 
 #this works well with desktop stuff, google drive not so much 
 ```
@@ -921,9 +921,9 @@ knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/27/trajectory.jpg")
 ## Cruise 28: {#28}
 
 ```{r plot_of_cruises_28, echo = F, fig.show="hold", out.width="50%"}
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/Flight_track_by_day.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/Flight_track_by_day_winds.png")
-knitr::include_graphics("/Users/reneechabot/Desktop/Seawolf/28/trajectory.jpg")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/28/Flight_track_by_day.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/28/Flight_track_by_day_winds.png")
+knitr::include_graphics("/Users/reneechabot-mehlin/Desktop/Seawolf/28/trajectory.jpg")
 
 #this works well with desktop stuff, google drive not so much 
 ```

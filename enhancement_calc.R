@@ -2,19 +2,19 @@
 #Updated last on September 2, 2025
 
 #You will have to manually change items in:
-# 2.0 (background_towers) 
+# 2.0 (background_towers)
 # 3.0 (start_date, end_date)
 # 5.1 (final_obs_co2 <- wide_data_co2_obs[, c(NUMBERS HERE)]) <- would like to automate
 
 #NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
-#NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well 
+#NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well
 
 ##losing background_towers by section 8 ?? looking into now 8/28/25
 
 #New goals via 1:1 meeting w/ Shep:
 # 1. Choose carefully which towers represent background
 # 2. Use WNJ not as a background but as a comparison to ship data
-# 3. Add scatter plots to compare modeled v enhancement 
+# 3. Add scatter plots to compare modeled v enhancement
 
 cruise = "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
@@ -22,24 +22,23 @@ cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 ##### 1. Loading in completed tower .csv files ####
 
-setwd(paste0("/Volumes/Seagate/",cruise_squish,"_eulerian/towers"))
+setwd(paste0("/Volumes/Seagate/", cruise_squish, "_eulerian/towers"))
 
-temp = list.files(pattern="\\.csv$")
+temp = list.files(pattern = "\\.csv$")
 
 myfiles = lapply(temp, read.csv)
 
 base_names <- tools::file_path_sans_ext(basename(temp))
 
-clean_names <- sub(paste0("merged_(co2|ch4)_", cruise_squish, "_(.*)"), "\\2_\\1", base_names)
+clean_names <- sub(paste0("merged_(co2|ch4)_", cruise_squish, "_(.*)"),
+                   "\\2_\\1",
+                   base_names)
 
-myfiles <- setNames(
-  lapply(temp, read.csv),
-  clean_names
-)
+myfiles <- setNames(lapply(temp, read.csv), clean_names)
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("WNJ", "LEW") #"LEW", "BVA", "TMD", "WNJ"
+background_towers <- c("LEW", "WNJ") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -954,7 +953,8 @@ tower_numbered <- tower_df_co2_obs %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -965,10 +965,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_co2_obs[[newcol]] <- rowMeans(
-    wide_data_co2_obs[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_co2_obs[[newcol]] <- rowMeans(wide_data_co2_obs[, c(col1, col2)], na.rm = TRUE)
 }
 
 #this needs to be dynamic - 8/28/25
@@ -1033,7 +1030,8 @@ tower_numbered <- tower_df_ch4_obs %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1044,10 +1042,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_ch4_obs[[newcol]] <- rowMeans(
-    wide_data_ch4_obs[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_ch4_obs[[newcol]] <- rowMeans(wide_data_ch4_obs[, c(col1, col2)], na.rm = TRUE)
 }
 
 final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
@@ -1097,34 +1092,58 @@ tower_colors <- rainbow(length(background_towers))
 tower_colors <- setNames(tower_colors, background_towers)
 all_colors <- c("Ship" = "black", tower_colors)
 
+ship_daylight_co2 <- subset(ship_df_co2_obs,
+                            format(date, "%H") >= "14" &
+                              format(date, "%H") <= "22")
+
+tower_daylight_co2 <- subset(tower_df_co2_obs,
+                             format(date, "%H") >= "14" &
+                               format(date, "%H") <= "22")
+tower_daylight_avg_co2 <- aggregate(CO2 ~ date + Source, data = tower_daylight_co2, FUN = mean)
+
+
+library(ggplot2)
+library(scales)
+
 ggplot() +
-  geom_ribbon(
-    data = ship_df_co2_obs,
-    aes(x = date, ymin = 415, ymax = CO2),
-    fill = "darkgrey",
-    alpha = 0.5
+  geom_segment(
+    data = tower_daylight_avg_co2,
+    aes(
+      x = date,
+      xend = date,
+      y = 415,
+      yend = CO2,
+      color = Source
+    ),
+    linewidth = 1,
+    alpha = 0.6
   ) +
-  geom_line(data = ship_df_co2_obs,
-            aes(x = date, y = CO2, color = Source),
-            linewidth = 1) +
-  geom_point(data = ship_df_co2_obs,
+  geom_point(data = ship_daylight_co2,
              aes(x = date, y = CO2, color = Source),
-             size = 2) +
-  geom_line(data = tower_df_co2_obs,
-            aes(x = date, y = CO2, color = Source),
-            linewidth = 1) +
-  geom_point(data = tower_df_co2_obs,
-             aes(x = date, y = CO2, color = Source),
-             size = 2) +
+             size = 3) +
+  geom_point(
+    data = tower_daylight_avg_co2,
+    aes(x = date, y = CO2, color = Source),
+    size = 3,
+    shape = 17
+  ) +
   scale_color_manual(values = all_colors) +
+  scale_x_datetime(
+    date_labels = "%b %d",
+    # show only month and day
+    date_breaks = "1 day",
+    # one tick per day
+    expand = expansion(add = c(1.5 * 60 * 60, 1.5 * 60 * 60))
+  ) +
   labs(
-    title = paste("Ship v Tower: Observation comparison for", cruise),
+    title = paste("Ship vs Tower CO2 Observations (Daylight, 10AM–6PM EDT)"),
     x = "Date UTC",
     y = "CO2 (ppm)"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
     axis.text = element_text(size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     axis.title = element_text(size = 16),
     plot.title = element_text(size = 20, hjust = 0.5)
   )
@@ -1134,34 +1153,58 @@ tower_colors <- rainbow(length(background_towers))
 tower_colors <- setNames(tower_colors, background_towers)
 all_colors <- c("Ship" = "black", tower_colors)
 
+ship_daylight_ch4 <- subset(ship_df_ch4_obs,
+                            format(date, "%H") >= "14" &
+                              format(date, "%H") <= "22")
+
+tower_daylight_ch4 <- subset(tower_df_ch4_obs,
+                             format(date, "%H") >= "14" &
+                               format(date, "%H") <= "22")
+tower_daylight_avg_ch4 <- aggregate(CH4 ~ date + Source, data = tower_daylight_ch4, FUN = mean)
+
+
+library(ggplot2)
+library(scales)
+
 ggplot() +
-  geom_ribbon(
-    data = ship_df_ch4_obs,
-    aes(x = date, ymin = 1975, ymax = CH4),
-    fill = "darkgrey",
-    alpha = 0.5
+  geom_segment(
+    data = tower_daylight_avg_ch4,
+    aes(
+      x = date,
+      xend = date,
+      y = 1950,
+      yend = CH4,
+      color = Source
+    ),
+    linewidth = 1,
+    alpha = 0.6
   ) +
-  geom_line(data = ship_df_ch4_obs,
-            aes(x = date, y = CH4, color = Source),
-            linewidth = 1) +
-  geom_point(data = ship_df_ch4_obs,
+  geom_point(data = ship_daylight_ch4,
              aes(x = date, y = CH4, color = Source),
-             size = 2) +
-  geom_line(data = tower_df_ch4_obs,
-            aes(x = date, y = CH4, color = Source),
-            linewidth = 1) +
-  geom_point(data = tower_df_ch4_obs,
-             aes(x = date, y = CH4, color = Source),
-             size = 2) +
+             size = 3) +
+  geom_point(
+    data = tower_daylight_avg_ch4,
+    aes(x = date, y = CH4, color = Source),
+    size = 3,
+    shape = 17
+  ) +
   scale_color_manual(values = all_colors) +
+  scale_x_datetime(
+    date_labels = "%b %d",
+    # show only month and day
+    date_breaks = "1 day",
+    # one tick per day
+    expand = expansion(add = c(1.5 * 60 * 60, 1.5 * 60 * 60))
+  ) +
   labs(
-    title = paste("Ship v Tower: Observation comparison for", cruise),
+    title = paste("Ship vs Tower CH4 Observations (Daylight, 10AM–6PM EDT)"),
     x = "Date UTC",
     y = "CH4 (ppb)"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
     axis.text = element_text(size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     axis.title = element_text(size = 16),
     plot.title = element_text(size = 20, hjust = 0.5)
   )
@@ -1171,20 +1214,58 @@ tower_colors <- rainbow(length(background_towers))
 tower_colors <- setNames(tower_colors, background_towers)
 all_colors <- c("Ship" = "black", tower_colors)
 
+ship_daylight_co2 <- subset(
+  final_obs_long_co2,
+  Tower == "Ship" &
+    format(date, "%H") >= "14" & format(date, "%H") <= "22"
+)
+tower_daylight_co2 <- subset(
+  final_obs_long_co2,
+  Tower != "Ship" &
+    format(date, "%H") >= "14" & format(date, "%H") <= "22"
+)
+tower_daylight_avg_co2 <- aggregate(CO2 ~ date + Tower, data = tower_daylight_co2, FUN = mean)
+
 library(ggplot2)
-ggplot(final_obs_long_co2, aes(x = date, y = CO2, color = Tower)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
+
+ggplot() +
+  geom_segment(
+    data = tower_daylight_avg_co2,
+    aes(
+      x = date,
+      xend = date,
+      y = 0,
+      yend = CO2,
+      color = Tower
+    ),
+    linewidth = 1,
+    alpha = 0.6
+  ) +
+  geom_point(data = ship_daylight_co2,
+             aes(x = date, y = CO2, color = Tower),
+             size = 3) +
+  geom_point(
+    data = tower_daylight_avg_co2,
+    aes(x = date, y = CO2, color = Tower),
+    size = 3,
+    shape = 17
+  ) +
   scale_color_manual(values = all_colors) +
+  scale_x_datetime(
+    date_labels = "%b %d",
+    date_breaks = "1 day",
+    expand = expansion(add = c(1.5 * 60 * 60, 1.5 * 60 * 60))
+  ) +
   labs(
-    title = paste("Ship v Tower: Observed enhancement comparison for", cruise),
+    title = paste("Ship vs Tower CO2 Observational Enhancements (Daylight, 10AM–6PM EDT)"),
     x = "Date UTC",
     y = "CO2 (ppm)"
   ) +
   geom_hline(yintercept = 0) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
     axis.text = element_text(size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     axis.title = element_text(size = 16),
     plot.title = element_text(size = 20, hjust = 0.5)
   )
@@ -1194,21 +1275,60 @@ ggplot(final_obs_long_co2, aes(x = date, y = CO2, color = Tower)) +
 tower_colors <- rainbow(length(background_towers))
 tower_colors <- setNames(tower_colors, background_towers)
 all_colors <- c("Ship" = "black", tower_colors)
+ship_daylight_ch4 <- subset(
+  final_obs_long_ch4,
+  Tower == "Ship" &
+    format(date, "%H") >= "14" & format(date, "%H") <= "22"
+)
+tower_daylight_ch4 <- subset(
+  final_obs_long_ch4,
+  Tower != "Ship" &
+    format(date, "%H") >= "14" & format(date, "%H") <= "22"
+)
+tower_daylight_avg_ch4 <- aggregate(CH4 ~ date + Tower, data = tower_daylight_ch4, FUN = mean)
 
 library(ggplot2)
-ggplot(final_obs_long_ch4, aes(x = date, y = CH4, color = Tower)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
+
+ggplot() +
+  geom_segment(
+    data = tower_daylight_avg_ch4,
+    aes(
+      x = date,
+      xend = date,
+      y = 0,
+      yend = CH4,
+      color = Tower
+    ),
+    linewidth = 1,
+    alpha = 0.6
+  ) +
+  geom_point(
+    data = ship_daylight_ch4,
+    aes(x = date, y = CH4, color = Tower),
+    size = 3
+  ) +
+  geom_point(
+    data = tower_daylight_avg_ch4,
+    aes(x = date, y = CH4, color = Tower),
+    size = 3,
+    shape = 17
+  ) +
   scale_color_manual(values = all_colors) +
+  scale_x_datetime(
+    date_labels = "%b %d",
+    date_breaks = "1 day",
+    expand = expansion(add = c(1.5 * 60 * 60, 1.5 * 60 * 60))
+  ) +
   labs(
-    title = paste("Ship v Tower: Observed enhancement comparison for", cruise),
+    title = paste("Ship vs Tower CH4 Observational Enhancements (Daylight, 10AM–6PM EDT)"),
     x = "Date UTC",
     y = "CH4 (ppb)"
   ) +
   geom_hline(yintercept = 0) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
     axis.text = element_text(size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1),
     axis.title = element_text(size = 16),
     plot.title = element_text(size = 20, hjust = 0.5)
   )
@@ -1255,7 +1375,8 @@ tower_numbered <- tower_df_co2_ct %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -1266,10 +1387,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_co2_ct[[newcol]] <- rowMeans(
-    wide_data_co2_ct[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_co2_ct[[newcol]] <- rowMeans(wide_data_co2_ct[, c(col1, col2)], na.rm = TRUE)
 }
 
 final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
@@ -1334,7 +1452,8 @@ tower_numbered <- tower_df_ch4_ct %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1345,10 +1464,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_ch4_ct[[newcol]] <- rowMeans(
-    wide_data_ch4_ct[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_ch4_ct[[newcol]] <- rowMeans(wide_data_ch4_ct[, c(col1, col2)], na.rm = TRUE)
 }
 
 final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
@@ -1538,7 +1654,8 @@ tower_numbered <- tower_df_co2_cams %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CO2, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CO2, Source_id))
 
 wide_data_co2_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
@@ -1549,10 +1666,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_co2_cams[[newcol]] <- rowMeans(
-    wide_data_co2_cams[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_co2_cams[[newcol]] <- rowMeans(wide_data_co2_cams[, c(col1, col2)], na.rm = TRUE)
 }
 
 final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
@@ -1617,7 +1731,8 @@ tower_numbered <- tower_df_ch4_cams %>%
   ungroup() %>%
   unite("Source_id", Source, id, sep = "_")
 
-combined <- bind_rows(ship_unique, tower_numbered %>% dplyr::select(date, CH4, Source_id))
+combined <- bind_rows(ship_unique,
+                      tower_numbered %>% dplyr::select(date, CH4, Source_id))
 
 wide_data_ch4_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
@@ -1628,10 +1743,7 @@ for (twr in background_towers) {
   col2 <- paste0(twr, "_2")
   newcol <- paste0(twr, "_mean")
   
-  wide_data_ch4_cams[[newcol]] <- rowMeans(
-    wide_data_ch4_cams[, c(col1, col2)], 
-    na.rm = TRUE
-  )
+  wide_data_ch4_cams[[newcol]] <- rowMeans(wide_data_ch4_cams[, c(col1, col2)], na.rm = TRUE)
 }
 
 final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
@@ -1798,8 +1910,8 @@ keep <- c(
   "joined",
   "towers",
   "interval_labels",
-  "background_towers,
-  cruise_squish"
+  "background_towers", 
+  "cruise_squish"
 )
 rm(list = setdiff(ls(), keep))
 
@@ -1925,7 +2037,7 @@ ggplot(long_data_ch4, aes(x = Grouping, y = Enhancement, color = Source)) +
                outlier.shape = NA,
                alpha = 0.3) +
   scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
-  facet_wrap(~ Tower, nrow = 1) +
+  facet_wrap( ~ Tower, nrow = 1) +
   labs(
     x = "UTC Interval",
     y = "CH4 Enhancement (ppb)",
@@ -1988,7 +2100,7 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
                outlier.shape = NA,
                alpha = 0.3) +
   scale_x_continuous(breaks = 1:8, labels = interval_labels$Times_UTC) +
-  facet_wrap(~ Tower, nrow = 1) +
+  facet_wrap( ~ Tower, nrow = 1) +
   labs(
     x = "UTC Interval",
     y = "CO2 Enhancement (ppm)",
@@ -2014,7 +2126,16 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
 
 #####_________________________9. Saving .csv files _______________________ #####
 ##### Saving all .csv files #####
-write.csv(merged_all, paste0("/Volumes/Seagate/",cruise_squish,"_eulerian/all_models_merged_",cruise_squish,".csv"))
+write.csv(
+  merged_all,
+  paste0(
+    "/Volumes/Seagate/",
+    cruise_squish,
+    "_eulerian/all_models_merged_",
+    cruise_squish,
+    ".csv"
+  )
+)
 
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
