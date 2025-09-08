@@ -1240,8 +1240,8 @@ for (i in names(averaged_data)) {
 }
 
 ##### Set time limit for model comparison #####
-start_date <- as.Date("2023-10-12")
-end_date <- as.Date("2023-10-17")
+start_date <- as.Date("2022-10-18")
+end_date <- as.Date("2022-10-19")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1263,7 +1263,7 @@ obs_ch4$co2_ppm <- NULL
 
 library(raster)
 
-cruise <- "Cruise 24"
+cruise <- "Cruise 14"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 

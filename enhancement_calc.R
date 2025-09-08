@@ -16,7 +16,7 @@
 # 2. Use WNJ not as a background but as a comparison to ship data
 # 3. Add scatter plots to compare modeled v enhancement
 
-cruise = "Cruise 24"
+cruise = "Cruise 14"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -38,7 +38,7 @@ myfiles <- setNames(lapply(temp, read.csv), clean_names)
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("LEW", "WNJ") #"LEW", "BVA", "TMD", "WNJ"
+background_towers <- c("TMD", "WNJ","BVA") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -65,8 +65,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2023-10-12")
-end_date <- as.Date("2023-10-17")
+start_date <- as.Date("2022-10-18")
+end_date <- as.Date("2022-10-19")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -969,7 +969,7 @@ for (twr in background_towers) {
 }
 
 #this needs to be dynamic - 8/28/25
-final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 7, 8)]
+final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 9, 10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1045,7 +1045,7 @@ for (twr in background_towers) {
   wide_data_ch4_obs[[newcol]] <- rowMeans(wide_data_ch4_obs[, c(col1, col2)], na.rm = TRUE)
 }
 
-final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
+final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 9,10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1390,7 +1390,7 @@ for (twr in background_towers) {
   wide_data_co2_ct[[newcol]] <- rowMeans(wide_data_co2_ct[, c(col1, col2)], na.rm = TRUE)
 }
 
-final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
+final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 9,10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1467,7 +1467,7 @@ for (twr in background_towers) {
   wide_data_ch4_ct[[newcol]] <- rowMeans(wide_data_ch4_ct[, c(col1, col2)], na.rm = TRUE)
 }
 
-final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
+final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 9, 10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1669,7 +1669,7 @@ for (twr in background_towers) {
   wide_data_co2_cams[[newcol]] <- rowMeans(wide_data_co2_cams[, c(col1, col2)], na.rm = TRUE)
 }
 
-final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
+final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 9, 10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1746,7 +1746,7 @@ for (twr in background_towers) {
   wide_data_ch4_cams[[newcol]] <- rowMeans(wide_data_ch4_cams[, c(col1, col2)], na.rm = TRUE)
 }
 
-final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
+final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 9, 10,11)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -2126,6 +2126,8 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
 
 #####_________________________9. Saving .csv files _______________________ #####
 ##### Saving all .csv files #####
+cruise_squish <- tolower(gsub(" ", "", cruise))
+
 write.csv(
   merged_all,
   paste0(
