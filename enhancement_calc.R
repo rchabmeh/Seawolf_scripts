@@ -16,7 +16,7 @@
 # 2. Use WNJ not as a background but as a comparison to ship data
 # 3. Add scatter plots to compare modeled v enhancement
 
-cruise = "Cruise 14"
+cruise = "Cruise 4"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -38,7 +38,7 @@ myfiles <- setNames(lapply(temp, read.csv), clean_names)
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("TMD", "WNJ","BVA") #"LEW", "BVA", "TMD", "WNJ"
+background_towers <- c("LEW", "WNJ") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -65,8 +65,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2022-10-18")
-end_date <- as.Date("2022-10-19")
+start_date <- as.Date("2022-04-09")
+end_date <- as.Date("2022-04-12")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -92,7 +92,7 @@ names(cruise_info)[names(cruise_info) == "longitude_deg_subrange"] <- "Longitude
 cruise_info <- cruise_info[!is.na(cruise_info$Longitude_deg), ]
 cruise_info <- cruise_info[!is.na(cruise_info$CO2_dry_cal_moving_day), ]
 cruise_info$Time_local <- as.POSIXct(cruise_info$Time_local, origin = "1904-01-01", tz = "America/New_York")
-cruise_info$Time_UTC <- as.POSIXct(cruise_info$Time_local, origin = "1904-01-01", tz = "UTC")
+cruise_info$Time_UTC <- with_tz(cruise_info$Time_local, origin = "1904-01-01", tz = "UTC")
 
 library(openair)
 colnames(cruise_info)[colnames(cruise_info) == "Time_UTC"] <- "date"
@@ -101,7 +101,8 @@ cruise_info_3hr <- timeAverage(
   cruise_info,
   avg.time = "3 hour",
   data.thresh = 0,
-  statistic = "mean"
+  statistic = "mean",
+  start.date = as.POSIXct(start_date, tz = "UTC")  # force bins from 00:00
 )
 
 cruise_info_3hr$CH4_dry_cal_moving_day = cruise_info_3hr$CH4_dry_cal_moving_day *
@@ -110,10 +111,12 @@ cruise_info_3hr$CH4_dry_cal_moving_day = cruise_info_3hr$CH4_dry_cal_moving_day 
 library(hms)
 cruise_info_3hr$time_only <- as_hms(cruise_info_3hr$date)
 
-cruise_info_3hr <- cruise_info_3hr[cruise_info_3hr$date >= as.POSIXct(start_date) &
-                                     cruise_info_3hr$date <= as.POSIXct(end_date) + 86400 - 1, ]
+start_datetime <- as.POSIXct(paste(start_date, "00:00:00"), tz = "UTC")
+end_datetime   <- as.POSIXct(paste(end_date, "23:59:59"), tz = "UTC")
 
-
+cruise_info_3hr <- cruise_info_3hr[
+  cruise_info_3hr$date >= start_datetime &
+    cruise_info_3hr$date <= end_datetime, ]
 
 ##### Loading in basic CT files ######
 library(raster)
@@ -967,9 +970,9 @@ for (twr in background_towers) {
   
   wide_data_co2_obs[[newcol]] <- rowMeans(wide_data_co2_obs[, c(col1, col2)], na.rm = TRUE)
 }
-
+wide_data_co2_obs <- na.omit(wide_data_co2_obs)
 #this needs to be dynamic - 8/28/25
-final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 9, 10,11)]
+final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1044,8 +1047,8 @@ for (twr in background_towers) {
   
   wide_data_ch4_obs[[newcol]] <- rowMeans(wide_data_ch4_obs[, c(col1, col2)], na.rm = TRUE)
 }
-
-final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 9,10,11)]
+wide_data_ch4_obs <- wide_data_ch4_obs[complete.cases(wide_data_ch4_obs), ]
+final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1389,8 +1392,8 @@ for (twr in background_towers) {
   
   wide_data_co2_ct[[newcol]] <- rowMeans(wide_data_co2_ct[, c(col1, col2)], na.rm = TRUE)
 }
-
-final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 9,10,11)]
+wide_data_co2_ct <- wide_data_co2_ct[complete.cases(wide_data_co2_ct), ]
+final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1466,8 +1469,9 @@ for (twr in background_towers) {
   
   wide_data_ch4_ct[[newcol]] <- rowMeans(wide_data_ch4_ct[, c(col1, col2)], na.rm = TRUE)
 }
+wide_data_ch4_ct <- wide_data_ch4_ct[complete.cases(wide_data_ch4_ct), ]
 
-final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 9, 10,11)]
+final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1668,8 +1672,9 @@ for (twr in background_towers) {
   
   wide_data_co2_cams[[newcol]] <- rowMeans(wide_data_co2_cams[, c(col1, col2)], na.rm = TRUE)
 }
+wide_data_co2_cams <- wide_data_co2_cams[complete.cases(wide_data_co2_cams), ]
 
-final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 9, 10,11)]
+final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
@@ -1745,8 +1750,8 @@ for (twr in background_towers) {
   
   wide_data_ch4_cams[[newcol]] <- rowMeans(wide_data_ch4_cams[, c(col1, col2)], na.rm = TRUE)
 }
-
-final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 9, 10,11)]
+wide_data_ch4_cams <- wide_data_ch4_cams[complete.cases(wide_data_ch4_cams), ]
+final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
 
 for (twr in background_towers) {
   mean_col <- paste0(twr, "_mean")
