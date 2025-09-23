@@ -1,21 +1,22 @@
 #Comparison of trajectories
+##LOADING IN INFO + PROCESSING FOR PLOTTING #####
 #Load in state outline and ship tracks___
 library(ggplot2)
 library(sf)
 library(sp)
 library(terra)
 library(tmap)
-states <- st_read("/Users/reneechabot/Downloads/cb_2023_us_state_500k/cb_2023_us_state_500k.shp")
+states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k")
 cruise_tracks <- read.delim(
-"/Users/reneechabot/Downloads/moving_data24.txt"
+"/Users/reneechabot-mehlin/Downloads/moving_data24.txt"
   ,
   sep = ",",
   dec = "."
 )
 cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$Longitude_deg), ]
 cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$CO2_dry_cal_moving_day), ]
-#Load in NAMS trajectories___
-NAMS_directory <- "/Users/reneechabot/hysplit/working/cruise_24_nams_tdump_files"
+#Load in NAMS trajectories___  
+NAMS_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/nams"
 setwd(NAMS_directory)
 tdump_files = list.files(
   pattern = glob2rx("tdump?*"),
@@ -59,8 +60,7 @@ while (i <= length(tdump_files)) {
   i = i + 1
 }
 #Load in HRRR trajectories___
-HRRR_directory <- "/Users/reneechabot/Desktop/test"
-#HRRR_directory <-"/Users/reneechabot/hysplit/working/cruise_4_hrrr_tdump_files"
+HRRR_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr"
 setwd(HRRR_directory)
 tdump_files = list.files(
   pattern = glob2rx("tdump?*"),
@@ -191,6 +191,8 @@ cruise_time_filter_std$closest_hr <- format(round(cruise_time_filter_std$date, u
 cruise_time_filter_std <- cruise_time_filter_std[cruise_time_filter_std$closest_hr >= 10 &
                                                    cruise_time_filter_std$closest_hr <= 16, , drop = FALSE]
 cruise_time_filter_std$Day <- as.Date(cruise_time_filter_std$date)
+
+##### PLOTTING ######
 #FIXING QUADRANTS___
 #NAMS__
 NAMS_most_visited_df <- data.frame(
@@ -886,4 +888,32 @@ for (i in 1:length(HRRR_final_traj_filter)) {
         type = "b",
         pch=20,
         col = "red")
+  
 }
+
+##### NEW PLOTS ####
+states <- st_transform(states, crs = 4326)
+plot(
+  st_geometry((states)),
+  xlim = c(-78, -70),
+  ylim = c(38, 42),
+  xlab = "",
+  ylab = "",
+  main = "Comparison ",
+  border = "grey",
+  axes = T,
+  las = 1,
+  asp = 1
+)
+for (i in 1:length(HRRR_final_traj_filter)) { 
+  lines(HRRR_final_traj_filter[[i]][["Longitude"]],HRRR_final_traj_filter[[i]][["Latitude"]])
+}
+
+lines(HRRR_final_traj_filter[[10]][["Longitude"]],HRRR_final_traj_filter[[10]][["Latitude"]])
+lines(HRRR_final_traj_filter[[11]][["Longitude"]],HRRR_final_traj_filter[[11]][["Latitude"]])
+lines(HRRR_final_traj_filter[[12]][["Longitude"]],HRRR_final_traj_filter[[12]][["Latitude"]])
+lines(HRRR_final_traj_filter[[13]][["Longitude"]],HRRR_final_traj_filter[[13]][["Latitude"]]) 
+lines(HRRR_final_traj_filter[[14]][["Longitude"]],HRRR_final_traj_filter[[14]][["Latitude"]]) 
+lines(HRRR_final_traj_filter[[15]][["Longitude"]],HRRR_final_traj_filter[[15]][["Latitude"]]) 
+lines(HRRR_final_traj_filter[[16]][["Longitude"]],HRRR_final_traj_filter[[16]][["Latitude"]])
+

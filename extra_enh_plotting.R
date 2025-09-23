@@ -10,7 +10,9 @@
 #9	3329.9 meters
 
 #CAMS Height:
-#surface level
+#I'm seeing multiple different info, max surface level p for both is 1015.8 hPa, having trouble isolating region
+#For CAMS CH4 level 1 height is said to be 2834.6 m (altitude variable)
+#Based on Figure 7 in ECMWF website, base layer is @ 1000 hPa
 
 #LEW tower is in Lewisburg, PA (Union County). GHG sources in the area include:
 # 1. Bucknell University (32,878 mt CO2e [2022]) which is S of LEW (Lewisburg, PA)
@@ -99,6 +101,9 @@ print(ct_print)
 print(cams_print)
 print(obs_LEW_print)
 
+time_range <- c(head(enh_info$date, 1),tail(enh_info$date, 1))
+date_text <- paste("Timeframe:",time_range[1],"through",time_range[2],"(Daylight hours only 10-16 EDT)")
+
 ##### Scatter Plots LEW Tower #####
 #co2 ct LEW v Ship
 library(ggplot2)
@@ -124,11 +129,11 @@ ggplot(enh_info, aes(x = obs_co2_enh_via_LEW, y = ct_co2_enh_via_LEW)) +
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v Ship: Comparing CT CO2 enh v Obs CO2 enh Cruise 4"
+    title = "LEW v Ship: Comparing CT CO2 Enh v Obs CO2 Enh Cruise 4"
     ,
     x = "Observed Ship Conc - Observed LEW Conc (CO2 Enhancement ppm)",
     y = "CT Ship Conc - CT LEW Conc (CO2 Enhancement ppm)",
-   subtitle = "Daylight hours only (10AM-4PM EDT)"
+   subtitle = date_text
     
   ) +
   geom_abline(
@@ -169,11 +174,11 @@ ggplot(enh_info, aes(x = obs_ch4_enh_via_LEW, y = ct_ch4_enh_via_LEW)) +
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v Ship: Comparing CT CH4 enh v Obs CH4 enh Cruise 4"
+    title = "LEW v Ship: Comparing CT CH4 Enh v Obs CH4 Enh Cruise 4"
     ,
     x = "Observed Ship Conc - Observed LEW Conc (CH4 Enhancement ppb)",
     y = "CT Ship Conc - CT LEW Conc (CH4 Enhancement ppb)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
   ) +
   geom_abline(
     intercept = 0,
@@ -216,11 +221,11 @@ ggplot(enh_info, aes(x = obs_co2_enh_via_LEW, y = cams_co2_enh_via_LEW)) +
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v Ship: Comparing CAMS CO2 enh v Obs CO2 enh Cruise 4"
+    title = "LEW v Ship: Comparing CAMS CO2 Enh v Obs CO2 Enh Cruise 4"
     ,
     x = "Observed Ship Conc - Observed LEW Conc (CO2 Enhancement ppm)",
     y = "CAMS Ship Conc - CAMS LEW Conc (CO2 Enhancement ppm)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
     
   ) +
   geom_abline(
@@ -261,11 +266,11 @@ ggplot(enh_info, aes(x = obs_ch4_enh_via_LEW, y = cams_ch4_enh_via_LEW)) +
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v Ship: Comparing CAMS CH4 enh v Obs CH4 enh Cruise 4"
+    title = "LEW v Ship: Comparing CAMS CH4 Enh v Obs CH4 Enh Cruise 4"
     ,
     x = "Observed Ship Conc - Observed LEW Conc (CH4 Enhancement ppb)",
     y = "CAMS Ship Conc - CAMS LEW Conc (CH4 Enhancement ppb)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
     
   ) +
   geom_abline(
@@ -311,11 +316,11 @@ ggplot(enh_info, aes(x = obs_co2_enh_via_LEW_4_WNJ, y = ct_co2_enh_via_LEW_4_WNJ
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v WNJ: Comparing CT CO2 enh v Obs CO2 enh Cruise 4"
+    title = "LEW v WNJ: Comparing CT CO2 Enh v Obs CO2 Enh Cruise 4"
     ,
     x = "Observed WNJ Conc - Observed LEW Conc (CO2 Enhancement ppm)",
     y = "CT WNJ Conc - CT LEW Conc (CO2 Enhancement ppm)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
     
   ) +
   geom_abline(
@@ -356,11 +361,11 @@ ggplot(enh_info, aes(x = obs_ch4_enh_via_LEW_4_WNJ, y = ct_ch4_enh_via_LEW_4_WNJ
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v WNJ: Comparing CT CH4 enh v Obs CH4 enh Cruise 4"
+    title = "LEW v WNJ: Comparing CT CH4 Enh v Obs CH4 Enh Cruise 4"
     ,
     x = "Observed WNJ Conc - Observed LEW Conc (CH4 Enhancement ppb)",
     y = "CT WNJ Conc - CT LEW Conc (CH4 Enhancement ppb)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
   ) +
   geom_abline(
     intercept = 0,
@@ -404,11 +409,11 @@ ggplot(enh_info, aes(x = obs_co2_enh_via_LEW_4_WNJ, y = cams_co2_enh_via_LEW_4_W
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v WNJ: Comparing CAMS CO2 enh v Obs CO2 enh Cruise 4"
+    title = "LEW v WNJ: Comparing CAMS CO2 Enh v Obs CO2 Enh Cruise 4"
     ,
     x = "Observed WNJ Conc - Observed LEW Conc (CO2 Enhancement ppm)",
     y = "CAMS WNJ Conc - CAMS LEW Conc (CO2 Enhancement ppm)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
     
   ) +
   geom_abline(
@@ -449,11 +454,11 @@ ggplot(enh_info, aes(x = obs_ch4_enh_via_LEW_4_WNJ, y = cams_ch4_enh_via_LEW_4_W
     ..eq.label.., "*\", \"*", ..rr.label.., sep = ""
   )), label.x = label.x, label.y = label.y) +
   labs(
-    title = "LEW v WNJ: Comparing CAMS CH4 enh v Obs CH4 enh Cruise 4"
+    title = "LEW v WNJ: Comparing CAMS CH4 Enh v Obs CH4 Enh Cruise 4"
     ,
     x = "Observed WNJ Conc - Observed LEW Conc (CH4 Enhancement ppb)",
     y = "CAMS WNJ Conc - CAMS LEW Conc (CH4 Enhancement ppb)",
-    subtitle = "Daylight hours only (10AM-4PM EDT)"
+    subtitle = date_text
     
   ) +
   geom_abline(
