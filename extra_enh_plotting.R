@@ -19,7 +19,7 @@
 # 2. Gold Bond - MLT Plant (45,494 mt CO2e [2022]) which is N of LEW (New Columbia, PA)
 
 ##### Loading in .csv file #####
-enh_info <- read.csv("/Volumes/Seagate/cruise4_eulerian/all_models_merged_cruise4.csv")
+enh_info <- read.csv("/Volumes/Seagate/cruise24_eulerian/all_models_merged_cruise24.csv")
 enh_info$obs_co2_enh_via_LEW_4_WNJ <- enh_info$obs_mean_co2_WNJ - enh_info$obs_mean_co2_LEW
 enh_info$obs_ch4_enh_via_LEW_4_WNJ <- enh_info$obs_mean_ch4_WNJ - enh_info$obs_mean_ch4_LEW
 enh_info$ct_co2_enh_via_LEW_4_WNJ <- enh_info$ct_mean_co2_WNJ - enh_info$ct_mean_co2_LEW
@@ -101,7 +101,7 @@ print(ct_print)
 print(cams_print)
 print(obs_LEW_print)
 
-time_range <- c(head(enh_info$date, 1),tail(enh_info$date, 1))
+time_range <- c(head(enh_info$date, 1),tail(enh_info$date, 1)) #for cruise 24 I want 10-16-23 from 10-16 EDT
 date_text <- paste("Timeframe:",time_range[1],"through",time_range[2],"(Daylight hours only 10-16 EDT)")
 
 ##### Scatter Plots LEW Tower #####
