@@ -19,7 +19,7 @@
 # 2. Gold Bond - MLT Plant (45,494 mt CO2e [2022]) which is N of LEW (New Columbia, PA)
 
 ##### Loading in .csv file #####
-enh_info <- read.csv("/Volumes/Seagate/cruise24_eulerian/all_models_merged_cruise24.csv")
+enh_info <- read.csv("/Volumes/Seagate/cruise4_eulerian/all_models_merged_cruise4.csv")
 enh_info$obs_co2_enh_via_LEW_4_WNJ <- enh_info$obs_mean_co2_WNJ - enh_info$obs_mean_co2_LEW
 enh_info$obs_ch4_enh_via_LEW_4_WNJ <- enh_info$obs_mean_ch4_WNJ - enh_info$obs_mean_ch4_LEW
 enh_info$ct_co2_enh_via_LEW_4_WNJ <- enh_info$ct_mean_co2_WNJ - enh_info$ct_mean_co2_LEW
@@ -27,9 +27,25 @@ enh_info$ct_ch4_enh_via_LEW_4_WNJ <- enh_info$ct_mean_ch4_WNJ - enh_info$ct_mean
 enh_info$cams_co2_enh_via_LEW_4_WNJ <- enh_info$cams_mean_co2_WNJ - enh_info$cams_mean_co2_LEW
 enh_info$cams_ch4_enh_via_LEW_4_WNJ <- enh_info$cams_mean_ch4_WNJ - enh_info$cams_mean_ch4_LEW
 
-enh_info$date <- as.POSIXct(enh_info$date, format = "%Y-%m-%d %H:%M:%OS", tz = "UTC")
- enh_info <- subset(enh_info, format(date, "%H") >= "14" &
-                     format(date, "%H") <= "20")
+enh_info$date <- ifelse(
+  grepl("^\\d{4}-\\d{2}-\\d{2}$", enh_info$date),
+  paste0(enh_info$date, " 00:00:00"),
+  enh_info$date
+)
+
+enh_info$date <- as.POSIXct(enh_info$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+enh_info$local_time <- as.POSIXct(format(enh_info$date, tz = "America/New_York", usetz = TRUE),
+                                  tz = "America/New_York")
+enh_info$local_date <- as.Date(enh_info$local_time, tz = "America/New_York")
+
+enh_info <- subset(enh_info, local_date == as.Date("2022-04-10"))
+
+ enh_info <- subset(enh_info, format(local_time, "%H") >= "10" &
+                      format(local_time, "%H") <= "16")
+
+
+
+
 #ship avg enh
 avg_cams_ch4_ship_enh <- mean(enh_info$cams_ch4_enh_via_LEW, na.rm = T)
 cams_ch4_ship_enh_sd <- sd(enh_info$cams_ch4_enh_via_LEW, na.rm = T)
@@ -102,7 +118,7 @@ print(cams_print)
 print(obs_LEW_print)
 
 time_range <- c(head(enh_info$date, 1),tail(enh_info$date, 1)) #for cruise 24 I want 10-16-23 from 10-16 EDT
-date_text <- paste("Timeframe:",time_range[1],"through",time_range[2],"(Daylight hours only 10-16 EDT)")
+date_text <- paste("Timeframe:",time_range[1],"through",time_range[2],"(Filtered for daylight hours only [10-16 EDT].)")
 
 ##### Scatter Plots LEW Tower #####
 #co2 ct LEW v Ship
@@ -116,8 +132,8 @@ yrange <- range(enh_info$ct_co2_enh_via_LEW, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-6,12)
-   overall_max <- max(-6,12)
+   overall_min <- min(-5,5)
+   overall_max <- max(-5,5)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -161,8 +177,8 @@ yrange <- range(enh_info$ct_ch4_enh_via_LEW, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-60,90)
-   overall_max <- max(-60,90)
+   overall_min <- min(-50,30)
+   overall_max <- max(-50,30)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -208,8 +224,8 @@ yrange <- range(enh_info$cams_co2_enh_via_LEW, na.rm = TRUE)
   # overall_min <- min(xrange[1], yrange[1])
   # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-5,15)
-   overall_max <- max(-5,15)
+   overall_min <- min(-5,5)
+   overall_max <- max(-5,5)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -253,8 +269,8 @@ yrange <- range(enh_info$cams_ch4_enh_via_LEW, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-  overall_min <- min(-61,61)
-  overall_max <- max(-61,61)
+  overall_min <- min(-30,30)
+  overall_max <- max(-30,30)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -302,8 +318,8 @@ yrange <- range(enh_info$ct_co2_enh_via_LEW_4_WNJ, na.rm = TRUE)
   # overall_min <- min(xrange[1], yrange[1])
   # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-6, 12)
-   overall_max <- max(-6, 12)
+   overall_min <- min(-5, 5)
+   overall_max <- max(-5, 5)
 
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
@@ -348,8 +364,8 @@ yrange <- range(enh_info$ct_ch4_enh_via_LEW_4_WNJ, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-60,90)
-   overall_max <- max(-60, 90)
+   overall_min <- min(-50,30)
+   overall_max <- max(-50, 30)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -395,8 +411,8 @@ yrange <- range(enh_info$cams_co2_enh_via_LEW_4_WNJ, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-   overall_min <- min(-5,15)
-   overall_max <- max(-5,15)
+   overall_min <- min(-5,5)
+   overall_max <- max(-5,5)
 
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
@@ -441,8 +457,8 @@ yrange <- range(enh_info$cams_ch4_enh_via_LEW_4_WNJ, na.rm = TRUE)
    # overall_min <- min(xrange[1], yrange[1])
    # overall_max <- max(xrange[2], yrange[2])
 
-  overall_min <- min(-61,61)
-  overall_max <- max(-61,61)
+  overall_min <- min(-30,30)
+  overall_max <- max(-30,30)
 
 label.x <- overall_min + 0.02 * (overall_max - overall_min)
 label.y <- overall_max - 0.02 * (overall_max - overall_min)
@@ -479,11 +495,3 @@ ggplot(enh_info, aes(x = obs_ch4_enh_via_LEW_4_WNJ, y = cams_ch4_enh_via_LEW_4_W
   )
 
 
-##### Look @ VULCAN compared to towers #####
-library(ncdf4)
-raw_vulcan <- nc_open(
-  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/inventories/Vulcan_V3_Annual_Emissions_1741/data/Vulcan_v3_US_annual_1km_total_mn.nc4"
-)
-lon <- ncvar_get(raw_vulcan, "lon")
-lat <- ncvar_get(raw_vulcan, "lat")
-time <- ncvar_get(raw_vulcan, 'time')

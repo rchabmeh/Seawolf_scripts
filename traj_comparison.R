@@ -8,7 +8,7 @@ library(terra)
 library(tmap)
 states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k")
 cruise_tracks <- read.delim(
-"/Users/reneechabot-mehlin/Downloads/moving_data24.txt"
+"/Users/reneechabot-mehlin/Downloads/moving_data.txt"
   ,
   sep = ",",
   dec = "."
@@ -16,7 +16,7 @@ cruise_tracks <- read.delim(
 cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$Longitude_deg), ]
 cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$CO2_dry_cal_moving_day), ]
 #Load in NAMS trajectories___  
-NAMS_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/nams"
+NAMS_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/nams" ##change per cruise
 setwd(NAMS_directory)
 tdump_files = list.files(
   pattern = glob2rx("tdump?*"),
@@ -60,7 +60,7 @@ while (i <= length(tdump_files)) {
   i = i + 1
 }
 #Load in HRRR trajectories___
-HRRR_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr"
+HRRR_directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr" ##change per cruise
 setwd(HRRR_directory)
 tdump_files = list.files(
   pattern = glob2rx("tdump?*"),
@@ -182,14 +182,14 @@ cruise_time_filter_std <- timeAverage(
 cruise_time_filter$closest_hr <- format(round(cruise_time_filter$date, units =
                                                 "hours"), format = "%H:%M")
 cruise_time_filter <- cruise_time_filter[cruise_time_filter$closest_hr >= 10 &
-                                           cruise_time_filter$closest_hr <= 16, , drop = FALSE]
+                                           cruise_time_filter$closest_hr <= 18, , drop = FALSE]
 cruise_time_filter$Day <- as.Date(cruise_time_filter$date)
 
 cruise_time_filter_std <- data.frame(cruise_time_filter)
 cruise_time_filter_std$closest_hr <- format(round(cruise_time_filter_std$date, units =
                                                     "hours"), format = "%H:%M")
 cruise_time_filter_std <- cruise_time_filter_std[cruise_time_filter_std$closest_hr >= 10 &
-                                                   cruise_time_filter_std$closest_hr <= 16, , drop = FALSE]
+                                                   cruise_time_filter_std$closest_hr <= 18, , drop = FALSE]
 cruise_time_filter_std$Day <- as.Date(cruise_time_filter_std$date)
 
 ##### PLOTTING ######
@@ -899,23 +899,23 @@ plot(
   ylim = c(38, 42),
   xlab = "Longitude",
   ylab = "Latitude",
-  main = "Cruise 24: 10-16-2023, 10:00-16:00 EDT HRRR Trajectories",
+  main = "Cruise 4: 4-10-2022, 10:00 - 16:00 EDT HRRR Trajectories",
   border = "grey",
   axes = T,
   las = 1,
   asp = 1
 )
-# for (i in 1:length(HRRR_final_traj_filter)) { 
-#   lines(HRRR_final_traj_filter[[i]][["Longitude"]],HRRR_final_traj_filter[[i]][["Latitude"]])
-# }
+ # for (i in 1:length(HRRR_final_traj_filter)) { 
+ #  lines(HRRR_final_traj_filter[[i]][["Longitude"]],HRRR_final_traj_filter[[i]][["Latitude"]])
+ # }
 
-lines(HRRR_final_traj_filter[[10]][["Longitude"]],HRRR_final_traj_filter[[10]][["Latitude"]], col = "red")
-lines(HRRR_final_traj_filter[[11]][["Longitude"]],HRRR_final_traj_filter[[11]][["Latitude"]], col = "blue")
-lines(HRRR_final_traj_filter[[12]][["Longitude"]],HRRR_final_traj_filter[[12]][["Latitude"]], col = "green")
-lines(HRRR_final_traj_filter[[13]][["Longitude"]],HRRR_final_traj_filter[[13]][["Latitude"]], col = "yellow") 
-lines(HRRR_final_traj_filter[[14]][["Longitude"]],HRRR_final_traj_filter[[14]][["Latitude"]], col = "orange") 
-lines(HRRR_final_traj_filter[[15]][["Longitude"]],HRRR_final_traj_filter[[15]][["Latitude"]], col = "purple") 
-lines(HRRR_final_traj_filter[[16]][["Longitude"]],HRRR_final_traj_filter[[16]][["Latitude"]], col = "brown")
+ lines(HRRR_final_traj_filter[[2]][["Longitude"]],HRRR_final_traj_filter[[2]][["Latitude"]], col = "red")
+ lines(HRRR_final_traj_filter[[3]][["Longitude"]],HRRR_final_traj_filter[[3]][["Latitude"]], col = "blue")
+ lines(HRRR_final_traj_filter[[4]][["Longitude"]],HRRR_final_traj_filter[[4]][["Latitude"]], col = "green")
+ lines(HRRR_final_traj_filter[[5]][["Longitude"]],HRRR_final_traj_filter[[5]][["Latitude"]], col = "yellow") 
+ lines(HRRR_final_traj_filter[[6]][["Longitude"]],HRRR_final_traj_filter[[6]][["Latitude"]], col = "orange") 
+ lines(HRRR_final_traj_filter[[7]][["Longitude"]],HRRR_final_traj_filter[[7]][["Latitude"]], col = "purple") 
+ lines(HRRR_final_traj_filter[[8]][["Longitude"]],HRRR_final_traj_filter[[8]][["Latitude"]], col = "brown")
 
 #add towers
 twr <-read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv")
@@ -925,7 +925,7 @@ twr <- twr[twr$SiteCode %in% c("LEW", "WNJ"), ]
 points(twr$Lon,twr$Lat, pch = 23, col = "black", bg = "black")
 text(twr$Lon, twr$Lat, labels = twr$SiteCode, pos = 4, cex = 0.8)
 
-labels <- sapply(10:16, function(i) {
+labels <- sapply(2:8, function(i) { #change this when necessary
   dt <- HRRR_final_traj_filter[[i]][["Starting.Date.Time"]][1]
   dt <- as.POSIXct(dt, tz = "America/New_York")   # ensure proper datetime object
   format(dt, "%H:%M %Z")                          # gives "10:00 EDT"

@@ -16,7 +16,7 @@
 # 2. Use WNJ not as a background but as a comparison to ship data
 # 3. Add scatter plots to compare modeled v enhancement
 
-cruise = "Cruise 4"
+cruise = "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -92,6 +92,7 @@ names(cruise_info)[names(cruise_info) == "longitude_deg_subrange"] <- "Longitude
 cruise_info <- cruise_info[!is.na(cruise_info$Longitude_deg), ]
 cruise_info <- cruise_info[!is.na(cruise_info$CO2_dry_cal_moving_day), ]
 cruise_info$Time_local <- as.POSIXct(cruise_info$Time_local, origin = "1904-01-01", tz = "America/New_York")
+library(lubridate)
 cruise_info$Time_UTC <- with_tz(cruise_info$Time_local, origin = "1904-01-01", tz = "UTC")
 
 library(openair)
@@ -963,23 +964,25 @@ wide_data_co2_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_co2_obs[[newcol]] <- rowMeans(wide_data_co2_obs[, c(col1, col2)], na.rm = TRUE)
-}
+#this is probably going to be removed 9/25/25 as we are only using lowest height on towers
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_co2_obs[[newcol]] <- rowMeans(wide_data_co2_obs[, c(col1, col2)], na.rm = TRUE)
+# }
 wide_data_co2_obs <- na.omit(wide_data_co2_obs)
 #this needs to be dynamic - 8/28/25
-final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 7, 8)]
+#final_obs_co2 <- wide_data_co2_obs[, c(1, 2, 7, 8)]
+final_obs_co2 <- wide_data_co2_obs
 
 for (twr in background_towers) {
-  mean_col <- paste0(twr, "_mean")
-  newcol   <- paste0("enh_via_", twr)
-  
-  final_obs_co2[[newcol]] <- final_obs_co2$Ship - final_obs_co2[[mean_col]]
+  tower_col <- paste0(twr, "_1")     # match the actual column name
+  newcol    <- paste0("enh_via_", twr)
+  final_obs_co2[[newcol]] <- final_obs_co2$Ship - final_obs_co2[[tower_col]]
 }
+
 
 enh_cols <- grep("^enh_via_", names(final_obs_co2), value = TRUE)
 
@@ -1040,21 +1043,21 @@ wide_data_ch4_obs <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_ch4_obs[[newcol]] <- rowMeans(wide_data_ch4_obs[, c(col1, col2)], na.rm = TRUE)
-}
-wide_data_ch4_obs <- wide_data_ch4_obs[complete.cases(wide_data_ch4_obs), ]
-final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_ch4_obs[[newcol]] <- rowMeans(wide_data_ch4_obs[, c(col1, col2)], na.rm = TRUE)
+# }
+# wide_data_ch4_obs <- wide_data_ch4_obs[complete.cases(wide_data_ch4_obs), ]
+# final_obs_ch4 <- wide_data_ch4_obs[, c(1, 2, 7, 8)]
+final_obs_ch4 <- wide_data_ch4_obs
 
 for (twr in background_towers) {
-  mean_col <- paste0(twr, "_mean")
-  newcol   <- paste0("enh_via_", twr)
-  
-  final_obs_ch4[[newcol]] <- final_obs_ch4$Ship - final_obs_ch4[[mean_col]]
+  tower_col <- paste0(twr, "_1")     # match the actual column name
+  newcol    <- paste0("enh_via_", twr)
+  final_obs_ch4[[newcol]] <- final_obs_ch4$Ship - final_obs_ch4[[tower_col]]
 }
 
 enh_cols <- grep("^enh_via_", names(final_obs_ch4), value = TRUE)
@@ -1385,21 +1388,22 @@ wide_data_co2_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_co2_ct[[newcol]] <- rowMeans(wide_data_co2_ct[, c(col1, col2)], na.rm = TRUE)
-}
-wide_data_co2_ct <- wide_data_co2_ct[complete.cases(wide_data_co2_ct), ]
-final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_co2_ct[[newcol]] <- rowMeans(wide_data_co2_ct[, c(col1, col2)], na.rm = TRUE)
+# }
+# wide_data_co2_ct <- wide_data_co2_ct[complete.cases(wide_data_co2_ct), ]
+#final_ct_co2 <- wide_data_co2_ct[, c(1, 2, 7, 8)]
+final_ct_co2 <- wide_data_co2_ct
 
 for (twr in background_towers) {
-  mean_col <- paste0(twr, "_mean")
-  newcol   <- paste0("enh_via_", twr)
+   tower_col <- paste0(twr, "_1")     # match the actual column name
+   newcol   <- paste0("enh_via_", twr)
   
-  final_ct_co2[[newcol]] <- final_ct_co2$Ship - final_ct_co2[[mean_col]]
+  final_ct_co2[[newcol]] <- final_ct_co2$Ship - final_ct_co2[[tower_col]]
 }
 
 enh_cols <- grep("^enh_via_", names(final_ct_co2), value = TRUE)
@@ -1462,22 +1466,24 @@ wide_data_ch4_ct <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_ch4_ct[[newcol]] <- rowMeans(wide_data_ch4_ct[, c(col1, col2)], na.rm = TRUE)
-}
-wide_data_ch4_ct <- wide_data_ch4_ct[complete.cases(wide_data_ch4_ct), ]
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_ch4_ct[[newcol]] <- rowMeans(wide_data_ch4_ct[, c(col1, col2)], na.rm = TRUE)
+# }
+# wide_data_ch4_ct <- wide_data_ch4_ct[complete.cases(wide_data_ch4_ct), ]
 
-final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
+# final_ct_ch4 <- wide_data_ch4_ct[, c(1, 2, 7, 8)]
+final_ct_ch4 <- wide_data_ch4_ct
 
 for (twr in background_towers) {
+  tower_col <- paste0(twr, "_1")     # match the actual column name
   mean_col <- paste0(twr, "_mean")
   newcol   <- paste0("enh_via_", twr)
   
-  final_ct_ch4[[newcol]] <- final_ct_ch4$Ship - final_ct_ch4[[mean_col]]
+  final_ct_ch4[[newcol]] <- final_ct_ch4$Ship - final_ct_ch4[[tower_col]]
 }
 
 enh_cols <- grep("^enh_via_", names(final_ct_ch4), value = TRUE)
@@ -1665,22 +1671,24 @@ wide_data_co2_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CO2) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_co2_cams[[newcol]] <- rowMeans(wide_data_co2_cams[, c(col1, col2)], na.rm = TRUE)
-}
-wide_data_co2_cams <- wide_data_co2_cams[complete.cases(wide_data_co2_cams), ]
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_co2_cams[[newcol]] <- rowMeans(wide_data_co2_cams[, c(col1, col2)], na.rm = TRUE)
+# }
+# wide_data_co2_cams <- wide_data_co2_cams[complete.cases(wide_data_co2_cams), ]
 
-final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
+# final_cams_co2 <- wide_data_co2_cams[, c(1, 2, 7, 8)]
+final_cams_co2 <- wide_data_co2_cams
 
 for (twr in background_towers) {
+  tower_col <- paste0(twr, "_1")     # match the actual column name
   mean_col <- paste0(twr, "_mean")
   newcol   <- paste0("enh_via_", twr)
   
-  final_cams_co2[[newcol]] <- final_cams_co2$Ship - final_cams_co2[[mean_col]]
+  final_cams_co2[[newcol]] <- final_cams_co2$Ship - final_cams_co2[[tower_col]]
 }
 
 enh_cols <- grep("^enh_via_", names(final_cams_co2), value = TRUE)
@@ -1743,21 +1751,23 @@ wide_data_ch4_cams <- combined %>%
   pivot_wider(names_from = Source_id, values_from = CH4) %>%
   arrange(date)
 
-for (twr in background_towers) {
-  col1 <- paste0(twr, "_1")
-  col2 <- paste0(twr, "_2")
-  newcol <- paste0(twr, "_mean")
-  
-  wide_data_ch4_cams[[newcol]] <- rowMeans(wide_data_ch4_cams[, c(col1, col2)], na.rm = TRUE)
-}
-wide_data_ch4_cams <- wide_data_ch4_cams[complete.cases(wide_data_ch4_cams), ]
-final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
+# for (twr in background_towers) {
+#   col1 <- paste0(twr, "_1")
+#   col2 <- paste0(twr, "_2")
+#   newcol <- paste0(twr, "_mean")
+#   
+#   wide_data_ch4_cams[[newcol]] <- rowMeans(wide_data_ch4_cams[, c(col1, col2)], na.rm = TRUE)
+# }
+# wide_data_ch4_cams <- wide_data_ch4_cams[complete.cases(wide_data_ch4_cams), ]
+# final_cams_ch4 <- wide_data_ch4_cams[, c(1, 2, 7, 8)]
+final_cams_ch4 <- wide_data_ch4_cams
 
 for (twr in background_towers) {
+  tower_col <- paste0(twr, "_1")     # match the actual column name
   mean_col <- paste0(twr, "_mean")
   newcol   <- paste0("enh_via_", twr)
   
-  final_cams_ch4[[newcol]] <- final_cams_ch4$Ship - final_cams_ch4[[mean_col]]
+  final_cams_ch4[[newcol]] <- final_cams_ch4$Ship - final_cams_ch4[[tower_col]]
 }
 
 enh_cols <- grep("^enh_via_", names(final_cams_ch4), value = TRUE)

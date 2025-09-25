@@ -1,5 +1,5 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on August 28, 2025
+#Updated last on September 25, 2025
 
 #You will have to manually change items in:
 # 1.3 (xlim_vals)
@@ -9,18 +9,18 @@
 ##### ________________________ 1. Just Towers _____________________________#####
 ##### Load in the 2022 NEC tower .csv files #####
 #____
-LEW_22_CH4_95 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-ch4-95m-1-hour-20230425.csv"
-)
-LEW_22_CH4_95$DATE <- as.Date(LEW_22_CH4_95$datetime_UTC)
-LEW_22_CH4_95$HH <- sprintf("%02d:00:00", LEW_22_CH4_95$HH)
-LEW_22_CH4_95$datetime_combined <- paste(LEW_22_CH4_95$DATE, LEW_22_CH4_95$HH)
-LEW_22_CH4_95$datetime_UTC <- as.POSIXct(LEW_22_CH4_95$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-LEW_22_CH4_95$datetime_EDT <- with_tz(LEW_22_CH4_95$datetime_UTC, tzone = "America/New_York")
-
+# LEW_22_CH4_95 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-ch4-95m-1-hour-20230425.csv"
+# )
+# LEW_22_CH4_95$DATE <- as.Date(LEW_22_CH4_95$datetime_UTC)
+# LEW_22_CH4_95$HH <- sprintf("%02d:00:00", LEW_22_CH4_95$HH)
+# LEW_22_CH4_95$datetime_combined <- paste(LEW_22_CH4_95$DATE, LEW_22_CH4_95$HH)
+# LEW_22_CH4_95$datetime_UTC <- as.POSIXct(LEW_22_CH4_95$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# LEW_22_CH4_95$datetime_EDT <- with_tz(LEW_22_CH4_95$datetime_UTC, tzone = "America/New_York")
+# 
 
 LEW_22_CH4_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-ch4-50m-1-hour-20230425.csv'
@@ -31,20 +31,20 @@ LEW_22_CH4_50$datetime_combined <- paste(LEW_22_CH4_50$DATE, LEW_22_CH4_50$HH)
 LEW_22_CH4_50$datetime_UTC <- as.POSIXct(LEW_22_CH4_50$datetime_combined,
                                          format = "%Y-%m-%d %H:%M:%S",
                                          tz = "UTC")
-library(lubridate)
-LEW_22_CH4_50$datetime_EDT <- with_tz(LEW_22_CH4_50$datetime_UTC, tzone = "America/New_York")
-
-LEW_22_CO2_95 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-co2-95m-1-hour-20230425.csv'
-)
-LEW_22_CO2_95$DATE <- as.Date(LEW_22_CO2_95$datetime_UTC)
-LEW_22_CO2_95$HH <- sprintf("%02d:00:00", LEW_22_CO2_95$HH)
-LEW_22_CO2_95$datetime_combined <- paste(LEW_22_CO2_95$DATE, LEW_22_CO2_95$HH)
-LEW_22_CO2_95$datetime_UTC <- as.POSIXct(LEW_22_CO2_95$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-LEW_22_CO2_95$datetime_EDT <- with_tz(LEW_22_CO2_95$datetime_UTC, tzone = "America/New_York")
+# library(lubridate)
+# LEW_22_CH4_50$datetime_EDT <- with_tz(LEW_22_CH4_50$datetime_UTC, tzone = "America/New_York")
+# 
+# LEW_22_CO2_95 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/LEW-2022-co2-95m-1-hour-20230425.csv'
+# )
+# LEW_22_CO2_95$DATE <- as.Date(LEW_22_CO2_95$datetime_UTC)
+# LEW_22_CO2_95$HH <- sprintf("%02d:00:00", LEW_22_CO2_95$HH)
+# LEW_22_CO2_95$datetime_combined <- paste(LEW_22_CO2_95$DATE, LEW_22_CO2_95$HH)
+# LEW_22_CO2_95$datetime_UTC <- as.POSIXct(LEW_22_CO2_95$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# LEW_22_CO2_95$datetime_EDT <- with_tz(LEW_22_CO2_95$datetime_UTC, tzone = "America/New_York")
 
 
 LEW_22_CO2_50 <- read.csv(
@@ -60,17 +60,17 @@ library(lubridate)
 LEW_22_CO2_50$datetime_EDT <- with_tz(LEW_22_CO2_50$datetime_UTC, tzone = "America/New_York")
 
 #_________
-TMD_22_CH4_113 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-ch4-113m-1-hour-20230425.csv'
-)
-TMD_22_CH4_113$DATE <- as.Date(TMD_22_CH4_113$datetime_UTC)
-TMD_22_CH4_113$HH <- sprintf("%02d:00:00", TMD_22_CH4_113$HH)
-TMD_22_CH4_113$datetime_combined <- paste(TMD_22_CH4_113$DATE, TMD_22_CH4_113$HH)
-TMD_22_CH4_113$datetime_UTC <- as.POSIXct(TMD_22_CH4_113$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-TMD_22_CH4_113$datetime_EDT <- with_tz(TMD_22_CH4_113$datetime_UTC, tzone = "America/New_York")
+# TMD_22_CH4_113 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-ch4-113m-1-hour-20230425.csv'
+# )
+# TMD_22_CH4_113$DATE <- as.Date(TMD_22_CH4_113$datetime_UTC)
+# TMD_22_CH4_113$HH <- sprintf("%02d:00:00", TMD_22_CH4_113$HH)
+# TMD_22_CH4_113$datetime_combined <- paste(TMD_22_CH4_113$DATE, TMD_22_CH4_113$HH)
+# TMD_22_CH4_113$datetime_UTC <- as.POSIXct(TMD_22_CH4_113$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# TMD_22_CH4_113$datetime_EDT <- with_tz(TMD_22_CH4_113$datetime_UTC, tzone = "America/New_York")
 
 TMD_22_CH4_49 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-ch4-49m-1-hour-20230425.csv'
@@ -84,17 +84,17 @@ TMD_22_CH4_49$datetime_UTC <- as.POSIXct(TMD_22_CH4_49$datetime_combined,
 library(lubridate)
 TMD_22_CH4_49$datetime_EDT <- with_tz(TMD_22_CH4_49$datetime_UTC, tzone = "America/New_York")
 
-TMD_22_CO2_113 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-co2-113m-1-hour-20230425.csv'
-)
-TMD_22_CO2_113$DATE <- as.Date(TMD_22_CO2_113$datetime_UTC)
-TMD_22_CO2_113$HH <- sprintf("%02d:00:00", TMD_22_CO2_113$HH)
-TMD_22_CO2_113$datetime_combined <- paste(TMD_22_CO2_113$DATE, TMD_22_CO2_113$HH)
-TMD_22_CO2_113$datetime_UTC <- as.POSIXct(TMD_22_CO2_113$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-TMD_22_CO2_113$datetime_EDT <- with_tz(TMD_22_CO2_113$datetime_UTC, tzone = "America/New_York")
+# TMD_22_CO2_113 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-co2-113m-1-hour-20230425.csv'
+# )
+# TMD_22_CO2_113$DATE <- as.Date(TMD_22_CO2_113$datetime_UTC)
+# TMD_22_CO2_113$HH <- sprintf("%02d:00:00", TMD_22_CO2_113$HH)
+# TMD_22_CO2_113$datetime_combined <- paste(TMD_22_CO2_113$DATE, TMD_22_CO2_113$HH)
+# TMD_22_CO2_113$datetime_UTC <- as.POSIXct(TMD_22_CO2_113$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# TMD_22_CO2_113$datetime_EDT <- with_tz(TMD_22_CO2_113$datetime_UTC, tzone = "America/New_York")
 
 TMD_22_CO2_49 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2022-co2-49m-1-hour-20230425.csv'
@@ -109,17 +109,17 @@ library(lubridate)
 TMD_22_CO2_49$datetime_EDT <- with_tz(TMD_22_CO2_49$datetime_UTC, tzone = "America/New_York")
 
 #_________
-BVA_22_CH4_111 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-ch4-111m-1-hour-v20250319.csv'
-)
-BVA_22_CH4_111$DATE <- as.Date(BVA_22_CH4_111$datetime_UTC)
-BVA_22_CH4_111$HH <- sprintf("%02d:00:00", BVA_22_CH4_111$HH)
-BVA_22_CH4_111$datetime_combined <- paste(BVA_22_CH4_111$DATE, BVA_22_CH4_111$HH)
-BVA_22_CH4_111$datetime_UTC <- as.POSIXct(BVA_22_CH4_111$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-BVA_22_CH4_111$datetime_EDT <- with_tz(BVA_22_CH4_111$datetime_UTC, tzone = "America/New_York")
+# BVA_22_CH4_111 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-ch4-111m-1-hour-v20250319.csv'
+# )
+# BVA_22_CH4_111$DATE <- as.Date(BVA_22_CH4_111$datetime_UTC)
+# BVA_22_CH4_111$HH <- sprintf("%02d:00:00", BVA_22_CH4_111$HH)
+# BVA_22_CH4_111$datetime_combined <- paste(BVA_22_CH4_111$DATE, BVA_22_CH4_111$HH)
+# BVA_22_CH4_111$datetime_UTC <- as.POSIXct(BVA_22_CH4_111$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# BVA_22_CH4_111$datetime_EDT <- with_tz(BVA_22_CH4_111$datetime_UTC, tzone = "America/New_York")
 
 BVA_22_CH4_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-ch4-50m-1-hour-v20250319.csv'
@@ -133,17 +133,17 @@ BVA_22_CH4_50$datetime_UTC <- as.POSIXct(BVA_22_CH4_50$datetime_combined,
 library(lubridate)
 BVA_22_CH4_50$datetime_EDT <- with_tz(BVA_22_CH4_50$datetime_UTC, tzone = "America/New_York")
 
-BVA_22_CO2_111 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-co2-111m-1-hour-v20250319.csv'
-)
-BVA_22_CO2_111$DATE <- as.Date(BVA_22_CO2_111$datetime_UTC)
-BVA_22_CO2_111$HH <- sprintf("%02d:00:00", BVA_22_CO2_111$HH)
-BVA_22_CO2_111$datetime_combined <- paste(BVA_22_CO2_111$DATE, BVA_22_CO2_111$HH)
-BVA_22_CO2_111$datetime_UTC <- as.POSIXct(BVA_22_CO2_111$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-BVA_22_CO2_111$datetime_EDT <- with_tz(BVA_22_CO2_111$datetime_UTC, tzone = "America/New_York")
+# BVA_22_CO2_111 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-co2-111m-1-hour-v20250319.csv'
+# )
+# BVA_22_CO2_111$DATE <- as.Date(BVA_22_CO2_111$datetime_UTC)
+# BVA_22_CO2_111$HH <- sprintf("%02d:00:00", BVA_22_CO2_111$HH)
+# BVA_22_CO2_111$datetime_combined <- paste(BVA_22_CO2_111$DATE, BVA_22_CO2_111$HH)
+# BVA_22_CO2_111$datetime_UTC <- as.POSIXct(BVA_22_CO2_111$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# BVA_22_CO2_111$datetime_EDT <- with_tz(BVA_22_CO2_111$datetime_UTC, tzone = "America/New_York")
 
 BVA_22_CO2_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2022-co2-50m-1-hour-v20250319.csv'
@@ -170,17 +170,17 @@ WNJ_22_CH4_43$datetime_UTC <- as.POSIXct(WNJ_22_CH4_43$datetime_combined,
 library(lubridate)
 WNJ_22_CH4_43$datetime_EDT <- with_tz(WNJ_22_CH4_43$datetime_UTC, tzone = "America/New_York")
 
-WNJ_22_CH4_98 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-ch4-98m-1-hour-v20250319.csv"
-)
-WNJ_22_CH4_98$DATE <- as.Date(WNJ_22_CH4_98$datetime_UTC)
-WNJ_22_CH4_98$HH <- sprintf("%02d:00:00", WNJ_22_CH4_98$HH)
-WNJ_22_CH4_98$datetime_combined <- paste(WNJ_22_CH4_98$DATE, WNJ_22_CH4_98$HH)
-WNJ_22_CH4_98$datetime_UTC <- as.POSIXct(WNJ_22_CH4_98$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-WNJ_22_CH4_98$datetime_EDT <- with_tz(WNJ_22_CH4_98$datetime_UTC, tzone = "America/New_York")
+# WNJ_22_CH4_98 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-ch4-98m-1-hour-v20250319.csv"
+# )
+# WNJ_22_CH4_98$DATE <- as.Date(WNJ_22_CH4_98$datetime_UTC)
+# WNJ_22_CH4_98$HH <- sprintf("%02d:00:00", WNJ_22_CH4_98$HH)
+# WNJ_22_CH4_98$datetime_combined <- paste(WNJ_22_CH4_98$DATE, WNJ_22_CH4_98$HH)
+# WNJ_22_CH4_98$datetime_UTC <- as.POSIXct(WNJ_22_CH4_98$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# WNJ_22_CH4_98$datetime_EDT <- with_tz(WNJ_22_CH4_98$datetime_UTC, tzone = "America/New_York")
 
 WNJ_22_CO2_43 <- read.csv(
   "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-co2-43m-1-hour-v20250319.csv"
@@ -194,30 +194,30 @@ WNJ_22_CO2_43$datetime_UTC <- as.POSIXct(WNJ_22_CO2_43$datetime_combined,
 library(lubridate)
 WNJ_22_CO2_43$datetime_EDT <- with_tz(WNJ_22_CO2_43$datetime_UTC, tzone = "America/New_York")
 
-WNJ_22_CO2_98 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-co2-98m-1-hour-v20250319.csv"
-)
-WNJ_22_CO2_98$DATE <- as.Date(WNJ_22_CO2_98$datetime_UTC)
-WNJ_22_CO2_98$HH <- sprintf("%02d:00:00", WNJ_22_CO2_98$HH)
-WNJ_22_CO2_98$datetime_combined <- paste(WNJ_22_CO2_98$DATE, WNJ_22_CO2_98$HH)
-WNJ_22_CO2_98$datetime_UTC <- as.POSIXct(WNJ_22_CO2_98$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-WNJ_22_CO2_98$datetime_EDT <- with_tz(WNJ_22_CO2_98$datetime_UTC, tzone = "America/New_York")
+# WNJ_22_CO2_98 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2022-co2-98m-1-hour-v20250319.csv"
+# )
+# WNJ_22_CO2_98$DATE <- as.Date(WNJ_22_CO2_98$datetime_UTC)
+# WNJ_22_CO2_98$HH <- sprintf("%02d:00:00", WNJ_22_CO2_98$HH)
+# WNJ_22_CO2_98$datetime_combined <- paste(WNJ_22_CO2_98$DATE, WNJ_22_CO2_98$HH)
+# WNJ_22_CO2_98$datetime_UTC <- as.POSIXct(WNJ_22_CO2_98$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# WNJ_22_CO2_98$datetime_EDT <- with_tz(WNJ_22_CO2_98$datetime_UTC, tzone = "America/New_York")
 
 ##### Load in the 2023 NEC tower .csv files #####
-LEW_23_CH4_95 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-ch4-95m-1-hour-v20250319.csv"
-)
-LEW_23_CH4_95$DATE <- as.Date(LEW_23_CH4_95$datetime_UTC)
-LEW_23_CH4_95$HH <- sprintf("%02d:00:00", LEW_23_CH4_95$HH)
-LEW_23_CH4_95$datetime_combined <- paste(LEW_23_CH4_95$DATE, LEW_23_CH4_95$HH)
-LEW_23_CH4_95$datetime_UTC <- as.POSIXct(LEW_23_CH4_95$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-LEW_23_CH4_95$datetime_EDT <- with_tz(LEW_23_CH4_95$datetime_UTC, tzone = "America/New_York")
+# LEW_23_CH4_95 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-ch4-95m-1-hour-v20250319.csv"
+# )
+# LEW_23_CH4_95$DATE <- as.Date(LEW_23_CH4_95$datetime_UTC)
+# LEW_23_CH4_95$HH <- sprintf("%02d:00:00", LEW_23_CH4_95$HH)
+# LEW_23_CH4_95$datetime_combined <- paste(LEW_23_CH4_95$DATE, LEW_23_CH4_95$HH)
+# LEW_23_CH4_95$datetime_UTC <- as.POSIXct(LEW_23_CH4_95$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# LEW_23_CH4_95$datetime_EDT <- with_tz(LEW_23_CH4_95$datetime_UTC, tzone = "America/New_York")
 
 LEW_23_CH4_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-ch4-50m-1-hour-v20250319.csv'
@@ -231,17 +231,17 @@ LEW_23_CH4_50$datetime_UTC <- as.POSIXct(LEW_23_CH4_50$datetime_combined,
 library(lubridate)
 LEW_23_CH4_50$datetime_EDT <- with_tz(LEW_23_CH4_50$datetime_UTC, tzone = "America/New_York")
 
-LEW_23_CO2_95 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-co2-95m-1-hour-v20250319.csv'
-)
-LEW_23_CO2_95$DATE <- as.Date(LEW_23_CO2_95$datetime_UTC)
-LEW_23_CO2_95$HH <- sprintf("%02d:00:00", LEW_23_CO2_95$HH)
-LEW_23_CO2_95$datetime_combined <- paste(LEW_23_CO2_95$DATE, LEW_23_CO2_95$HH)
-LEW_23_CO2_95$datetime_UTC <- as.POSIXct(LEW_23_CO2_95$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-LEW_23_CO2_95$datetime_EDT <- with_tz(LEW_23_CO2_95$datetime_UTC, tzone = "America/New_York")
+# LEW_23_CO2_95 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-co2-95m-1-hour-v20250319.csv'
+# )
+# LEW_23_CO2_95$DATE <- as.Date(LEW_23_CO2_95$datetime_UTC)
+# LEW_23_CO2_95$HH <- sprintf("%02d:00:00", LEW_23_CO2_95$HH)
+# LEW_23_CO2_95$datetime_combined <- paste(LEW_23_CO2_95$DATE, LEW_23_CO2_95$HH)
+# LEW_23_CO2_95$datetime_UTC <- as.POSIXct(LEW_23_CO2_95$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# LEW_23_CO2_95$datetime_EDT <- with_tz(LEW_23_CO2_95$datetime_UTC, tzone = "America/New_York")
 
 LEW_23_CO2_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-co2-50m-1-hour-v20250319.csv'
@@ -256,17 +256,17 @@ library(lubridate)
 LEW_23_CO2_50$datetime_EDT <- with_tz(LEW_23_CO2_50$datetime_UTC, tzone = "America/New_York")
 
 #_________
-TMD_23_CH4_113 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-ch4-113m-1-hour-v20250319.csv'
-)
-TMD_23_CH4_113$DATE <- as.Date(TMD_23_CH4_113$datetime_UTC)
-TMD_23_CH4_113$HH <- sprintf("%02d:00:00", TMD_23_CH4_113$HH)
-TMD_23_CH4_113$datetime_combined <- paste(TMD_23_CH4_113$DATE, TMD_23_CH4_113$HH)
-TMD_23_CH4_113$datetime_UTC <- as.POSIXct(TMD_23_CH4_113$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-TMD_23_CH4_113$datetime_EDT <- with_tz(TMD_23_CH4_113$datetime_UTC, tzone = "America/New_York")
+# TMD_23_CH4_113 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-ch4-113m-1-hour-v20250319.csv'
+# )
+# TMD_23_CH4_113$DATE <- as.Date(TMD_23_CH4_113$datetime_UTC)
+# TMD_23_CH4_113$HH <- sprintf("%02d:00:00", TMD_23_CH4_113$HH)
+# TMD_23_CH4_113$datetime_combined <- paste(TMD_23_CH4_113$DATE, TMD_23_CH4_113$HH)
+# TMD_23_CH4_113$datetime_UTC <- as.POSIXct(TMD_23_CH4_113$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# TMD_23_CH4_113$datetime_EDT <- with_tz(TMD_23_CH4_113$datetime_UTC, tzone = "America/New_York")
 
 TMD_23_CH4_49 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-ch4-49m-1-hour-v20250319.csv'
@@ -280,17 +280,17 @@ TMD_23_CH4_49$datetime_UTC <- as.POSIXct(TMD_23_CH4_49$datetime_combined,
 library(lubridate)
 TMD_23_CH4_49$datetime_EDT <- with_tz(TMD_23_CH4_49$datetime_UTC, tzone = "America/New_York")
 
-TMD_23_CO2_113 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-co2-113m-1-hour-v20250319.csv'
-)
-TMD_23_CO2_113$DATE <- as.Date(TMD_23_CO2_113$datetime_UTC)
-TMD_23_CO2_113$HH <- sprintf("%02d:00:00", TMD_23_CO2_113$HH)
-TMD_23_CO2_113$datetime_combined <- paste(TMD_23_CO2_113$DATE, TMD_23_CO2_113$HH)
-TMD_23_CO2_113$datetime_UTC <- as.POSIXct(TMD_23_CO2_113$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-TMD_23_CO2_113$datetime_EDT <- with_tz(TMD_23_CO2_113$datetime_UTC, tzone = "America/New_York")
+# TMD_23_CO2_113 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-co2-113m-1-hour-v20250319.csv'
+# )
+# TMD_23_CO2_113$DATE <- as.Date(TMD_23_CO2_113$datetime_UTC)
+# TMD_23_CO2_113$HH <- sprintf("%02d:00:00", TMD_23_CO2_113$HH)
+# TMD_23_CO2_113$datetime_combined <- paste(TMD_23_CO2_113$DATE, TMD_23_CO2_113$HH)
+# TMD_23_CO2_113$datetime_UTC <- as.POSIXct(TMD_23_CO2_113$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# TMD_23_CO2_113$datetime_EDT <- with_tz(TMD_23_CO2_113$datetime_UTC, tzone = "America/New_York")
 
 TMD_23_CO2_49 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/TMD-2023-co2-49m-1-hour-v20250319.csv'
@@ -305,17 +305,17 @@ library(lubridate)
 TMD_23_CO2_49$datetime_EDT <- with_tz(TMD_23_CO2_49$datetime_UTC, tzone = "America/New_York")
 
 #_________
-BVA_23_CH4_111 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-ch4-111m-1-hour-v20250319.csv'
-)
-BVA_23_CH4_111$DATE <- as.Date(BVA_23_CH4_111$datetime_UTC)
-BVA_23_CH4_111$HH <- sprintf("%02d:00:00", BVA_23_CH4_111$HH)
-BVA_23_CH4_111$datetime_combined <- paste(BVA_23_CH4_111$DATE, BVA_23_CH4_111$HH)
-BVA_23_CH4_111$datetime_UTC <- as.POSIXct(BVA_23_CH4_111$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-BVA_23_CH4_111$datetime_EDT <- with_tz(BVA_23_CH4_111$datetime_UTC, tzone = "America/New_York")
+# BVA_23_CH4_111 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-ch4-111m-1-hour-v20250319.csv'
+# )
+# BVA_23_CH4_111$DATE <- as.Date(BVA_23_CH4_111$datetime_UTC)
+# BVA_23_CH4_111$HH <- sprintf("%02d:00:00", BVA_23_CH4_111$HH)
+# BVA_23_CH4_111$datetime_combined <- paste(BVA_23_CH4_111$DATE, BVA_23_CH4_111$HH)
+# BVA_23_CH4_111$datetime_UTC <- as.POSIXct(BVA_23_CH4_111$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# BVA_23_CH4_111$datetime_EDT <- with_tz(BVA_23_CH4_111$datetime_UTC, tzone = "America/New_York")
 
 BVA_23_CH4_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-ch4-50m-1-hour-v20250319.csv'
@@ -329,17 +329,17 @@ BVA_23_CH4_50$datetime_UTC <- as.POSIXct(BVA_23_CH4_50$datetime_combined,
 library(lubridate)
 BVA_23_CH4_50$datetime_EDT <- with_tz(BVA_23_CH4_50$datetime_UTC, tzone = "America/New_York")
 
-BVA_23_CO2_111 <- read.csv(
-  '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-co2-111m-1-hour-v20250319.csv'
-)
-BVA_23_CO2_111$DATE <- as.Date(BVA_23_CO2_111$datetime_UTC)
-BVA_23_CO2_111$HH <- sprintf("%02d:00:00", BVA_23_CO2_111$HH)
-BVA_23_CO2_111$datetime_combined <- paste(BVA_23_CO2_111$DATE, BVA_23_CO2_111$HH)
-BVA_23_CO2_111$datetime_UTC <- as.POSIXct(BVA_23_CO2_111$datetime_combined,
-                                          format = "%Y-%m-%d %H:%M:%S",
-                                          tz = "UTC")
-library(lubridate)
-BVA_23_CO2_111$datetime_EDT <- with_tz(BVA_23_CO2_111$datetime_UTC, tzone = "America/New_York")
+# BVA_23_CO2_111 <- read.csv(
+#   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-co2-111m-1-hour-v20250319.csv'
+# )
+# BVA_23_CO2_111$DATE <- as.Date(BVA_23_CO2_111$datetime_UTC)
+# BVA_23_CO2_111$HH <- sprintf("%02d:00:00", BVA_23_CO2_111$HH)
+# BVA_23_CO2_111$datetime_combined <- paste(BVA_23_CO2_111$DATE, BVA_23_CO2_111$HH)
+# BVA_23_CO2_111$datetime_UTC <- as.POSIXct(BVA_23_CO2_111$datetime_combined,
+#                                           format = "%Y-%m-%d %H:%M:%S",
+#                                           tz = "UTC")
+# library(lubridate)
+# BVA_23_CO2_111$datetime_EDT <- with_tz(BVA_23_CO2_111$datetime_UTC, tzone = "America/New_York")
 
 BVA_23_CO2_50 <- read.csv(
   '/Users/reneechabot-mehlin/Desktop/towers/BVA-2023-co2-50m-1-hour-v20250319.csv'
@@ -367,17 +367,17 @@ library(lubridate)
 WNJ_23_CH4_43$datetime_EDT <- with_tz(WNJ_23_CH4_43$datetime_UTC, tzone = "America/New_York")
 
 #
-WNJ_23_CH4_98 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-ch4-98m-1-hour-v20250319.csv"
-)
-WNJ_23_CH4_98$DATE <- as.Date(WNJ_23_CH4_98$datetime_UTC)
-WNJ_23_CH4_98$HH <- sprintf("%02d:00:00", WNJ_23_CH4_98$HH)
-WNJ_23_CH4_98$datetime_combined <- paste(WNJ_23_CH4_98$DATE, WNJ_23_CH4_98$HH)
-WNJ_23_CH4_98$datetime_UTC <- as.POSIXct(WNJ_23_CH4_98$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-WNJ_23_CH4_98$datetime_EDT <- with_tz(WNJ_23_CH4_98$datetime_UTC, tzone = "America/New_York")
+# WNJ_23_CH4_98 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-ch4-98m-1-hour-v20250319.csv"
+# )
+# WNJ_23_CH4_98$DATE <- as.Date(WNJ_23_CH4_98$datetime_UTC)
+# WNJ_23_CH4_98$HH <- sprintf("%02d:00:00", WNJ_23_CH4_98$HH)
+# WNJ_23_CH4_98$datetime_combined <- paste(WNJ_23_CH4_98$DATE, WNJ_23_CH4_98$HH)
+# WNJ_23_CH4_98$datetime_UTC <- as.POSIXct(WNJ_23_CH4_98$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# WNJ_23_CH4_98$datetime_EDT <- with_tz(WNJ_23_CH4_98$datetime_UTC, tzone = "America/New_York")
 
 #
 WNJ_23_CO2_43 <- read.csv(
@@ -393,18 +393,18 @@ library(lubridate)
 WNJ_23_CO2_43$datetime_EDT <- with_tz(WNJ_23_CO2_43$datetime_UTC, tzone = "America/New_York")
 
 #
-WNJ_23_CO2_98 <- read.csv(
-  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-co2-98m-1-hour-v20250319.csv"
-)
-WNJ_23_CO2_98$DATE <- as.Date(WNJ_23_CO2_98$datetime_UTC)
-WNJ_23_CO2_98$HH <- sprintf("%02d:00:00", WNJ_23_CO2_98$HH)
-WNJ_23_CO2_98$datetime_combined <- paste(WNJ_23_CO2_98$DATE, WNJ_23_CO2_98$HH)
-WNJ_23_CO2_98$datetime_UTC <- as.POSIXct(WNJ_23_CO2_98$datetime_combined,
-                                         format = "%Y-%m-%d %H:%M:%S",
-                                         tz = "UTC")
-library(lubridate)
-WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "America/New_York")
-
+# WNJ_23_CO2_98 <- read.csv(
+#   "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-co2-98m-1-hour-v20250319.csv"
+# )
+# WNJ_23_CO2_98$DATE <- as.Date(WNJ_23_CO2_98$datetime_UTC)
+# WNJ_23_CO2_98$HH <- sprintf("%02d:00:00", WNJ_23_CO2_98$HH)
+# WNJ_23_CO2_98$datetime_combined <- paste(WNJ_23_CO2_98$DATE, WNJ_23_CO2_98$HH)
+# WNJ_23_CO2_98$datetime_UTC <- as.POSIXct(WNJ_23_CO2_98$datetime_combined,
+#                                          format = "%Y-%m-%d %H:%M:%S",
+#                                          tz = "UTC")
+# library(lubridate)
+# WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "America/New_York")
+# 
 
 ##### Set time limit for basic plots #####
 xlim_vals <- c(as.POSIXct("2023-10-12 08:00:00"),
@@ -1105,20 +1105,20 @@ par(xpd = FALSE)
 #3 hr avg__
 all_data <- list(
   LEW_22_CH4_50 = LEW_22_CH4_50,
-  LEW_22_CH4_95 = LEW_22_CH4_95,
+  #LEW_22_CH4_95 = LEW_22_CH4_95,
   LEW_22_CO2_50 = LEW_22_CO2_50,
-  LEW_22_CO2_95 = LEW_22_CO2_95,
-  TMD_22_CH4_113 = TMD_22_CH4_113,
+  #LEW_22_CO2_95 = LEW_22_CO2_95,
+ # TMD_22_CH4_113 = TMD_22_CH4_113,
   TMD_22_CH4_49 = TMD_22_CH4_49,
-  TMD_22_CO2_113 = TMD_22_CO2_113,
+  #TMD_22_CO2_113 = TMD_22_CO2_113,
   TMD_22_CO2_49 = TMD_22_CO2_49,
-  BVA_22_CH4_111 = BVA_22_CH4_111,
+ # BVA_22_CH4_111 = BVA_22_CH4_111,
   BVA_22_CH4_50 = BVA_22_CH4_50,
-  BVA_22_CO2_111 = BVA_22_CO2_111,
+  #BVA_22_CO2_111 = BVA_22_CO2_111,
   BVA_22_CO2_50 = BVA_22_CO2_50,
-  WNJ_22_CO2_98 = WNJ_22_CO2_98,
+ # WNJ_22_CO2_98 = WNJ_22_CO2_98,
   WNJ_22_CO2_43 = WNJ_22_CO2_43,
-  WNJ_22_CH4_98 = WNJ_22_CH4_98,
+ # WNJ_22_CH4_98 = WNJ_22_CH4_98,
   WNJ_22_CH4_43 = WNJ_22_CH4_43
 )
 interval_labels <- c(
@@ -1172,20 +1172,20 @@ for (i in names(averaged_data)) {
 ##### Averaging data for 3 hour intervals 2023 #####
 all_data <- list(
   LEW_23_CH4_50 = LEW_23_CH4_50,
-  LEW_23_CH4_95 = LEW_23_CH4_95,
+  #LEW_23_CH4_95 = LEW_23_CH4_95,
   LEW_23_CO2_50 = LEW_23_CO2_50,
-  LEW_23_CO2_95 = LEW_23_CO2_95,
-  TMD_23_CH4_113 = TMD_23_CH4_113,
+  #LEW_23_CO2_95 = LEW_23_CO2_95,
+  #TMD_23_CH4_113 = TMD_23_CH4_113,
   TMD_23_CH4_49 = TMD_23_CH4_49,
-  TMD_23_CO2_113 = TMD_23_CO2_113,
+  #TMD_23_CO2_113 = TMD_23_CO2_113,
   TMD_23_CO2_49 = TMD_23_CO2_49,
-  BVA_23_CH4_111 = BVA_23_CH4_111,
+ #BVA_23_CH4_111 = BVA_23_CH4_111,
   BVA_23_CH4_50 = BVA_23_CH4_50,
-  BVA_23_CO2_111 = BVA_23_CO2_111,
+  #BVA_23_CO2_111 = BVA_23_CO2_111,
   BVA_23_CO2_50 = BVA_23_CO2_50,
-  WNJ_23_CO2_98 = WNJ_23_CO2_98,
+ # WNJ_23_CO2_98 = WNJ_23_CO2_98,
   WNJ_23_CO2_43 = WNJ_23_CO2_43,
-  WNJ_23_CH4_98 = WNJ_23_CH4_98,
+  #WNJ_23_CH4_98 = WNJ_23_CH4_98,
   WNJ_23_CH4_43 = WNJ_23_CH4_43
 )
 
@@ -1240,8 +1240,8 @@ for (i in names(averaged_data)) {
 }
 
 ##### Set time limit for model comparison #####
-start_date <- as.Date("2022-04-09")
-end_date <- as.Date("2022-04-12")
+start_date <- as.Date("2023-10-12")
+end_date <- as.Date("2023-10-18")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1263,7 +1263,7 @@ obs_ch4$co2_ppm <- NULL
 
 library(raster)
 
-cruise <- "Cruise 4"
+cruise <- "Cruise 24"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 
