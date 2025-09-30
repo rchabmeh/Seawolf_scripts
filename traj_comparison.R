@@ -944,5 +944,243 @@ legend("bottomright",
 
 
 
+tracks4 <- read.csv("/Users/reneechabot-mehlin/Downloads/2022-04-07__2022-04-16_Seawolf_1hz.csv")
+tracks4 <- tracks4[!is.na(tracks4$Latitude_deg), ]
+tracks4$Time_local <- as.POSIXct(tracks4$Time_local, origin = "1904-01-01", tz = "America/New_York")
+tracks4$DATE <- as.Date(tracks4$Time_local)
+
+library(sf)
+library(ggplot2)
+states <- st_transform(states, crs = 4326)
+
+dates <- sort(unique(tracks4$DATE))
+colors <- rainbow(length(dates))
+names(colors) <- as.character(dates)
+
+start_points <- tracks4[!duplicated(tracks4$DATE), ]
+
+ggplot() +
+  geom_sf(data = states,
+          fill = NA,
+          color = "grey2") +
+  geom_path(
+    data = tracks4,
+    aes(x = Longitude_deg, y = Latitude_deg, color = as.factor(DATE)),
+    size = 1
+  ) +
+  scale_color_manual(values = colors) +
+  coord_sf(xlim = c(-78, -70), ylim = c(38, 42)) +
+  labs(
+    title = "Cruise 4 Tracks: 04/05/22 - 04/16/22",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    legend.title = element_text(size = 14),
+    plot.title = element_text(size = 20,face = "bold"),
+    legend.text = element_text(size =13)
+  )
 
 
+
+cruise = "Cruise 4"
+cruise_squish <- tolower(gsub(" ", "", cruise))
+library(raster)
+library(ncdf4)
+library(sf)
+library(dplyr)
+library(reshape2)
+CAMS <- list()
+all_timestamps <- list()
+files <- list.files(
+  paste0(
+    '/Volumes/Seagate/',
+    cruise_squish,
+    '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
+  ),
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
+states <- st_read(
+  "/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
+)
+east_coast_states <- c(
+  "Maine",
+  "New Hampshire",
+  "Massachusetts",
+  "Rhode Island",
+  "Connecticut",
+  "New York",
+  "New Jersey",
+  "Delaware",
+  "Maryland",
+  "Virginia",
+  "North Carolina",
+  "South Carolina",
+  "Georgia",
+  "Florida",
+  "Pennsylvania",
+  "Vermont"
+)
+east_states_sf <- states %>%
+  filter(NAME %in% east_coast_states)
+east_extent <- extent(-85, -65, 25, 47)
+
+for (f in files) {
+  cat("Processing:", f, "\n")
+  nc <- nc_open(f)
+  var_names <- names(nc$var)
+  
+  if ("CH4" %in% var_names) {
+    var_to_use <- "CH4"
+  } else if ("CO2" %in% var_names) {
+    var_to_use <- "CO2"
+  } else {
+    warning("No CH4 or CO2 found in:", f)
+    nc_close(nc)
+    next
+  }
+  
+  # Read timestamps
+  if ("time" %in% names(nc$dim)) {
+    time_vals <- ncvar_get(nc, "time")
+    time_units <- ncatt_get(nc, "time", "units")$value
+    origin <- sub("hours since ", "", time_units)
+    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
+  } else {
+    warning("No time dimension in:", f)
+    nc_close(nc)
+    next
+  }
+  nc_close(nc)
+  
+  # Load all time layers
+  r <- stack(f, varname = var_to_use)
+  
+  # Ensure CRS matches shapefile
+  if (is.na(crs(r))) {
+    crs(r) <- st_crs(east_states_sf)$proj4string
+  }
+  
+  # Crop and mask
+  r <- crop(r, east_extent)
+  r <- mask(r, east_states_sf)
+  
+  # Unit fix for CO2
+  if (var_to_use == "CO2") {
+    r <- calc(r, function(x)
+      x * 1e6)
+  }
+  
+  file_key <- basename(f)  # Use file name as key
+  CAMS[[file_key]] <- r
+  all_timestamps[[file_key]] <- timestamps
+}
+east_states_sf <- st_transform(east_states_sf, crs = st_crs(CAMS[[1]]))
+CAMS_df_list <- lapply(names(CAMS), function(file_key) {
+  ras <- CAMS[[file_key]]
+  
+  if (is.null(ras)) {
+    message("[", file_key, "] Raster is NULL — skipping.")
+    return(NULL)
+  }
+  df <- as.data.frame(ras, xy = TRUE)
+  df <- na.omit(df)
+  # Example dataframe df with first two columns lon, lat and the rest timestamp columns
+  # Rename only from column 3 onward
+  if (ncol(df) < 3)
+    return(NULL)
+  
+  names(df)[3:ncol(df)] <- {
+    cn <- names(df)[3:ncol(df)]         # subset column names
+    cn <- sub("^X", "", cn)             # remove leading X
+    
+    # Use regmatches + regexec to extract date/time parts
+    parts <- regmatches(cn,
+                        regexec("^([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})(.*)$", cn))
+    
+    sapply(parts, function(p) {
+      if (length(p) == 0)
+        return(NA_character_)
+      date_part <- paste0(p[2], "-", p[3], "-", p[4])
+      time_part <- p[5]
+      if (time_part == "") {
+        time_part <- " 00:00:00"
+      } else {
+        time_part <- gsub("\\.", ":", sub("^\\.", " ", time_part))
+      }
+      paste0(date_part, time_part)
+    })
+  }
+  bad_cols <- which(is.na(names(df)))
+  if (length(bad_cols) > 0) {
+    df <- df[, -bad_cols, drop = FALSE]
+  }
+  
+  if (ncol(df) < 3)
+    return(NULL)  # no data columns left
+  
+  library(tidyr)
+  df_long <- pivot_longer(
+    df,
+    cols = -(1:2),
+    # all columns except lat and long
+    names_to = "date",
+    # new column name for former column headers
+    values_to = "concentration"  # new column name for values
+  )
+  df_long$date <- as.POSIXct(df_long$date, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+  df_long$gas <- ifelse(grepl("CO2", file_key, ignore.case = TRUE), "CO2", "CH4")
+  df_long$source <- file_key
+  
+  df_long
+})
+
+CAMS_combined <- do.call(rbind, CAMS_df_list)
+CAMS_split <- split(CAMS_combined, CAMS_combined$gas)
+
+CAMS_CO2_df <- CAMS_split[["CO2"]]
+CAMS_CH4_df <- CAMS_split[["CH4"]]
+
+grid_data_ch4 <- CAMS_CH4_df %>%
+  group_by(date) %>%
+  summarise(ch4_conc = mean(concentration, na.rm = TRUE) / 1000) %>%
+  rename(window_start_ch4 = date)
+
+cruise_info_3hr <- cruise_info_3hr %>% mutate(window_start_ch4 = floor_date(date, unit = "6 hours"))
+joined <- cruise_info_3hr %>%
+  mutate(window_start_ch4 = floor_date(date, unit = "6 hours")) %>%
+  left_join(grid_data_ch4, by = "window_start_ch4")
+
+grid_data_co2 <- CAMS_CO2_df %>%
+  group_by(date) %>%
+  summarise(co2_conc = mean(concentration, na.rm = TRUE)) %>%
+  rename(window_start_co2 = date)
+
+joined <- joined %>% mutate(window_start_co2 = floor_date(date, unit = "3 hours"))
+joined <- joined %>% left_join(grid_data_co2, by = "window_start_co2")
+
+library(dplyr)
+joined <- joined %>% dplyr::select(-window_start_co2, -window_start_ch4, -time_only, -Day)
+
+names(joined)[names(joined) == "date"] <- "Date_UTC"
+names(joined)[names(joined) == "CO2_dry_cal_moving_day"] <- "Observed_CO2"
+names(joined)[names(joined) == "CH4_dry_cal_moving_day"] <- "Observed_CH4"
+names(joined)[names(joined) == "CT_CO2_tile"] <- "CT_CO2"
+names(joined)[names(joined) == "CT_CH4_tile"] <- "CT_CH4"
+names(joined)[names(joined) == "co2_conc"] <- "CAMS_CO2"
+names(joined)[names(joined) == "ch4_conc"] <- "CAMS_CH4"
+joined <- joined[, c(1, 4, 5, 6, 2, 3, 7, 8, 10, 9)]
+
+joined$Bias_CT_CO2 <- joined$CT_CO2 - joined$Observed_CO2
+joined$Bias_CT_CH4 <- joined$CT_CH4 - joined$Observed_CH4
+joined$Bias_CAMS_CO2 <- joined$CAMS_CO2 - joined$Observed_CO2
+joined$Bias_CAMS_CH4 <- joined$CAMS_CH4 - joined$Observed_CH4
+joined$Bias_CT_CO2_SD <- sd(joined$Bias_CT_CO2, na.rm = T)
+joined$Bias_CT_CH4_SD <- sd(joined$Bias_CT_CH4, na.rm = T)
+joined$Bias_CAMS_CO2_SD <- sd(joined$Bias_CAMS_CO2, na.rm = T)
+joined$Bias_CAMS_CH4_SD <- sd(joined$Bias_CAMS_CH4, na.rm = T)
