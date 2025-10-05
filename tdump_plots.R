@@ -170,14 +170,14 @@ train_tracks <- st_as_sfc(trainline$the_geom, crs = 4326)
 states <- st_transform(states, crs = 4326)
 #Plotting tracks and trajectories
 library(paletteer)
-colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
+#colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
 plot(
   st_geometry((states)),
   xlim = c(-78, -70),
   ylim = c(38, 42),
   xlab = "",
   ylab = "",
-  main = "Back Trajectories in HRRR: Flight #07_02_2025",
+  main = "Potential Sources of GHGs",
   border = "grey",
   axes = T,
   las = 1,

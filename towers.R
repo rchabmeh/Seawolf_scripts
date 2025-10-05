@@ -1240,8 +1240,8 @@ for (i in names(averaged_data)) {
 }
 
 ##### Set time limit for model comparison #####
-start_date <- as.Date("2023-10-12")
-end_date <- as.Date("2023-10-18")
+start_date <- as.Date("2022-10-18")
+end_date <- as.Date("2022-10-19")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1263,7 +1263,7 @@ obs_ch4$co2_ppm <- NULL
 
 library(raster)
 
-cruise <- "Cruise 24"
+cruise <- "Cruise 14"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 
@@ -1379,14 +1379,14 @@ for (i in seq_along(CTCO2_lists)) {
   
   dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   hours <- as.numeric(format(dates_posix, "%H"))
-  rounded_hours <- floor(hours / 3) * 3 #chosing floor instead of ceiling so 01:30 -> 00:00
+  rounded_hours <- floor(hours / 3) * 3 #choosing floor instead of ceiling so 01:30 -> 00:00
   dates_posix_aligned <- as.POSIXct(paste0(
     format(dates_posix, "%Y-%m-%d "),
     sprintf("%02d:00:00", rounded_hours)
   ), tz = "UTC")
   
   library(terra)
-  vals <- extract(r_brick, coords)
+  vals <- raster::extract(r_brick, coords)
   
   df <- data.frame(
     date = rep(as.POSIXct(dates_posix_aligned), each = nrow(coords)),
@@ -1419,7 +1419,7 @@ for (i in seq_along(CTCH4_lists)) {
   }
   
   library(terra)
-  vals <- extract(r_brick, coords)
+  vals <- raster::extract(r_brick, coords)
   dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   
   df <- data.frame(
@@ -1517,7 +1517,7 @@ for (file_key in names(CAMS)) {
   r_stack <- CAMS[[file_key]]
   timestamps <- all_timestamps[[file_key]]
   
-  vals <- extract(r_stack, coords)
+  vals <- raster::extract(r_stack, coords)
   df <- data.frame(
     Lon = rep(coords$Lon, each = nlayers(r_stack)),
     Lat = rep(coords$Lat, each = nlayers(r_stack)),

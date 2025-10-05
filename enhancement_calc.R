@@ -9,14 +9,7 @@
 #NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
 #NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well
 
-##losing background_towers by section 8 ?? looking into now 8/28/25
-
-#New goals via 1:1 meeting w/ Shep:
-# 1. Choose carefully which towers represent background
-# 2. Use WNJ not as a background but as a comparison to ship data
-# 3. Add scatter plots to compare modeled v enhancement
-
-cruise = "Cruise 24"
+cruise = "Cruise 14"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -38,7 +31,7 @@ myfiles <- setNames(lapply(temp, read.csv), clean_names)
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("LEW", "WNJ") #"LEW", "BVA", "TMD", "WNJ"
+background_towers <- c("TMD", "WNJ", "BVA") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -65,8 +58,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2022-04-09")
-end_date <- as.Date("2022-04-12")
+start_date <- as.Date("2022-10-18")
+end_date <- as.Date("2022-10-19")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -98,6 +91,10 @@ cruise_info$Time_UTC <- with_tz(cruise_info$Time_local, origin = "1904-01-01", t
 library(openair)
 colnames(cruise_info)[colnames(cruise_info) == "Time_UTC"] <- "date"
 cruise_info$Day <- as.Date(cruise_info$date)
+# added 10/25
+first_day <- as.Date(min(cruise_info$date))
+start_date <- as.POSIXct(paste0(first_day, " 00:00:00"), tz = "UTC")
+#
 cruise_info_3hr <- timeAverage(
   cruise_info,
   avg.time = "3 hour",
@@ -1089,6 +1086,7 @@ keep <- c(
 )
 rm(list = setdiff(ls(), keep))
 
+final_obs_ch4 <- na.omit(final_obs_ch4)
 View(final_obs_co2)
 View(final_obs_ch4)
 
@@ -1497,6 +1495,9 @@ final_ct_long_ch4 <- melt(
 )
 final_ct_long_ch4$Tower <- sub("^enh_via_", "", final_ct_long_ch4$Tower)
 
+final_ct_co2 <- na.omit(final_ct_co2)
+final_ct_ch4 <- na.omit(final_ct_ch4)
+
 View(final_ct_co2)
 View(final_ct_ch4)
 
@@ -1786,6 +1787,7 @@ final_cams_ch4 <- na.omit(final_cams_ch4)
 final_cams_long_ch4 <- na.omit(final_cams_long_ch4)
 tower_df_ch4_cams <- na.omit(tower_df_ch4_cams)
 
+final_cams_co2 <- na.omit(final_cams_co2)
 View(final_cams_co2)
 View(final_cams_ch4)
 

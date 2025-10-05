@@ -895,55 +895,112 @@ for (i in 1:length(HRRR_final_traj_filter)) {
 states <- st_transform(states, crs = 4326)
 plot(
   st_geometry((states)),
-  xlim = c(-78, -70),
-  ylim = c(38, 42),
+  xlim = c(-79, -74),
+  ylim = c(39, 41.8),
   xlab = "Longitude",
   ylab = "Latitude",
-  main = "Cruise 4: 4-10-2022, 10:00 - 16:00 EDT HRRR Trajectories",
+  main = "Cruise 14: 10/18/2022 EDT HRRR Trajectories",
   border = "grey",
   axes = T,
   las = 1,
   asp = 1
 )
- # for (i in 1:length(HRRR_final_traj_filter)) { 
- #  lines(HRRR_final_traj_filter[[i]][["Longitude"]],HRRR_final_traj_filter[[i]][["Latitude"]])
- # }
+   for (i in 1:length(HRRR_final_traj_filter)) { 
+    lines(HRRR_final_traj_filter[[i]][["Longitude"]],HRRR_final_traj_filter[[i]][["Latitude"]])
+   }
 
- lines(HRRR_final_traj_filter[[2]][["Longitude"]],HRRR_final_traj_filter[[2]][["Latitude"]], col = "red")
- lines(HRRR_final_traj_filter[[3]][["Longitude"]],HRRR_final_traj_filter[[3]][["Latitude"]], col = "blue")
- lines(HRRR_final_traj_filter[[4]][["Longitude"]],HRRR_final_traj_filter[[4]][["Latitude"]], col = "green")
- lines(HRRR_final_traj_filter[[5]][["Longitude"]],HRRR_final_traj_filter[[5]][["Latitude"]], col = "yellow") 
- lines(HRRR_final_traj_filter[[6]][["Longitude"]],HRRR_final_traj_filter[[6]][["Latitude"]], col = "orange") 
- lines(HRRR_final_traj_filter[[7]][["Longitude"]],HRRR_final_traj_filter[[7]][["Latitude"]], col = "purple") 
- lines(HRRR_final_traj_filter[[8]][["Longitude"]],HRRR_final_traj_filter[[8]][["Latitude"]], col = "brown")
+ lines(HRRR_final_traj_filter[[16]][["Longitude"]],HRRR_final_traj_filter[[16]][["Latitude"]], col = "red")
+ lines(HRRR_final_traj_filter[[10]][["Longitude"]],HRRR_final_traj_filter[[10]][["Latitude"]], col = "blue")
+ lines(HRRR_final_traj_filter[[11]][["Longitude"]],HRRR_final_traj_filter[[11]][["Latitude"]], col = "green")
+ lines(HRRR_final_traj_filter[[12]][["Longitude"]],HRRR_final_traj_filter[[12]][["Latitude"]], col = "yellow") 
+ lines(HRRR_final_traj_filter[[13]][["Longitude"]],HRRR_final_traj_filter[[13]][["Latitude"]], col = "orange") 
+ lines(HRRR_final_traj_filter[[14]][["Longitude"]],HRRR_final_traj_filter[[14]][["Latitude"]], col = "purple") 
+ lines(HRRR_final_traj_filter[[15]][["Longitude"]],HRRR_final_traj_filter[[15]][["Latitude"]], col = "brown")
 
+ 
+ cities <- read.csv(
+   '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Major NE cities lat_long.csv'
+ )
+ landfills <- read.csv(
+   '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-landfills.csv'
+ )
+ powerplants <- read.csv(
+   '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Misc. RCM /Lat_Lon_Locations-powerplants.csv'
+ )
+ 
+
+ 
+ library(paletteer)
+ colors2 = paletteer_d("ggthemes::calc", n = length(cities$Longitude))
+ for (j in 1:length(cities$Longitude)) {
+   par(xpd = F)
+   points(
+     cities$Longitude[j],
+     cities$Latitude[j],
+     col = "black",
+     bg = colors2[j],
+     pch = 22,
+     cex = 1.5
+   )
+ }
+ #Plotting landfills
+ library(paletteer)
+ colors3 = paletteer_d("tvthemes::EarthKingdom", n = length(landfills$Longitude))
+ for (j in 1:length(landfills$Longitude)) {
+   par(xpd = F)
+   points(
+     landfills$Longitude[j],
+     landfills$Latitude[j],
+     col = "black",
+     bg = colors3[j],
+     pch = 24,
+     cex = 1.5
+   )
+ }
+ #Plotting powerplants
+ library(paletteer)
+ colors6 = paletteer_d("tvthemes::WaterTribe", n = length(powerplants$Longitude))
+ for (j in 1:length(landfills$Longitude)) {
+   par(xpd = F)
+   points(
+     powerplants$Longitude[j],
+     powerplants$Latitude[j],
+     col = "black",
+     bg = colors6[j],
+     pch = 25,
+     cex = 1.5
+   )
+ }
+ 
+ 
+ 
 #add towers
 twr <-read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv")
 #twr <- twr[twr$SiteCode == "LEW", ]
-twr <- twr[twr$SiteCode %in% c("LEW", "WNJ"), ]
+twr <- twr[twr$SiteCode %in% c("LEW", "WNJ", "BVA", "TMD"), ]
 
 points(twr$Lon,twr$Lat, pch = 23, col = "black", bg = "black")
 text(twr$Lon, twr$Lat, labels = twr$SiteCode, pos = 4, cex = 0.8)
 
-labels <- sapply(2:8, function(i) { #change this when necessary
+labels <- sapply(10:16, function(i) { #change this when necessary
   dt <- HRRR_final_traj_filter[[i]][["Starting.Date.Time"]][1]
   dt <- as.POSIXct(dt, tz = "America/New_York")   # ensure proper datetime object
   format(dt, "%H:%M %Z")                          # gives "10:00 EDT"
 })
 
 # add legend
-legend("bottomright",
-       inset = -0.135,
+legend("bottomleft",
+       inset = 0.235,
        legend = labels,
        col = c("red", "blue", "green", "yellow", "orange", "purple", "brown"),
        lty = 1,
-       cex = 0.9,
+       cex = 0.6,
        bty = "n",
        y.intersp = 0.3
      )
 
 
-
+#________________
 tracks4 <- read.csv("/Users/reneechabot-mehlin/Downloads/2022-04-07__2022-04-16_Seawolf_1hz.csv")
 tracks4 <- tracks4[!is.na(tracks4$Latitude_deg), ]
 tracks4$Time_local <- as.POSIXct(tracks4$Time_local, origin = "1904-01-01", tz = "America/New_York")
