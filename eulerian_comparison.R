@@ -1,6 +1,6 @@
 #File comparing Eulerian .nc files to cruise data
-#Trajectory data________________________________________________________________
-final_filtered_trajectories <- readRDS('/Users/reneechabot/Desktop/cruise4_eulerian /4final_traj.RData')
+#####Trajectory data_______________________________________________________#####
+final_filtered_trajectories <- readRDS('/Volumes/Seagate/cruise14_eulerian/14final_traj.RData')
 traj_dates <- vector("list", length(final_filtered_trajectories))
 for (i in seq_along(final_filtered_trajectories)) {
   traj_dates[[i]] <- as.Date(final_filtered_trajectories[[i]][[14]][[1]], tz = "America/New_York")
@@ -10,14 +10,13 @@ for (i in seq_along(final_filtered_trajectories)){
   traj_times[[i]] <- as.POSIXct(final_filtered_trajectories[[i]][[14]][[1]], tz = "America/New_York")
 }
 
-#_______________________________________________________________________________
-#Time intervals_________________________________________________________________
+#####Time intervals________________________________________________________#####
 library(ncdf4)
 library(raster)
 library(lubridate)
 
 files <- list.files(
-  '/Users/reneechabot/Desktop/cruise8_eulerian/carbon_tracker_co2_total',
+  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -55,7 +54,12 @@ interval_labels$Times_NY <- paste0(
 
 print(interval_labels)
 
-#Carbon tracker CO2_____________________________________________________________
+#####LOADING IN TOWERS_____________________________________________________#####
+twr <-read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv") 
+#twr <- twr[twr$SiteCode == "LEW", ] 
+twr <- twr[twr$SiteCode %in% c("LEW", "WNJ", "BVA", "TMD"), ]
+
+#####Carbon tracker CO2___________________________________________________######
 #This file contains CarbonTracker mole fractions averaged over each time interval.
 #The times on the date axis are the centers of each averaging period in UTC:
 #The vertical resolution of TM5 in CarbonTracker is 34 hybrid sigma-pressure levels.
@@ -74,7 +78,7 @@ print(interval_labels)
 library(raster)
 CT_CO2 <- list()
 files <- list.files(
-  '/Users/reneechabot/Desktop/cruise8_eulerian/carbon_tracker_co2_total/',
+  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -94,7 +98,7 @@ library(dplyr)
 library(fields)
 library(paletteer)
 states <- st_read(
-  "/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
+  "/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k"
 )
 east_coast_states <- c(
   "Maine",
@@ -131,7 +135,7 @@ for (i in seq_along(CT_CO2)) {
   CTCO2_6[[i]] <- CT_CO2[[i]][[6]] 
   CTCO2_7[[i]] <- CT_CO2[[i]][[7]] 
 }
-#TIME FIVE______________________________________________________________________
+#####TIME FIVE_____________________________________________________________#####
 traj_df_5 <- list()
 for (k in seq_along(CT_CO2)) {
   name_string <- CT_CO2[[k]]@data@names[[1]]
@@ -148,7 +152,7 @@ for (k in seq_along(CT_CO2)) {
       for (j in match_indices) {
         traj_data <- final_filtered_trajectories[[j]]
         if (!is.null(traj_data) && "Hour" %in% names(traj_data)) {
-          matched_rows <- traj_data[traj_data$Hour %in% c("08:00", "09:00", "10:00", "111:00"), ]
+          matched_rows <- traj_data[traj_data$Hour %in% c("08:00", "09:00", "10:00", "11:00"), ]
           
           if (nrow(matched_rows) > 0) {
             traj_df_5[[length(traj_df_5) + 1]] <- matched_rows
@@ -184,38 +188,25 @@ for (i in seq_along(CTCO2_5)) {
   colnames(raster_df) <- c("x", "y", "CO2_ppm")
   
   name_string <- CTCO2_5[[i]]@data@names[[1]]
-  date_string <- gsub("X(\\d{4})\\.(\\d{2})\\.(\\d{2}).*",
-                      "\\1-\\2-\\3",
-                      name_string)
+  date_string <- gsub("X(\\d{4})\\.(\\d{2})\\.(\\d{2}).*", "\\1-\\2-\\3", name_string)
   target_date <- as.Date(date_string)
   
   p <- ggplot() +
     geom_tile(data = raster_df, aes(x = x, y = y, fill = CO2_ppm)) +
     geom_text(
       data = raster_df,
-      aes(
-        x = x,
-        y = y,
-        label = round(CO2_ppm, 3)
-      ),
+      aes(x = x, y = y, label = round(CO2_ppm, 3)),
       size = 2.5,
       color = "black"
     ) +
-    geom_sf(
-      data = east_states_sf,
-      fill = NA,
-      color = "grey",
-      linewidth = 0.4
-    ) +
+    geom_sf(data = east_states_sf, fill = NA, color = "grey", linewidth = 0.4) +
     scale_fill_gradientn(colors = fields::tim.colors(),
                          limits = z_range_5EAST,
                          name = "ppm CO2") +
-    coord_sf(xlim = c(-80, -70),
-             ylim = c(38, 42),
-             expand = FALSE) +
+    coord_sf(xlim = c(-80, -70), ylim = c(38, 42), expand = FALSE) +
     labs(
       title = paste(
-        "CT CO2: Cruise #8 averaged",
+        "CT CO2: Cruise #14 averaged",
         date_string,
         "(time period 8-11 EDT)"
       ),
@@ -223,6 +214,8 @@ for (i in seq_along(CTCO2_5)) {
       y = "Latitude"
     ) +
     theme_minimal()
+  
+  # Add trajectories
   colors <- paletteer_c("grDevices::rainbow", n = length(traj_dates5))
   match_indices <- which(traj_dates5 == target_date)
   
@@ -230,9 +223,8 @@ for (i in seq_along(CTCO2_5)) {
     for (j in seq_along(match_indices)) {
       traj_df <- traj_df_5[[match_indices[j]]]
       start_point <- traj_df[1, c("Longitude", "Latitude")]
-      tile_value <- raster::extract(cropped_raster, matrix(c(
-        start_point$Longitude, start_point$Latitude
-      ), ncol = 2))
+      tile_value <- raster::extract(cropped_raster,
+                                    matrix(c(start_point$Longitude, start_point$Latitude), ncol = 2))
       key <- paste0(as.character(target_date), "_traj", j)
       start_tile_values[[key]] <- as.numeric(tile_value)
       traj_color <- colors[match_indices[j]]
@@ -254,6 +246,25 @@ for (i in seq_along(CTCO2_5)) {
         )
     }
   }
+  
+  # ---- Add tower locations ----
+  p <- p +
+    geom_point(
+      data = twr,
+      aes(x = Lon, y = Lat),
+      shape = 23,          # diamond shape
+      size = 3,
+      fill = "black",
+      color = "black"
+    ) +
+    geom_text(
+      data = twr,
+      aes(x = Lon, y = Lat, label = SiteCode),
+      hjust = -0.3,        # label slightly to the right
+      vjust = 0.3,
+      size = 3
+    )
+  
   print(p)
 }
 legend_text2 <- c()
@@ -266,7 +277,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 8",
+  title = "Dates-Cruise 14",
   text.font = 3,
   col = colors,
   lty = 1,
@@ -277,8 +288,7 @@ legend(
   lwd = 3,
   bg = "aliceblue"
 )
-#TIME SIX_______________________________________________________________________
-traj_df_6 <- list()
+#####TIME SIX______________________________________________________________#####
 for (k in seq_along(CT_CO2)) {
   name_string <- CT_CO2[[k]]@data@names[[1]]
   date_string <- gsub("X(\\d{4})\\.(\\d{2})\\.(\\d{2}).*",
@@ -357,7 +367,7 @@ for (i in seq_along(CTCO2_6)) {
              expand = FALSE) +
     labs(
       title = paste(
-        "CT CO2: Cruise #8 averaged",
+        "CT CO2: Cruise #14 averaged",
         date_string,
         "(time period 11-14 EDT)"
       ),
@@ -394,6 +404,23 @@ for (i in seq_along(CTCO2_6)) {
         )
     }
   }
+  # ---- Add tower locations ----
+  p <- p +
+    geom_point(
+      data = twr,
+      aes(x = Lon, y = Lat),
+      shape = 23,          # diamond shape
+      size = 3,
+      fill = "black",
+      color = "black"
+    ) +
+    geom_text(
+      data = twr,
+      aes(x = Lon, y = Lat, label = SiteCode),
+      hjust = -0.3,        # label slightly to the right
+      vjust = 0.3,
+      size = 3
+    )
   print(p)
 
 }
@@ -407,7 +434,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 8",
+  title = "Dates-Cruise 14",
   text.font = 3,
   col = colors,
   lty = 1,
@@ -418,7 +445,7 @@ legend(
   lwd = 3,
   bg = "aliceblue"
 )
-#TIME 7_________________________________________________________________________
+#####TIME SEVEN____________________________________________________________#####
 traj_df_7 <- list()
 for (k in seq_along(CT_CO2)) {
   name_string <- CT_CO2[[k]]@data@names[[1]]
@@ -497,7 +524,7 @@ for (i in seq_along(CTCO2_7)) {
              expand = FALSE) +
     labs(
       title = paste(
-        "CT CO2: Cruise #8 averaged",
+        "CT CO2: Cruise #14 averaged",
         date_string,
         "(time period 14-17 EDT)"
       ),
@@ -534,6 +561,23 @@ for (i in seq_along(CTCO2_7)) {
         )
     }
   }
+  # ---- Add tower locations ----
+  p <- p +
+    geom_point(
+      data = twr,
+      aes(x = Lon, y = Lat),
+      shape = 23,          # diamond shape
+      size = 3,
+      fill = "black",
+      color = "black"
+    ) +
+    geom_text(
+      data = twr,
+      aes(x = Lon, y = Lat, label = SiteCode),
+      hjust = -0.3,        # label slightly to the right
+      vjust = 0.3,
+      size = 3
+    )
   print(p)
 }
 legend_text2 <- c()
@@ -546,7 +590,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 8",
+  title = "Dates-Cruise 14",
   text.font = 3,
   col = colors,
   lty = 1,
@@ -558,7 +602,7 @@ legend(
   bg = "aliceblue"
 )
 #_______________________________________________________________________________
-#STATISTICS_____________________________________________________________________
+#####STATISTICS CT CO2___________________________________________________#######
 #Cruise Data____________________________________________________________________
 cruise <- "Cruise 8"
 cruise_info <- read.delim(
@@ -662,7 +706,7 @@ cruise_info_5min <- timeAverage(
 #q + geom_hline(yintercept = 429.3834, color = "red")
 
 #_______________________________________________________________________________
-#Carbon tracker CH4_____________________________________________________________
+#####Carbon tracker CH4____________________________________________________#####
 CT_CH4 <- list()
 library(raster)
 files = list.files(
@@ -723,7 +767,7 @@ for (i in seq_along(CT_CH4)) {
   CTCH4_6[[i]] <- CT_CH4[[i]][[5]]
   CTCH4_7[[i]] <- CT_CH4[[i]][[6]]
 }
-#TIME FIVE______________________________________________________________________
+#####TIME FIVE_____________________________________________________________#####
 traj_df_5 <- list()
 for (k in seq_along(CT_CH4)) {
   name_string <- CT_CH4[[k]]@data@names[[1]]
@@ -867,7 +911,7 @@ legend(
   lwd = 3,
   bg = "aliceblue"
 )
-#TIME SIX_______________________________________________________________________
+#####TIME SIX______________________________________________________________#####
 traj_df_6 <- list()
 for (k in seq_along(CT_CH4)) {
   name_string <- CT_CH4[[k]]@data@names[[1]]
@@ -1011,7 +1055,7 @@ legend(
   lwd = 3,
   bg = "aliceblue"
 )
-#TIME 7_________________________________________________________________________
+#####TIME SEVEN____________________________________________________________#####
 traj_df_7 <- list()
 for (k in seq_along(CT_CH4)) {
   name_string <- CT_CH4[[k]]@data@names[[1]]
@@ -1157,7 +1201,7 @@ legend(
   bg = "aliceblue"
 )
 #_______________________________________________________________________________
-#STATISTICS_____________________________________________________________________
+#####STATISTICS CT CH4_____________________________________________________#####
 cruise <- "Cruise 8"
 cruise_info <- read.delim(
 "/Users/reneechabot/Desktop/moving_data.txt"  ,
@@ -1259,7 +1303,7 @@ cruise_info_5min <- timeAverage(
 #To add one line: 
 #q + geom_hline(yintercept = 2.031191, color = "red")
 
-#FIGURING OUT CAMS________
+#####FIGURING OUT CAMS____________________________________________________######
 #_______________________________________________________________________________
 #CAMS CO2 & CH4___
 ## Info:

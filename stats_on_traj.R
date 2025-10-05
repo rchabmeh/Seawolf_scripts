@@ -21,7 +21,7 @@
 #create a histogram with frequency on x-axis and conc avg on y-axis for each angle bin
 
 #CRUISE TRACKS___
-cruise_tracks <- read.delim("/Users/reneechabot/Desktop/moving_data.txt"
+cruise_tracks <- read.delim("/Users/reneechabot-mehlin/Downloads/moving_data_14.txt"
                             ,
                             sep = ",",
                             dec = ".")
@@ -29,7 +29,7 @@ cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$Longitude_deg), ]
 cruise_tracks <- cruise_tracks[!is.na(cruise_tracks$CO2_dry_cal_moving_day), ]
 
 #TRAJECTORIES___
-directory <- "/Users/reneechabot/Desktop/test"
+directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr"
 #directory <- "/Users/reneechabot/hysplit/working/cruise_4_hrrr_tdump_files"
 setwd(directory)
 tdump_files = list.files(
@@ -298,7 +298,11 @@ print(paste0(
   observations2,
   " observations"
 ))
-saveRDS(final_traj_filter, file = "/Users/reneechabot/Desktop/8final_traj.RData")
+saveRDS(final_traj_filter, file = "/Volumes/Seagate/cruise14_eulerian/14final_traj.RData")
+
+
+
+
 #PLOT ALONG TRACKS___
 library(ggplot2)
 library(sf)

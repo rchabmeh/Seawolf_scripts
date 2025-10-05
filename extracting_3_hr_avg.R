@@ -1,4 +1,4 @@
-directory <- "/Users/reneechabot/hysplit/working/cruise_4_hrrr_tdump_files"
+directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr"
 setwd(directory)
 tdump_files = list.files(
   pattern = glob2rx("tdump?*"),
@@ -46,10 +46,10 @@ for (i in seq_along(final_filtered_trajectories)) {
   traj_dates[[i]] <- as.Date(final_filtered_trajectories[[i]][[14]][[1]], tz = "America/New_York")
 }
 #NOT SURE IF I NEED TRAJECTORY INFO REALLY
-cruise <- "Cruise 4"
+cruise <- "Cruise 14"
 #need full cruise information
 cruise_info <- read.delim(
-  "/Users/reneechabot/Desktop/cruise_4_all_data.csv",
+  "/Volumes/Seagate/cruise14_eulerian/all_data_cruise14.txt",
   sep = ",",
   dec = "."
 )
@@ -80,7 +80,7 @@ cruise_info_3hr$time_only <- as_hms(cruise_info_3hr$date)
 library(raster)
 CT_CO2 <- list()
 files <- list.files(
-  '/Users/reneechabot/Desktop/cruise4_eulerian /carbon_tracker_co2_total/',
+  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -120,7 +120,7 @@ for (i in seq_along(CT_CO2)) {
 CT_CH4 <- list()
 library(raster)
 files = list.files(
-  '/Users/reneechabot/Desktop/cruise4_eulerian /carbon_tracker_ch4_total',
+  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_ch4_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -162,7 +162,7 @@ library(lubridate)
 
 CT_CO2 <- list()
 files <- list.files(
-  '/Users/reneechabot/Desktop/cruise4_eulerian /carbon_tracker_co2_total/',
+  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -448,7 +448,7 @@ ggplot(cruise_info_3hr,
        aes(x = CO2_dry_cal_moving_day, y = CT_CO2_tile)) + geom_point() +
   labs(
     title = paste(
-      "CT CO2: Cruise #4 averaged every 3 hours vs measured concentrations"
+      "CT CO2: Cruise #14 averaged every 3 hours vs measured concentrations"
     ),
     x = "Observed CO2 (ppm)",
     y = "CT CO2 (ppm)"
@@ -492,7 +492,7 @@ ggplot(cruise_info_3hr,
        aes(x = CO2_dry_cal_moving_day, y = CT_CO2_tile, color = date)) + geom_point(size=3) +
   labs(
     title = paste(
-      "CT CO2: Cruise #4 averaged every 3 hours vs measured concentrations"
+      "CT CO2: Cruise #14 averaged every 3 hours vs measured concentrations"
     ),
     x = "Observed CO2 (ppm)",
     y = "CT CO2 (ppm)"
@@ -557,7 +557,7 @@ matching_indices <- which(traj_datetimes %in% cruise_datetimes)
 final_traj_filter <- final_traj_filter[matching_indices]
 final_traj_filter <- final_traj_filter[sapply(final_traj_filter, nrow) == 25]
 
-states <- st_read("/Users/reneechabot/Downloads/cb_2023_us_state_500k/cb_2023_us_state_500k.shp")
+states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k")
 
 lon_all <- c()
 lat_all <- c()
@@ -601,10 +601,6 @@ ggplot(cruise_info_3hr, aes(x = date, y = co2_mean_bias, fill = over_land)) +
     legend.title = element_text(size = 14),
     legend.text = element_text(size = 12)
   )
-
-
-
-
 
 
 #CH4
@@ -859,7 +855,7 @@ ggplot(cruise_info_3hr,
        aes(x = CH4_dry_cal_moving_day, y = CT_CH4_tile)) + geom_point() +
   labs(
     title = paste(
-      "CT CO2: Cruise #4 averaged every 3 hours vs measured concentrations"
+      "CT CO2: Cruise #14 averaged every 3 hours vs measured concentrations"
     ),
     x = "Observed CH4 (ppb)",
     y = "CT CH4 (ppb)"
@@ -901,7 +897,7 @@ ggplot(cruise_info_3hr,
        aes(x = CH4_dry_cal_moving_day, y = CT_CH4_tile, color = date)) + geom_point(size=3) +
   labs(
     title = paste(
-      "CT CH4: Cruise #4 averaged every 3 hours vs measured concentrations"
+      "CT CH4: Cruise #14 averaged every 3 hours vs measured concentrations"
     ),
     x = "Observed CH4 (ppb)",
     y = "CT CH4 (ppb)"
@@ -979,8 +975,6 @@ cruise_datetimes <- as.POSIXct(cruise_info_3hr$date, tz = "America/New_York")
 matching_indices <- which(traj_datetimes %in% cruise_datetimes)
 final_traj_filter <- final_traj_filter[matching_indices]
 final_traj_filter <- final_traj_filter[sapply(final_traj_filter, nrow) == 25]
-
-states <- st_read("/Users/reneechabot/Downloads/cb_2023_us_state_500k/cb_2023_us_state_500k.shp")
 
 lon_all <- c()
 lat_all <- c()
