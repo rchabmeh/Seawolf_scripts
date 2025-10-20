@@ -1,6 +1,6 @@
 #File comparing Eulerian .nc files to cruise data
 #####Trajectory data_______________________________________________________#####
-final_filtered_trajectories <- readRDS('/Volumes/Seagate/cruise14_eulerian/14final_traj.RData')
+final_filtered_trajectories <- readRDS('/Volumes/Seagate/cruise4_eulerian/4final_traj.RData')
 traj_dates <- vector("list", length(final_filtered_trajectories))
 for (i in seq_along(final_filtered_trajectories)) {
   traj_dates[[i]] <- as.Date(final_filtered_trajectories[[i]][[14]][[1]], tz = "America/New_York")
@@ -16,7 +16,7 @@ library(raster)
 library(lubridate)
 
 files <- list.files(
-  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
+  '/Volumes/Seagate/cruise4_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -78,7 +78,7 @@ twr <- twr[twr$SiteCode %in% c("LEW", "WNJ", "BVA", "TMD"), ]
 library(raster)
 CT_CO2 <- list()
 files <- list.files(
-  '/Volumes/Seagate/cruise14_eulerian/carbon_tracker_co2_total',
+  '/Volumes/Seagate/cruise4_eulerian/carbon_tracker_co2_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -206,7 +206,7 @@ for (i in seq_along(CTCO2_5)) {
     coord_sf(xlim = c(-80, -70), ylim = c(38, 42), expand = FALSE) +
     labs(
       title = paste(
-        "CT CO2: Cruise #14 averaged",
+        "CT CO2: Cruise #4 averaged",
         date_string,
         "(time period 8-11 EDT)"
       ),
@@ -277,7 +277,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 14",
+  title = "Dates-Cruise 4",
   text.font = 3,
   col = colors,
   lty = 1,
@@ -367,7 +367,7 @@ for (i in seq_along(CTCO2_6)) {
              expand = FALSE) +
     labs(
       title = paste(
-        "CT CO2: Cruise #14 averaged",
+        "CT CO2: Cruise #4 averaged",
         date_string,
         "(time period 11-14 EDT)"
       ),
@@ -434,7 +434,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 14",
+  title = "Dates-Cruise 4",
   text.font = 3,
   col = colors,
   lty = 1,
@@ -710,7 +710,7 @@ cruise_info_5min <- timeAverage(
 CT_CH4 <- list()
 library(raster)
 files = list.files(
-  '/Users/reneechabot/Desktop/cruise8_eulerian/carbon_tracker_ch4_total',
+  '/Volumes/Seagate/cruise4_eulerian/carbon_tracker_ch4_total',
   pattern = '*.nc',
   full.names = TRUE
 )
@@ -730,7 +730,7 @@ library(dplyr)
 library(fields)
 library(paletteer)
 states <- st_read(
-  "/Users/reneechabot/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/My Drive/Shepson Group Drive/General Inventories and Shapefiles/Shapefiles/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
+  "/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k"
 )
 east_coast_states <- c(
   "Maine",
@@ -848,7 +848,7 @@ for (i in seq_along(CTCH4_5)) {
              expand = FALSE) +
     labs(
       title = paste(
-        "CT CH4: Cruise #8 averaged",
+        "CT CH4: Cruise #4 averaged",
         date_string,
         "(time period 8-11 EDT)"
       ),
@@ -888,6 +888,22 @@ for (i in seq_along(CTCH4_5)) {
         )
     }
   }
+  p <- p +
+    geom_point(
+      data = twr,
+      aes(x = Lon, y = Lat),
+      shape = 23,          # diamond shape
+      size = 3,
+      fill = "black",
+      color = "black"
+    ) +
+    geom_text(
+      data = twr,
+      aes(x = Lon, y = Lat, label = SiteCode),
+      hjust = -0.3,        # label slightly to the right
+      vjust = 0.3,
+      size = 3
+    )
   print(p)
 }
 legend_text2 <- c()
@@ -900,7 +916,7 @@ par(xpd = T)
 legend(
   "center",
   legend = c(legend_text2),
-  title = "Dates-Cruise 8",
+  title = "Dates-Cruise 4",
   text.font = 3,
   col = colors,
   lty = 1,

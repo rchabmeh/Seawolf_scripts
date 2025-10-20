@@ -9,7 +9,7 @@
 #NOTE: BVA and TMD are in the same grid cell which is why on CT and CAMS plots it doesn't show BVA
 #NOTE: File path is /Volumes/Seagate/... you will have to change them manually as well
 
-cruise = "Cruise 14"
+cruise = "Cruise 4"
 cruise_squish <- tolower(gsub(" ", "", cruise))
 #####_____________________________________________________________________ #####
 #####_____________________________________________________________________ #####
@@ -31,7 +31,7 @@ myfiles <- setNames(lapply(temp, read.csv), clean_names)
 list2env(myfiles, envir = .GlobalEnv)
 
 ##### 2. LOOK @ TRAJECTORY MAP TO SEE WHICH TOWERS ARE YOUR BACKGROUND #####
-background_towers <- c("TMD", "WNJ", "BVA") #"LEW", "BVA", "TMD", "WNJ"
+background_towers <- c("LEW", "WNJ") #"LEW", "BVA", "TMD", "WNJ"
 
 rm(list = ls()[!grepl(paste0("^(", paste(
   c(
@@ -58,8 +58,8 @@ for (nm in names(tower_data)) {
 }
 
 ##### 3. Set time limit #####
-start_date <- as.Date("2022-10-18")
-end_date <- as.Date("2022-10-19")
+start_date <- as.Date("2023-03-22")
+end_date <- as.Date("2023-04-01")
 
 #####_______________ 4. Setting cruise to 3 hour average _________________ #####
 #### Loading in cruise and averaging to 3 hours ####
@@ -2142,7 +2142,7 @@ ggplot(long_data_co2, aes(x = Grouping, y = Enhancement, color = Source)) +
   )
 
 #####_________________________9. Saving .csv files _______________________ #####
-##### Saving all .csv files #####
+##### Saving all .csv files edited 10/07/25 for WNJ v LEW Compare#####
 cruise_squish <- tolower(gsub(" ", "", cruise))
 
 write.csv(
@@ -2151,7 +2151,7 @@ write.csv(
     "/Volumes/Seagate/",
     cruise_squish,
     "_eulerian/all_models_merged_",
-    cruise_squish,
+    cruise_squish, "tower_comparisons",
     ".csv"
   )
 )
