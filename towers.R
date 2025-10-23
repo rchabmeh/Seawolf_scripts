@@ -2555,3 +2555,714 @@ for (sp in names(enh_info_list)) {
     print(p)
   }
 }
+
+#####_______________________ 4. WNJ v LEW Comparison 2023 _________________#####
+##### Load in the 2023 NEC tower .csv files #####
+LEW_23_CH4_50 <- read.csv(
+  '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-ch4-50m-1-hour-v20250319.csv'
+)
+LEW_23_CH4_50$DATE <- as.Date(LEW_23_CH4_50$datetime_UTC)
+LEW_23_CH4_50$HH <- sprintf("%02d:00:00", LEW_23_CH4_50$HH)
+LEW_23_CH4_50$datetime_combined <- paste(LEW_23_CH4_50$DATE, LEW_23_CH4_50$HH)
+LEW_23_CH4_50$datetime_UTC <- as.POSIXct(LEW_23_CH4_50$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+LEW_23_CH4_50$datetime_EDT <- with_tz(LEW_23_CH4_50$datetime_UTC, tzone = "America/New_York")
+
+
+LEW_23_CO2_50 <- read.csv(
+  '/Users/reneechabot-mehlin/Desktop/towers/LEW-2023-co2-50m-1-hour-v20250319.csv'
+)
+LEW_23_CO2_50$DATE <- as.Date(LEW_23_CO2_50$datetime_UTC)
+LEW_23_CO2_50$HH <- sprintf("%02d:00:00", LEW_23_CO2_50$HH)
+LEW_23_CO2_50$datetime_combined <- paste(LEW_23_CO2_50$DATE, LEW_23_CO2_50$HH)
+LEW_23_CO2_50$datetime_UTC <- as.POSIXct(LEW_23_CO2_50$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+LEW_23_CO2_50$datetime_EDT <- with_tz(LEW_23_CO2_50$datetime_UTC, tzone = "America/New_York")
+
+
+WNJ_23_CH4_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-ch4-43m-1-hour-v20250319.csv"
+)
+WNJ_23_CH4_43$DATE <- as.Date(WNJ_23_CH4_43$datetime_UTC)
+WNJ_23_CH4_43$HH <- sprintf("%02d:00:00", WNJ_23_CH4_43$HH)
+WNJ_23_CH4_43$datetime_combined <- paste(WNJ_23_CH4_43$DATE, WNJ_23_CH4_43$HH)
+WNJ_23_CH4_43$datetime_UTC <- as.POSIXct(WNJ_23_CH4_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CH4_43$datetime_EDT <- with_tz(WNJ_23_CH4_43$datetime_UTC, tzone = "America/New_York")
+
+
+WNJ_23_CO2_43 <- read.csv(
+  "/Users/reneechabot-mehlin/Desktop/towers/WNJ-2023-co2-43m-1-hour-v20250319.csv"
+)
+WNJ_23_CO2_43$DATE <- as.Date(WNJ_23_CO2_43$datetime_UTC)
+WNJ_23_CO2_43$HH <- sprintf("%02d:00:00", WNJ_23_CO2_43$HH)
+WNJ_23_CO2_43$datetime_combined <- paste(WNJ_23_CO2_43$DATE, WNJ_23_CO2_43$HH)
+WNJ_23_CO2_43$datetime_UTC <- as.POSIXct(WNJ_23_CO2_43$datetime_combined,
+                                         format = "%Y-%m-%d %H:%M:%S",
+                                         tz = "UTC")
+library(lubridate)
+WNJ_23_CO2_43$datetime_EDT <- with_tz(WNJ_23_CO2_43$datetime_UTC, tzone = "America/New_York")
+
+##### Averaging data for 3 hour intervals 2023 #####
+#3 hr avg__
+all_data <- list(
+  LEW_23_CH4_50 = LEW_23_CH4_50,
+  LEW_23_CO2_50 = LEW_23_CO2_50,
+  WNJ_23_CO2_43 = WNJ_23_CO2_43,
+  WNJ_23_CH4_43 = WNJ_23_CH4_43
+)
+interval_labels <- c(
+  "00:00–03:00 UTC",
+  "03:00–06:00 UTC",
+  "06:00–09:00 UTC",
+  "09:00–12:00 UTC",
+  "12:00–15:00 UTC",
+  "15:00–18:00 UTC",
+  "18:00–21:00 UTC",
+  "21:00–00:00 UTC"
+)
+averaged_data <- list()
+
+for (name in names(all_data)) {
+  df <- all_data[[name]]
+  df$hour <- as.numeric(format(df$datetime_UTC, "%H"))
+  df$date <- as.Date(df$datetime_UTC)
+  df$group <- findInterval(df$hour,
+                           vec = c(0, 3, 6, 9, 12, 15, 18, 21, 24),
+                           rightmost.closed = TRUE)
+  if ("ch4_ppb" %in% names(df)) {
+    target_col <- "ch4_ppb"
+  } else if ("co2_ppm" %in% names(df)) {
+    target_col <- "co2_ppm"
+  } else {
+    warning(paste("No target column found in", name))
+    next
+  }
+  agg_formula <- as.formula(paste(target_col, "~ date + group"))
+  avg_df <- aggregate(agg_formula, data = df, FUN = mean)
+  avg_df$interval <- interval_labels[avg_df$group]
+  
+  averaged_data[[name]] <- avg_df
+}
+
+TOWER_LOCATIONS <- read.csv("/Users/reneechabot-mehlin/Desktop/towers/NEC_sites.csv")
+
+prefixes <- c("TMD", "LEW", "BVA", "WNJ")
+site_prefixes <- substr(as.character(TOWER_LOCATIONS$SiteCode), 1, 3)
+matched_rows <- TOWER_LOCATIONS[site_prefixes %in% prefixes, ]
+
+for (i in names(averaged_data)) {
+  sitecode <- substr(i, 1, 3)
+  tower_row <- matched_rows[matched_rows$SiteCode == sitecode, c("Lat", "Lon") , drop = FALSE]
+  if (nrow(tower_row) == 1) {
+    meta_df <- cbind(averaged_data[[i]], tower_row[rep(1, nrow(averaged_data[[i]])), ])
+    averaged_data[[i]] <- meta_df
+  }
+}
+
+
+##### Set time limit for model comparison #####
+start_date <- as.Date("2023-01-01")
+end_date <- as.Date("2023-12-31")
+
+# Filter averaged_data to time period of interest
+datetime_filtered_data <- lapply(averaged_data, function(df) {
+  df$date <- as.Date(df$date)
+  df[df$date >= start_date & df$date <= end_date, ]
+})
+
+library(dplyr)
+big_df <- bind_rows(datetime_filtered_data, .id = "source")
+obs_co2 <- big_df[!is.na(big_df$co2_ppm), ]
+obs_co2$ch4_ppb <- NULL
+
+obs_ch4 <- big_df[!is.na(big_df$ch4_ppb), ]
+obs_ch4$co2_ppm <- NULL
+##### Loading in CarbonTracker #####
+
+# obs_co2
+# obs_ch4
+
+library(raster)
+
+co2_files <- list.files(
+  '/Volumes/Seagate/towers_model_info/CT_2023/co2',
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
+
+CT_CO2 <- lapply(co2_files, function(f) {
+  brick(
+    f,
+    varname = "co2",
+    stopIfNotEqualSpaced = FALSE,
+    level = 1
+  )
+})
+
+
+ch4_files <- list.files(
+  '/Volumes/Seagate/towers_model_info/CT_2023/ch4',
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
+
+CT_CH4 <- lapply(ch4_files, function(f) {
+  brick(
+    f,
+    varname = "ch4",
+    stopIfNotEqualSpaced = FALSE,
+    level = 1
+  )
+})
+
+
+CT_CO2_cropped <- list()
+for (i in seq(CT_CO2)) {
+  ras_date <- as.Date(floor(as.numeric((getZ(
+    CT_CO2[[i]]
+  )[1]))))
+  if (ras_date >= start_date && ras_date <= end_date) {
+    CT_CO2_cropped[[i]] <- CT_CO2[[i]]
+  }
+  
+}
+
+CT_CO2_cropped <- CT_CO2_cropped[!sapply(CT_CO2_cropped, is.null)]
+
+CT_CH4_cropped <- list()
+for (i in seq(CT_CO2)) {
+  ras_date <- as.Date(getZ(CT_CH4[[i]])[1]) #starts at 03:00 and ends the next day at 00:00
+  if (ras_date >= start_date &&
+      ras_date <= end_date) {
+    #this is why it is mismatched later on and can't be fixed
+    CT_CH4_cropped[[i]] <- CT_CH4[[i]] #but why CT_CO2 can and has been fixed
+  }
+  
+}
+
+CT_CH4_cropped <- CT_CH4_cropped[!sapply(CT_CH4_cropped, is.null)]
+
+CTCO2_lists <- lapply(1:8, function(k)
+  lapply(CT_CO2_cropped, function(x)
+    x[[k]]))
+CTCH4_lists <- lapply(1:8, function(k)
+  lapply(CT_CH4_cropped, function(x)
+    x[[k]]))
+
+library(raster)
+CTCO2_lists <- unlist(CTCO2_lists, recursive = FALSE)
+coords <- unique(obs_co2[, c("Lon", "Lat")])
+all_results <- list()
+
+for (i in seq_along(CTCO2_lists)) {
+  r_brick <- CTCO2_lists[[i]]
+  
+  dates <- getZ(r_brick)
+  
+  if (is.null(dates)) {
+    dates <- 1:nlayers(r_brick)
+  }
+  
+  dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
+  hours <- as.numeric(format(dates_posix, "%H"))
+  rounded_hours <- floor(hours / 3) * 3 #choosing floor instead of ceiling so 01:30 -> 00:00
+  dates_posix_aligned <- as.POSIXct(paste0(
+    format(dates_posix, "%Y-%m-%d "),
+    sprintf("%02d:00:00", rounded_hours)
+  ), tz = "UTC")
+  
+  library(terra)
+  vals <- raster::extract(r_brick, coords)
+  
+  df <- data.frame(
+    date = rep(as.POSIXct(dates_posix_aligned), each = nrow(coords)),
+    Lon  = rep(coords$Lon, times = nlayers(r_brick)),
+    Lat  = rep(coords$Lat, times = nlayers(r_brick)),
+    co2  = as.vector(t(vals))
+  )
+  
+  all_results[[i]] <- df
+}
+
+CT_CO2_df <- do.call(rbind, all_results)
+CT_CO2_df <- merge(CT_CO2_df,
+                   unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+                   by = c("Lon", "Lat"),
+                   all.x = TRUE)
+
+library(raster)
+
+CTCH4_lists <- unlist(CTCH4_lists, recursive = FALSE)
+coords <- unique(obs_co2[, c("Lon", "Lat")])
+all_results <- list()
+
+for (i in seq_along(CTCH4_lists)) {
+  r_brick <- CTCH4_lists[[i]]
+  
+  dates <- getZ(r_brick)
+  if (is.null(dates)) {
+    dates <- 1:nlayers(r_brick)
+  }
+  
+  library(terra)
+  vals <- raster::extract(r_brick, coords)
+  dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
+  
+  df <- data.frame(
+    date = rep(as.POSIXct(dates_posix), each = nrow(coords)),
+    Lon  = rep(coords$Lon, times = nlayers(r_brick)),
+    Lat  = rep(coords$Lat, times = nlayers(r_brick)),
+    ch4  = as.vector(t(vals))
+  )
+  
+  all_results[[i]] <- df
+}
+
+CT_CH4_df <- do.call(rbind, all_results)
+CT_CH4_df <- merge(CT_CH4_df,
+                   unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+                   by = c("Lon", "Lat"),
+                   all.x = TRUE)
+
+
+###### Loading in CAMS information ######
+
+library(raster)
+library(ncdf4)
+library(sf)
+library(dplyr)
+library(reshape2)
+CAMS <- list()
+all_timestamps <- list()
+files <- list.files(
+  '/Volumes/Seagate/towers_model_info/CAMS_2023',
+  pattern = '\\.nc$',
+  full.names = TRUE
+)
+
+for (f in files) {
+  cat("Processing:", f, "\n")
+  nc <- nc_open(f)
+  var_names <- names(nc$var)
+  
+  if ("CH4" %in% var_names) {
+    var_to_use <- "CH4"
+  } else if ("CO2" %in% var_names) {
+    var_to_use <- "CO2"
+  } else {
+    warning("No CH4 or CO2 found in:", f)
+    nc_close(nc)
+    next
+  }
+  
+  # Read timestamps
+  if ("time" %in% names(nc$dim)) {
+    time_vals <- ncvar_get(nc, "time")
+    time_units <- ncatt_get(nc, "time", "units")$value
+    origin <- sub("hours since ", "", time_units)
+    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
+  } else {
+    warning("No time dimension in:", f)
+    nc_close(nc)
+    next
+  }
+  nc_close(nc)
+  
+  # Load all time layers
+  r <- stack(f, varname = var_to_use)
+  
+  # Unit fix for CO2
+  if (var_to_use == "CO2") {
+    r <- calc(r, function(x)
+      x * 1e6)
+  }
+  
+  file_key <- basename(f)  # Use file name as key
+  CAMS[[file_key]] <- r
+  all_timestamps[[file_key]] <- timestamps
+}
+
+coords <- unique(obs_co2[, c("Lon", "Lat")])
+library(raster)
+
+extracted_list <- list()
+
+for (file_key in names(CAMS)) {
+  r_stack <- CAMS[[file_key]]
+  timestamps <- all_timestamps[[file_key]]
+  
+  vals <- raster::extract(r_stack, coords)
+  df <- data.frame(
+    Lon = rep(coords$Lon, each = nlayers(r_stack)),
+    Lat = rep(coords$Lat, each = nlayers(r_stack)),
+    Timestamp = rep(timestamps, times = nrow(coords)),
+    Value = as.vector(t(vals)),
+    File = file_key
+  )
+  
+  extracted_list[[file_key]] <- df
+}
+
+all_data_cams <- do.call(rbind, extracted_list)
+
+all_data_cams <- merge(
+  all_data_cams,
+  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
+  by = c("Lon", "Lat"),
+  all.x = TRUE
+)
+
+start_datetime <- as.POSIXct(start_date, tz = "UTC")
+end_datetime   <- as.POSIXct(end_date + 1, tz = "UTC") - 1
+
+
+cams_CO2 <- all_data_cams[grepl("CO2", all_data_cams$File, ignore.case = TRUE) &
+                            all_data_cams$Timestamp >= start_datetime &
+                            all_data_cams$Timestamp <= end_datetime, ]
+
+cams_CH4 <- all_data_cams[grepl("CH4", all_data_cams$File, ignore.case = TRUE) &
+                            all_data_cams$Timestamp >= start_datetime &
+                            all_data_cams$Timestamp <= end_datetime, ]
+cams_CO2$File <- NULL
+cams_CH4$File <- NULL
+
+
+##### Merging Datasets together based on tower #####
+#CO2
+
+merged_co2_list <- list()
+
+for (abriv in c("WNJ","LEW")) {
+  site <- abriv
+  
+  filtered_cams_co2 <- cams_CO2[cams_CO2$SiteCode == site, ]
+  filtered_obs_co2  <- obs_co2[substr(obs_co2$source, 1, 3) == site, ]
+  filtered_ct_co2   <- CT_CO2_df[CT_CO2_df$SiteCode == site, ]
+  
+  interval_starts <- c(
+    "00:00–03:00 UTC" = "00:00:00",
+    "03:00–06:00 UTC" = "03:00:00",
+    "06:00–09:00 UTC" = "06:00:00",
+    "09:00–12:00 UTC" = "09:00:00",
+    "12:00–15:00 UTC" = "12:00:00",
+    "15:00–18:00 UTC" = "15:00:00",
+    "18:00–21:00 UTC" = "18:00:00",
+    "21:00–00:00 UTC" = "21:00:00"
+  )
+  
+  filtered_obs_co2$datetime <- as.POSIXct(
+    paste(filtered_obs_co2$date, interval_starts[filtered_obs_co2$interval]),
+    tz = "UTC"
+  )
+  
+  filtered_cams_co2$DATE <- filtered_cams_co2$Timestamp
+  filtered_obs_co2$DATE  <- filtered_obs_co2$datetime
+  filtered_ct_co2$DATE   <- filtered_ct_co2$date
+  
+  names(filtered_cams_co2)[names(filtered_cams_co2) == "Value"] <- "CAMs_CO2"
+  names(filtered_obs_co2)[names(filtered_obs_co2) == "co2_ppm"] <- "Obs_CO2_ppm"
+  names(filtered_ct_co2)[names(filtered_ct_co2) == "co2"] <- "CT_CO2"
+  
+  filtered_cams_co2$SiteCode <- site
+  filtered_ct_co2$SiteCode   <- site
+  filtered_obs_co2$SiteCode  <- site
+  
+  merged_temp <- merge(filtered_cams_co2,
+                       filtered_ct_co2,
+                       by = "DATE",
+                       all = TRUE)
+  merged_co2 <- merge(merged_temp,
+                      filtered_obs_co2,
+                      by = "DATE",
+                      all = TRUE)
+  
+  merged_co2 <- merged_co2[, c("DATE", "SiteCode", "CAMs_CO2", "Obs_CO2_ppm", "CT_CO2")]
+  
+  merged_co2_list[[site]] <- merged_co2
+}
+
+
+#CH4
+merged_ch4_list <- list()
+
+for (abriv in c("WNJ", "LEW")) {
+  site <- abriv
+  
+  filtered_cams_ch4 <- cams_CH4[cams_CH4$SiteCode == site, ]
+  filtered_obs_ch4  <- obs_ch4[substr(obs_ch4$source, 1, 3) == site, ]
+  filtered_ct_ch4   <- CT_CH4_df[CT_CH4_df$SiteCode == site, ]
+  
+  interval_starts <- c(
+    "00:00–03:00 UTC" = "00:00:00",
+    "03:00–06:00 UTC" = "03:00:00",
+    "06:00–09:00 UTC" = "06:00:00",
+    "09:00–12:00 UTC" = "09:00:00",
+    "12:00–15:00 UTC" = "12:00:00",
+    "15:00–18:00 UTC" = "15:00:00",
+    "18:00–21:00 UTC" = "18:00:00",
+    "21:00–00:00 UTC" = "21:00:00"
+  )
+  
+  filtered_obs_ch4$datetime <- as.POSIXct(
+    paste(filtered_obs_ch4$date, interval_starts[filtered_obs_ch4$interval]),
+    tz = "UTC"
+  )
+  
+  filtered_cams_ch4$DATE <- filtered_cams_ch4$Timestamp
+  filtered_obs_ch4$DATE  <- filtered_obs_ch4$datetime
+  filtered_ct_ch4$DATE   <- filtered_ct_ch4$date
+  
+  names(filtered_cams_ch4)[names(filtered_cams_ch4) == "Value"] <- "CAMs_CH4"
+  names(filtered_obs_ch4)[names(filtered_obs_ch4) == "ch4_ppb"] <- "Obs_CH4_ppb"
+  names(filtered_ct_ch4)[names(filtered_ct_ch4) == "ch4"] <- "CT_CH4"
+  
+  filtered_cams_ch4$SiteCode <- site
+  filtered_ct_ch4$SiteCode   <- site
+  filtered_obs_ch4$SiteCode  <- site
+  
+  merged_temp <- merge(filtered_cams_ch4,
+                       filtered_ct_ch4,
+                       by = "DATE",
+                       all = TRUE)
+  merged_ch4 <- merge(merged_temp,
+                      filtered_obs_ch4,
+                      by = "DATE",
+                      all = TRUE)
+  
+  merged_ch4 <- merged_ch4[, c("DATE", "SiteCode", "CAMs_CH4", "Obs_CH4_ppb", "CT_CH4")]
+  merged_ch4_list[[site]] <- merged_ch4
+}
+
+##### Saving .csv files #####
+
+output_dir <- '/Volumes/Seagate/towers_model_info'
+
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+for (abriv in c("WNJ", "LEW")) {
+  write.csv(
+    merged_co2_list[[abriv]],
+    paste0(
+      output_dir, "/merged_co2_2023_",
+      abriv, ".csv"
+    ),
+    row.names = FALSE
+  )
+}
+
+for (abriv in c("WNJ", "LEW")) {
+  write.csv(
+    merged_ch4_list[[abriv]],
+    paste0(
+      output_dir, "/merged_ch4_2023_",
+      abriv, ".csv"
+    ),
+    row.names = FALSE
+  )
+}
+
+
+##### Removing everything except merged files ####
+rm(list = ls())
+
+WNJ_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2023_WNJ.csv")
+WNJ_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2023_WNJ.csv")
+
+WNJ_co2 <- na.omit(WNJ_co2)
+WNJ_ch4 <- na.omit(WNJ_ch4)
+
+LEW_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2023_LEW.csv")
+LEW_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2023_LEW.csv")
+
+LEW_co2 <- na.omit(LEW_co2)
+LEW_ch4 <- na.omit(LEW_ch4)
+
+##### Adding trajectory dates in (editing now! 10-20-2025)#####
+dates_2023 <- c(
+  "2023-01-01",
+  "2023-01-18",
+  "2023-01-23",
+  "2023-02-03",
+  "2023-02-04",
+  "2023-02-08",
+  "2023-02-14", 
+  "2023-02-18",
+  "2023-02-24",
+  "2023-03-14",
+  "2023-03-15",
+  "2023-03-18",
+  "2023-05-21",
+  "2023-06-15",
+  "2023-06-18",
+  "2023-07-10",
+  "2023-08-09",
+  "2023-08-18",
+  "2023-08-19",
+  "2023-09-04",
+  "2023-09-19",
+  "2023-10-16",
+  "2023-10-21",
+  "2023-10-22",
+  "2023-11-01",
+  "2023-11-10",
+  "2023-11-11",
+  "2023-11-14",
+  "2023-11-19",
+  "2023-11-23",
+  "2023-11-24",
+  "2023-12-05",
+  "2023-12-11",
+  "2023-12-18",
+  "2023-12-19",
+  "2023-12-20",
+  "2023-12-29",
+  "2023-12-31"
+)
+dates_2023 <- as.POSIXct(dates_2022, format = "%Y-%m-%d", tz = "UTC")
+
+for (site in c("WNJ", "LEW")) {
+  for (gas in c("co2", "ch4")) {
+    
+    df_name <- paste0(site, "_", gas)
+    df <- get(df_name)  
+    
+    df$DATE <- ifelse(
+      nchar(df$DATE) == 10,
+      paste0(df$DATE, " 00:00:00"),
+      df$DATE
+    )
+    df$DATE <- as.POSIXct(df$DATE, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+    
+    assign(df_name, df)  
+  }
+}
+
+for (site in c("WNJ", "LEW")) {
+  for (gas in c("co2", "ch4")) {
+    
+    df_name <- paste0(site, "_", gas)
+    df <- get(df_name)
+    df <- df[df$DATE %in% dates_2023, ]
+    
+    assign(df_name, df)
+  }
+}
+
+keep <- c(
+  "WNJ_co2",
+  "WNJ_ch4",
+  "LEW_co2",
+  "LEW_ch4",
+  "dates_2023"
+)
+rm(list = setdiff(ls(), keep))
+
+##### Adding enhancement calculation #####
+library(dplyr)
+
+obs_enh_co2 <-WNJ_co2$Obs_CO2_ppm - LEW_co2$Obs_CO2_ppm
+obs_enh_ch4 <-WNJ_ch4$Obs_CH4_ppb- LEW_ch4$Obs_CH4_ppb
+
+ct_enh_co2 <-WNJ_co2$CT_CO2 - LEW_co2$CT_CO2
+ct_enh_ch4 <-WNJ_ch4$CT_CH4 - LEW_ch4$CT_CH4
+
+cams_enh_co2 <-WNJ_co2$CAMs_CO2 - LEW_co2$CAMs_CO2
+cams_enh_ch4 <-WNJ_ch4$CAMs_CH4 - LEW_ch4$CAMs_CH4
+
+date_co2 <- as.Date(LEW_co2$DATE)
+date_ch4 <- as.Date(LEW_ch4$DATE)
+
+enh_info_co2 <- data.frame(date_co2, obs_enh_co2,ct_enh_co2, cams_enh_co2)
+enh_info_ch4 <- data.frame(date_ch4, obs_enh_ch4, ct_enh_ch4, cams_enh_ch4)
+
+##### Plotting WNJ against LEW #####
+library(ggplot2)
+library(ggpubr)
+
+for (sp in names(enh_info_list)) {
+  df <- enh_info_list[[sp]]
+  
+  date_col <- names(df)[1]
+  df[[date_col]] <- as.Date(df[[date_col]])
+  obs_col  <- paste0("obs_enh_", sp)
+  ct_col   <- paste0("ct_enh_", sp)
+  cams_col <- paste0("cams_enh_", sp)
+  
+  if (!all(c(obs_col, ct_col, cams_col, date_col) %in% names(df))) next
+  
+  overall_min <- limits[[sp]][1]
+  overall_max <- limits[[sp]][2]
+  label.x <- overall_min + 0.02 * (overall_max - overall_min)
+  label.y <- overall_max - 0.02 * (overall_max - overall_min)
+  
+  for (mod in c("ct", "cams")) {
+    mod_col <- paste0(mod, "_enh_", sp)
+    
+    title_text <- paste0(
+      toupper(mod), " vs OBS: ",
+      toupper(sp), " WNJ Enhancement Comparison from LEW"
+    )
+    
+    x_label <- paste0(
+      "Observed ", toupper(sp),
+      ifelse(sp == "co2", " Enhancement (ppm)", " Enhancement (ppb)")
+    )
+    
+    y_label <- paste0(
+      toupper(mod), " ",
+      toupper(sp),
+      ifelse(sp == "co2", " Enhancement (ppm)", " Enhancement (ppb)")
+    )
+    
+    p <- ggplot(df, aes(x = .data[[obs_col]], y = .data[[mod_col]], color = .data[[date_col]])) +
+      geom_point(size = 2, alpha = 0.8) +
+      geom_smooth(method = lm, se = FALSE, color = "black") +
+      stat_regline_equation(
+        aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),
+        label.x = label.x,
+        label.y = label.y,
+        color = "black"
+      ) +
+      geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+      geom_hline(yintercept = 0, color = "grey55") +
+      geom_vline(xintercept = 0, color = "grey55") +
+      coord_fixed(
+        ratio = 1,
+        xlim = c(overall_min, overall_max),
+        ylim = c(overall_min, overall_max)
+      ) +
+      scale_color_date(
+        name = "Date",
+        date_labels = "%Y-%m-%d",
+        date_breaks = "1 month",
+        guide = guide_colorbar(reverse = TRUE),
+        low = "blue",
+        high = "red"
+      ) +
+      labs(
+        title = title_text,
+        x = x_label,
+        y = y_label
+      ) +
+      theme(
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.key.height = unit(1.5, "cm")
+      )
+    
+    print(p)
+  }
+}
+#####_______________________________________________________________________####

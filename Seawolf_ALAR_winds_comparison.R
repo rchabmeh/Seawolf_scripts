@@ -70,6 +70,9 @@ ggplot() +
   ) +
   theme_minimal(base_size = 12)
 ###___________________ starting lat/lon is wrong for traj___________________####
+
+##is it a height problem vs lat long?? wtf
+#actual heights
 directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/flight"
 setwd(directory)
 
@@ -114,33 +117,47 @@ while (i <= length(tdump_files)) {
   i = i + 1
 }
 
-
+library(ggplot2)
+library(sf)
+library(dplyr)
 library(paletteer)
-colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
-plot(
-  st_geometry((states)),
-  xlim = c(-78, -70),
-  ylim = c(38, 42),
-  xlab = "",
-  ylab = "",
-  main = "Trajs",
-  border = "grey",
-  axes = T,
-  las = 1,
-  asp = 1
-)
-lines(ALAR$Longitude_deg,ALAR$Latitude_deg, col = "black")
-for (i in 1:length(trajectory1_list)) {
+
+traj_df <- do.call(rbind, lapply(1:length(trajectory1_list), function(i) {
   lon <- trajectory1_list[[i]][[11]]
   lat <- trajectory1_list[[i]][[10]]
   
-  print(paste("i =", i, "length(lon) =", length(lon), "length(lat) =", length(lat)))
-  
   if (all(is.finite(lon)) && all(is.finite(lat)) && length(lon) > 1) {
-    lines(lon, lat, col = colors[i], lwd = 0.5, type = "o", pch = 20, cex = 0.6)
-    points(lon[1],lat[1], col = colors[i],pch = 20)
+    data.frame(
+      traj_id = i,
+      lon = lon,
+      lat = lat,
+      order = seq_along(lon)
+    )
   } else {
-    message("Skipped trajectory ", i)
+    NULL
   }
-}
+}))
 
+colors <- as.character(paletteer_c("grDevices::rainbow", n = length(unique(traj_df$traj_id))))
+color_map <- setNames(colors, unique(traj_df$traj_id))
+states_sf <- st_as_sf(states)
+ggplot() +
+  geom_sf(data = states_sf, fill = NA, color = "grey") +
+  geom_path(data = traj_df, 
+            aes(x = lon, y = lat, group = traj_id, color = factor(traj_id)), 
+            size = 0.5,
+            show.legend = FALSE) +
+  geom_point(data = traj_df %>% group_by(traj_id) %>% slice(1), 
+             aes(x = lon, y = lat, color = factor(traj_id)),
+             size = 2,
+             show.legend = FALSE) +
+  geom_path(data = ALAR, aes(x = Longitude_deg, y = Latitude_deg), color = "black") +
+  coord_sf(xlim = c(-78, -70), ylim = c(38, 42), expand = FALSE) +
+  scale_color_manual(values = color_map) +
+  theme_minimal() +
+  labs(
+    title = "HRRR wind vectors (@ flown height in meters) (7/2/2025)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme(legend.position = "none")  
