@@ -1,11 +1,10 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on September 25, 2025
+#Updated last on October 24, 2025
 
 #You will have to manually change items in:
 # 1.3 (xlim_vals)
 # 2.3 (start_date, end_date)
 # 2.4 (cruise)
-
 ##### ________________________ 1. Just Towers _____________________________#####
 ##### Load in the 2022 NEC tower .csv files #####
 #____
@@ -2364,14 +2363,14 @@ rm(list = ls())
 WNJ_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2022_WNJ.csv")
 WNJ_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2022_WNJ.csv")
 
-WNJ_co2 <- na.omit(WNJ_co2)
-WNJ_ch4 <- na.omit(WNJ_ch4)
+# WNJ_co2 <- na.omit(WNJ_co2)
+# WNJ_ch4 <- na.omit(WNJ_ch4)
 
 LEW_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2022_LEW.csv")
 LEW_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2022_LEW.csv")
 
-LEW_co2 <- na.omit(LEW_co2)
-LEW_ch4 <- na.omit(LEW_ch4)
+# LEW_co2 <- na.omit(LEW_co2)
+# LEW_ch4 <- na.omit(LEW_ch4)
 
 ##### Adding trajectory dates in #####
 dates_2022 <- c(
@@ -2474,14 +2473,29 @@ date_ch4 <- as.Date(LEW_ch4$DATE)
 enh_info_co2 <- data.frame(date_co2, obs_enh_co2,ct_enh_co2, cams_enh_co2)
 enh_info_ch4 <- data.frame(date_ch4, obs_enh_ch4, ct_enh_ch4, cams_enh_ch4)
 
+write.csv(enh_info_co2, file = "/Volumes/Seagate/towers_model_info/enh_info_co2_2022.csv")
+write.csv(enh_info_ch4, file = "/Volumes/Seagate/towers_model_info/enh_info_ch4_2022.csv")
+
+rm(list = ls())
+
+#####_____________ can just run the section below for quick access ________#####
 ##### Plotting WNJ against LEW #####
+enh_info_co2_2022 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_co2_2022.csv")
+enh_info_co2_2022$date_co2 <- as.Date(enh_info_co2_2022$date_co2)
+enh_info_ch4_2022 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_ch4_2022.csv")
+enh_info_ch4_2022$date_ch4 <- as.Date(enh_info_ch4_2022$date_ch4)
+
 library(ggplot2)
 library(ggpubr)
+
+enh_info_list <- list(co2 = enh_info_co2_2022, ch4 = enh_info_ch4_2022)
+
+limits <- list(co2 = c(-30, 30), ch4 = c(-200, 200))
 
 for (sp in names(enh_info_list)) {
   df <- enh_info_list[[sp]]
   
-  date_col <- names(df)[1]
+  date_col <- names(df)[2]
   df[[date_col]] <- as.Date(df[[date_col]])
   obs_col  <- paste0("obs_enh_", sp)
   ct_col   <- paste0("ct_enh_", sp)
@@ -2497,10 +2511,8 @@ for (sp in names(enh_info_list)) {
   for (mod in c("ct", "cams")) {
     mod_col <- paste0(mod, "_enh_", sp)
     
-    title_text <- paste0(
-      toupper(mod), " vs OBS: ",
-      toupper(sp), " WNJ Enhancement Comparison from LEW"
-    )
+    title_text <- "Daytime Enhancements at WNJ tower Relative to LEW tower"
+    
     
     x_label <- paste0(
       "Observed ", toupper(sp),
@@ -2541,7 +2553,9 @@ for (sp in names(enh_info_list)) {
       labs(
         title = title_text,
         x = x_label,
-        y = y_label
+        y = y_label,
+        subtitle = paste0(
+          toupper(mod), " vs Observations")
       ) +
       theme(
         axis.text = element_text(size = 14),
@@ -3077,16 +3091,16 @@ rm(list = ls())
 WNJ_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2023_WNJ.csv")
 WNJ_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2023_WNJ.csv")
 
-WNJ_co2 <- na.omit(WNJ_co2)
-WNJ_ch4 <- na.omit(WNJ_ch4)
+# WNJ_co2 <- na.omit(WNJ_co2)
+# WNJ_ch4 <- na.omit(WNJ_ch4)
 
 LEW_co2 <- read.csv("/Volumes/Seagate/towers_model_info/merged_co2_2023_LEW.csv")
 LEW_ch4 <- read.csv("/Volumes/Seagate/towers_model_info/merged_ch4_2023_LEW.csv")
 
-LEW_co2 <- na.omit(LEW_co2)
-LEW_ch4 <- na.omit(LEW_ch4)
+# LEW_co2 <- na.omit(LEW_co2)
+# LEW_ch4 <- na.omit(LEW_ch4)
 
-##### Adding trajectory dates in (editing now! 10-20-2025)#####
+##### Adding trajectory dates in #####
 dates_2023 <- c(
   "2023-01-01",
   "2023-01-18",
@@ -3127,7 +3141,7 @@ dates_2023 <- c(
   "2023-12-29",
   "2023-12-31"
 )
-dates_2023 <- as.POSIXct(dates_2022, format = "%Y-%m-%d", tz = "UTC")
+dates_2023 <- as.POSIXct(dates_2023, format = "%Y-%m-%d", tz = "UTC")
 
 for (site in c("WNJ", "LEW")) {
   for (gas in c("co2", "ch4")) {
@@ -3178,20 +3192,34 @@ ct_enh_ch4 <-WNJ_ch4$CT_CH4 - LEW_ch4$CT_CH4
 cams_enh_co2 <-WNJ_co2$CAMs_CO2 - LEW_co2$CAMs_CO2
 cams_enh_ch4 <-WNJ_ch4$CAMs_CH4 - LEW_ch4$CAMs_CH4
 
-date_co2 <- as.Date(LEW_co2$DATE)
+date_co2 <- as.Date(WNJ_co2$DATE)
 date_ch4 <- as.Date(LEW_ch4$DATE)
 
 enh_info_co2 <- data.frame(date_co2, obs_enh_co2,ct_enh_co2, cams_enh_co2)
 enh_info_ch4 <- data.frame(date_ch4, obs_enh_ch4, ct_enh_ch4, cams_enh_ch4)
 
+write.csv(enh_info_co2, file = "/Volumes/Seagate/towers_model_info/enh_info_co2_2023.csv")
+write.csv(enh_info_ch4, file = "/Volumes/Seagate/towers_model_info/enh_info_ch4_2023.csv")
+
+rm(list = ls())
+#####_____________ can just run the section below for quick access ________#####
 ##### Plotting WNJ against LEW #####
+enh_info_co2_2023 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_co2_2023.csv")
+enh_info_co2_2023$date_co2 <- as.Date(enh_info_co2_2023$date_co2)
+enh_info_ch4_2023 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_ch4_2023.csv")
+enh_info_ch4_2023$date_ch4 <- as.Date(enh_info_ch4_2023$date_ch4)
+
 library(ggplot2)
 library(ggpubr)
+
+enh_info_list <- list(co2 = enh_info_co2_2023, ch4 = enh_info_ch4_2023)
+
+limits <- list(co2 = c(-30, 30), ch4 = c(-200, 200))
 
 for (sp in names(enh_info_list)) {
   df <- enh_info_list[[sp]]
   
-  date_col <- names(df)[1]
+  date_col <- names(df)[2]
   df[[date_col]] <- as.Date(df[[date_col]])
   obs_col  <- paste0("obs_enh_", sp)
   ct_col   <- paste0("ct_enh_", sp)
@@ -3207,10 +3235,7 @@ for (sp in names(enh_info_list)) {
   for (mod in c("ct", "cams")) {
     mod_col <- paste0(mod, "_enh_", sp)
     
-    title_text <- paste0(
-      toupper(mod), " vs OBS: ",
-      toupper(sp), " WNJ Enhancement Comparison from LEW"
-    )
+    title_text <- "Daytime Enhancements at WNJ tower Relative to LEW tower"
     
     x_label <- paste0(
       "Observed ", toupper(sp),
@@ -3251,7 +3276,9 @@ for (sp in names(enh_info_list)) {
       labs(
         title = title_text,
         x = x_label,
-        y = y_label
+        y = y_label,
+        subtitle = paste0(
+          toupper(mod), " vs Observations")
       ) +
       theme(
         axis.text = element_text(size = 14),
@@ -3265,4 +3292,103 @@ for (sp in names(enh_info_list)) {
     print(p)
   }
 }
+#####_______________________________________________________________________####
+#####_____________________ 5. Combining Comparison 22-23 ___________________####
+enh_info_co2_2022 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_co2_2022.csv")
+enh_info_co2_2022$date_co2 <- as.Date(enh_info_co2_2022$date_co2)
+enh_info_ch4_2022 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_ch4_2022.csv")
+enh_info_ch4_2022$date_ch4 <- as.Date(enh_info_ch4_2022$date_ch4)
+enh_info_co2_2023 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_co2_2023.csv")
+enh_info_co2_2023$date_co2 <- as.Date(enh_info_co2_2023$date_co2)
+enh_info_ch4_2023 <- read.csv("/Volumes/Seagate/towers_model_info/enh_info_ch4_2023.csv")
+enh_info_ch4_2023$date_ch4 <- as.Date(enh_info_ch4_2023$date_ch4)
+
+combined_co2 <- rbind(enh_info_co2_2022,enh_info_co2_2023)
+combined_ch4 <-rbind(enh_info_ch4_2022, enh_info_ch4_2023)
+
+library(ggplot2)
+library(ggpubr)
+
+enh_info_list <- list(co2 = combined_co2, ch4 = combined_ch4)
+
+limits <- list(co2 = c(-30, 30), ch4 = c(-200, 200))
+
+for (sp in names(enh_info_list)) {
+  df <- enh_info_list[[sp]]
+  
+  date_col <- names(df)[2]
+  df[[date_col]] <- as.Date(df[[date_col]])
+  obs_col  <- paste0("obs_enh_", sp)
+  ct_col   <- paste0("ct_enh_", sp)
+  cams_col <- paste0("cams_enh_", sp)
+  
+  if (!all(c(obs_col, ct_col, cams_col, date_col) %in% names(df))) next
+  
+  overall_min <- limits[[sp]][1]
+  overall_max <- limits[[sp]][2]
+  label.x <- overall_min + 0.02 * (overall_max - overall_min)
+  label.y <- overall_max - 0.02 * (overall_max - overall_min)
+  
+  for (mod in c("ct", "cams")) {
+    mod_col <- paste0(mod, "_enh_", sp)
+    
+    title_text <- "Daytime Enhancements at WNJ tower Relative to LEW tower"
+    
+    
+    x_label <- paste0(
+      "Observed ", toupper(sp),
+      ifelse(sp == "co2", " Enhancement (ppm)", " Enhancement (ppb)")
+    )
+    
+    y_label <- paste0(
+      toupper(mod), " ",
+      toupper(sp),
+      ifelse(sp == "co2", " Enhancement (ppm)", " Enhancement (ppb)")
+    )
+    
+    p <- ggplot(df, aes(x = .data[[obs_col]], y = .data[[mod_col]], color = .data[[date_col]])) +
+      geom_point(size = 2, alpha = 0.8) +
+      geom_smooth(method = lm, se = FALSE, color = "black") +
+      stat_regline_equation(
+        aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),
+        label.x = label.x,
+        label.y = label.y,
+        color = "black"
+      ) +
+      geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+      geom_hline(yintercept = 0, color = "grey55") +
+      geom_vline(xintercept = 0, color = "grey55") +
+      coord_fixed(
+        ratio = 1,
+        xlim = c(overall_min, overall_max),
+        ylim = c(overall_min, overall_max)
+      ) +
+      scale_color_date(
+        name = "Date",
+        date_labels = "%Y-%m-%d",
+        date_breaks = "1 month",
+        guide = guide_colorbar(reverse = TRUE),
+        low = "blue",
+        high = "red"
+      ) +
+      labs(
+        title = title_text,
+        x = x_label,
+        y = y_label,
+        subtitle = paste0(
+          toupper(mod), " vs Observations")
+      ) +
+      theme(
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 20),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.key.height = unit(2, "cm")
+      )
+    
+    print(p)
+  }
+}
+#####_______________________________________________________________________####
 #####_______________________________________________________________________####
