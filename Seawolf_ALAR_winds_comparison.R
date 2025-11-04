@@ -322,3 +322,49 @@ boxplot(
 
 ##### .nc files ####
 #they are in here: /Users/reneechabot-mehlin/Downloads/alar_winds_file
+library(ncdf4)
+library(dplyr)
+
+nc_dir <- "/Users/reneechabot-mehlin/Downloads/alar_winds_file"
+nc_files <- list.files(nc_dir, pattern = "\\.nc$", full.names = TRUE)
+
+u_files <- nc_files[grepl("_u", nc_files, ignore.case = TRUE)]
+v_files <- nc_files[grepl("_v", nc_files, ignore.case = TRUE)]
+
+min_lon <- 72
+max_lon <- 77
+min_lat <- 39.5
+max_lat <- 41.5
+
+u_list <- list()
+for (nc_file in u_files) {
+  u <- nc_open(nc_file)
+  lon  <- ncvar_get(u, "longitude")
+  lat  <- ncvar_get(u, "latitude")
+  time <- ncvar_get(u, "utc_date")
+  time <- as.POSIXct(time,origin = "1970-01-01",  tz =  "UTC")
+  #U.component <- ncvar_get(u, "U")
+  df <- expand.grid(lon = lon, lat = lat, time = time) #, u = U.component)
+  df <- df %>%
+    filter(lat >= min_lat, lat <= max_lat,
+           lon >= min_lon, lon <= max_lon)
+  u_list[[nc_file]] <- df
+  nc_close(u)
+}
+
+v_list <- list()
+for (nc_file in u_files) {
+  v <- nc_open(nc_file)
+  lon  <- ncvar_get(v, "longitude")
+  lat  <- ncvar_get(v, "latitude")
+  time <- ncvar_get(v, "utc_date")
+  time <- as.POSIXct(time,origin = "1970-01-01",  tz =  "UTC")
+  #U.component <- ncvar_get(u, "U")
+  df <- expand.grid(lon = lon, lat = lat, time = time) #, u = U.component)
+  df <- df %>%
+    filter(lat >= min_lat, lat <= max_lat,
+           lon >= min_lon, lon <= max_lon)
+  v_list[[nc_file]] <- df
+  nc_close(u)
+}
+
