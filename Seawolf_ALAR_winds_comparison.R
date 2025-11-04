@@ -96,90 +96,240 @@ ggplot() +
     subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")
   ) +
   theme_minimal(base_size = 12)
-####Using GRIB file ####
-library(terra)
-library(lubridate)
 
-grib_file <- rast("/Users/reneechabot-mehlin/Downloads/ALAR.grib")
-
-u.wind.comp.10m <- grib_file[[seq(2, nlyr(grib_file), by = 2)]]
-v.wind.comp.10m <- grib_file[[seq(1, nlyr(grib_file), by = 2)]]
-
-tvals <- time(grib_file)[seq(2, nlyr(grib_file), by = 2)]
-
-names(u.wind.comp.10m) <- paste0("u10_", format(tvals, "%Y%m%d_%H"))
-names(v.wind.comp.10m) <- paste0("v10_", format(tvals, "%Y%m%d_%H"))
-
-wind_speed <- sqrt(u.wind.comp.10m^2 + v.wind.comp.10m^2)
-names(wind_speed) <- paste0("speed_", format(tvals, "%Y%m%d_%H"))
-
-
-wind_dir <- atan2(u.wind.comp.10m, v.wind.comp.10m) * 180 / pi
-wind_dir <- (wind_dir + 360) %% 360
-names(wind_dir) <- paste0("dir_", format(tvals, "%Y%m%d_%H"))
-
-df <- data.frame(
-  lon = ALAR_5min$Longitude_deg,
-  lat = ALAR_5min$Latitude_deg,
-  date_ny = ALAR_5min$Time_local
+##### .nc files ####
+#they are in here: /Users/reneechabot-mehlin/Downloads/alar_winds_file
+ALAR <- read.csv(
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
 )
+ALAR$Time_local <- as.POSIXct(ALAR$Time_local, origin = "1904-01-01", tz = "America/New_York")
+ALAR$Time_UTC <- as.POSIXct(ALAR$Time_UTC, origin = "1904-01-01", tz = "UTC")
 
-df$date_utc <- with_tz(df$date_ny, "UTC")
-df$datetime_rounded <- lubridate::round_date(df$date_utc, "hour")
-df$datetime_rounded <- as.POSIXct(df$datetime_rounded)
+library(openair)
+colnames(ALAR)[colnames(ALAR) == "Time_UTC"] <- "date"
 
-df$datetime_formatted <- format(df$datetime_rounded, "%Y%m%d_%H")
+ALAR_5min <- timeAverage(ALAR,
+                         avg.time = "5 min",
+                         data.thresh = 0,
+                         statistic = "mean")
 
-pts <- vect(df, geom = c("lon", "lat"), crs = "EPSG:4326")
-pts <- project(pts, crs(wind_speed))
+ALAR_5min <- ALAR_5min[!is.na(ALAR_5min$Latitude_deg), ]
 
-results_list <- list()
+library(ncdf4)
+library(dplyr)
+nc_dir <- "/Users/reneechabot-mehlin/Downloads/alar_winds_file"
+nc_files <- list.files(nc_dir, pattern = "\\.nc$", full.names = TRUE)
 
-for (t in unique(df$datetime_formatted)) {
-  layer_name <- paste0("speed_", t)
-  if (layer_name %in% names(wind_speed)) {
-    idx <- which(df$datetime_formatted == t)
-    spd_vals <- terra::extract(wind_speed[[layer_name]], pts[idx, ])[, 2]
-    s_index <- paste0(as.character(t), "_speed")
-    results_list[[as.character(s_index)]] <- data.frame(idx = idx, wind_speed = spd_vals)
+u_files <- nc_files[grepl("_u", nc_files, ignore.case = TRUE)]
+v_files <- nc_files[grepl("_v", nc_files, ignore.case = TRUE)]
+
+min_lon <- 72
+max_lon <- 77
+min_lat <- 39.5
+max_lat <- 41.5
+
+min_time <- as.POSIXct(min(ALAR_5min$Time_local), tz = "America/New_York")
+max_time <- as.POSIXct(max(ALAR_5min$Time_local), tz = "America/New_York")
+
+min_time <- format(min_time, tz = "UTC", usetz = TRUE)
+min_time <- as.POSIXct(min_time, tz = "UTC")
+max_time <- format(max_time, tz = "UTC", usetz = TRUE)
+max_time <- as.POSIXct(max_time, tz = "UTC")
+
+
+u_list <- list()
+for (nc_file in u_files) {
+  u <- nc_open(nc_file)
+  lon  <- ncvar_get(u, "longitude")
+  lat  <- ncvar_get(u, "latitude")
+  time <- ncvar_get(u, "time")
+  time <- as.POSIXct(time * 3600, origin = "1900-01-01 00:00:00", tz = "UTC")
+  
+  time_sel <- time[time >= min_time & time <= max_time]
+  time_indices <- which(time >= min_time & time <= max_time)
+  if (length(time_indices) == 0) {
+    message("No overlapping times for file: ", nc_file)
+    nc_close(u)
+    next
   }
-  layer_name <- paste0("dir_", t)
-  if (layer_name %in% names(wind_dir)) {
-    idx <- which(df$datetime_formatted == t)
-    dir_vals <- terra::extract(wind_dir[[layer_name]], pts[idx, ])[, 2]
-    d_index <- paste0(as.character(t), "_dir")
-    results_list[[as.character(d_index)]] <- data.frame(idx = idx, wind_dir = dir_vals)
+  
+  level <- u$dim$level$vals
+  selected_levels <- level[100:137]
+  
+  for (lvl in selected_levels) {
+    lvl_index <- which(level == lvl)
+    
+    if (length(time_indices) > 0) {
+      U_component <- ncvar_get(
+        u,
+        "U",
+        start = c(1, 1, lvl_index, min(time_indices)),
+        count = c(-1, -1, 1, length(time_indices))
+      )
+    } else {
+      next
+    }
+    
+    lon_sel <- lon[lon >= min_lon & lon <= max_lon]
+    lat_sel <- lat[lat >= min_lat & lat <= max_lat]
+    
+    df <- expand.grid(
+      lon = lon_sel,
+      lat = lat_sel,
+      time = time_sel,
+      level = lvl
+    )
+    
+    lon_idx <- which(lon >= min_lon & lon <= max_lon)
+    lat_idx <- which(lat >= min_lat & lat <= max_lat)
+    if (length(lon_idx) == 0 | length(lat_idx) == 0) {
+      message("No overlapping lon/lat for file: ", nc_file)
+      next
+    }
+    
+    U_sub <- U_component[lon_idx, lat_idx, , drop = FALSE]
+    
+    df$U <- as.vector(U_sub)
+    
+    new_name <- sub(
+      ".*_u\\.regn320uv\\.(\\d{8})(\\d{2})_\\d{8}(\\d{2})\\.nc",
+      "u_\\1_\\2-\\3",
+      basename(nc_file)
+    )
+    df_name <- paste0(new_name, "_lvl", lvl)
+    u_list[[df_name]] <- df
   }
+  nc_close(u)
 }
 
-speed_df <- do.call(rbind, results_list[grep("_speed$", names(results_list))])
-dir_df   <- do.call(rbind, results_list[grep("_dir$", names(results_list))])
+v_list <- list()
+for (nc_file in v_files) {
+  v <- nc_open(nc_file)
+  lon  <- ncvar_get(v, "longitude")
+  lat  <- ncvar_get(v, "latitude")
+  time <- ncvar_get(v, "time")
+  time <- as.POSIXct(time * 3600, origin = "1900-01-01 00:00:00", tz = "UTC")
+  
+  time_sel <- time[time >= min_time & time <= max_time]
+  time_indices <- which(time >= min_time & time <= max_time)
+  if (length(time_indices) == 0) {
+    message("No overlapping times for file: ", nc_file)
+    nc_close(v)
+    next
+  }
+  
+  level <- v$dim$level$vals
+  selected_levels <- level[100:137]
+  
+  for (lvl in selected_levels) {
+    lvl_index <- which(level == lvl)
+    
+    if (length(time_indices) > 0) {
+      V_component <- ncvar_get(
+        v,
+        "V",
+        start = c(1, 1, lvl_index, min(time_indices)),
+        count = c(-1, -1, 1, length(time_indices))
+      )
+    } else {
+      next
+    }
+    
+    lon_sel <- lon[lon >= min_lon & lon <= max_lon]
+    lat_sel <- lat[lat >= min_lat & lat <= max_lat]
+    
+    df <- expand.grid(
+      lon = lon_sel,
+      lat = lat_sel,
+      time = time_sel,
+      level = lvl
+    )
+    
+    lon_idx <- which(lon >= min_lon & lon <= max_lon)
+    lat_idx <- which(lat >= min_lat & lat <= max_lat)
+    if (length(lon_idx) == 0 | length(lat_idx) == 0) {
+      message("No overlapping lon/lat for file: ", nc_file)
+      next
+    }
+    
+    V_sub <- V_component[lon_idx, lat_idx, , drop = FALSE]
+    
+    df$V <- as.vector(V_sub)
+    
+    new_name <- sub(
+      ".*_v\\.regn320uv\\.(\\d{8})(\\d{2})_\\d{8}(\\d{2})\\.nc",
+      "u_\\1_\\2-\\3",
+      basename(nc_file)
+    )
+    df_name <- paste0(new_name, "_lvl", lvl)
+    v_list[[df_name]] <- df
+  }
+  nc_close(v)
+}
 
-results_df <- merge(speed_df, dir_df, by = "idx", all = TRUE)
+merged_list <- mapply(function(df_u, df_v) {
+  common_cols <- setdiff(names(df_u), "U")
+  merge(df_u, df_v, by = common_cols, all = TRUE)
+}, u_list, v_list, SIMPLIFY = FALSE)
 
-df$wind_speed <- NA
-df$wind_dir <- NA
-df$wind_speed[results_df$idx] <- results_df$wind_speed
-df$wind_dir[results_df$idx] <- results_df$wind_dir
-df <- na.omit(df)
+names(merged_list) <- sapply(merged_list, function(df) {
+  paste0("df_lvl_", unique(df$level))
+})
 
-final_df <- data.frame(df[, c("date_utc",
-                              "datetime_rounded",
-                              "date_ny",
-                              "lat",
-                              "lon",
-                              "wind_speed",
-                              "wind_dir")])
+nc <- nc_open(nc_file)
+a_model <- ncvar_get(nc, "a_model")
+b_model <- ncvar_get(nc, "b_model")
 
-u_model <- -final_df$wind_speed * sin(pi * final_df$wind_dir / 180)
-v_model <- -final_df$wind_speed * cos(pi * final_df$wind_dir / 180)
-lon_model <- final_df$lon
-lat_model <- final_df$lat
+nc_close(nc)
 
-wind_df_model <- data.frame(u = u_model,
-                            v = v_model,
-                            lon = lon_model,
-                            lat = lat_model)
+# Approximate heights (meters) assuming standard surface pressure and constant temp
+ps <- 101325          # Pa, standard surface pressure
+T <- 273.15 + 15      # K, approx temperature
+R <- 287.05           # J/(kg·K)
+g <- 9.80665          # m/s^2
+
+pressure <- a_model + b_model * ps
+height <- -R * T / g * log(pressure / ps)
+level_height <- data.frame(level = seq_along(a_model), height_m = height)
+merged_list <- lapply(merged_list, function(df) {
+  merge(df, level_height, by = "level", all.x = TRUE)
+})
+
+ALAR_COMPARISON <- data.frame(
+  lon = ALAR_5min$Longitude_deg,
+  lat = ALAR_5min$Latitude_deg,
+  height_m = ALAR_5min$heightabvground_m,
+  time = ALAR_5min$date
+)
+full_model_df <- do.call(rbind, merged_list)
+find_closest <- function(df_model, df_obs) {
+  # For each row in the obs dataset, find the closest model point
+  df_obs$U <- NA
+  df_obs$V <- NA
+  
+  for (i in seq_len(nrow(df_obs))) {
+    obs <- df_obs[i, ]
+    
+    # Compute Euclidean distance in lon/lat/height (could weight height differently)
+    dist <- (df_model$lon - obs$lon)^2 +
+      (df_model$lat - obs$lat)^2 +
+      (df_model$height - obs$height)^2
+    
+    # Optionally, also include time difference:
+    time_diff <- as.numeric(difftime(df_model$time, obs$time, units = "secs"))
+    dist <- dist + (time_diff / 3600)^2  # scale time in hours^2
+    
+    closest_idx <- which.min(dist)
+    
+    df_obs$U[i] <- df_model$U[closest_idx]
+    df_obs$V[i] <- df_model$V[closest_idx]
+  }
+  
+  return(df_obs)
+}
+
+obs_with_model <- find_closest(full_model_df, ALAR_COMPARISON)
+obs_with_model$wind_speed <- sqrt(obs_with_model$U^2 + obs_with_model$V^2)
 
 library(sf)
 library(ggplot2)
@@ -226,23 +376,19 @@ ggplot() +
     linewidth = 1
   ) +
   geom_segment(
-    data = wind_df_model,
+    data = obs_with_model,
     aes(
       x = lon,
       y = lat,
-      xend = lon + u * arrow_scale,
-      yend = lat + v * arrow_scale,
-      color = df$wind_speed
+      xend = lon + U * arrow_scale,
+      yend = lat + V * arrow_scale,
+      color = wind_speed
     ),
     arrow = arrow(length = unit(0.15, "cm")),
     linewidth = 0.5
   ) +
-  geom_point(data = wind_df_model,
-             aes(
-               x = lon,
-               y = lat,
-               color = df$wind_speed
-             ),
+  geom_point(data = obs_with_model,
+             aes(x = lon, y = lat, color = wind_speed),
              size = 1) +
   coord_sf(
     xlim = c(-77, -72),
@@ -251,120 +397,9 @@ ggplot() +
   ) +
   scale_color_viridis_c(option = "plasma", name = "Wind speed (m/s)") +
   labs(
-    title = "5-Minute Averaged ERA5-Reanalysis (10m) Hourly Wind Vectors over ALAR Flight Path (7/2/2025)",
+    title = "ERA5-Reanalysis Wind Vectors over ALAR Flight Path (7/2/2025)",
     x = "Longitude",
     y = "Latitude",
     subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")
   ) +
   theme_minimal(base_size = 12)
-
-ALAR_5min$Time_local == final_df$date_ny
-
-#### Comparison of wind dir vectors #####
-library(ggplot2)
-library(tidyr)
-library(dplyr)
-
-plot_df <- bind_rows(
-  final_df %>% select(time = date_ny, wind_dir) %>% mutate(Source = "ERA5"),
-  ALAR_5min %>% select(time = Time_local, wind_dir = w_dir) %>% mutate(Source = "Measurement")
-)
-
-ggplot(plot_df, aes(x = time, y = wind_dir, color = Source)) +
-  geom_line(size = 1) +
-  scale_color_manual(values = c("Measurement" = "red", "ERA5" = "black")) +
-  scale_y_continuous(limits = c(0, 350), expand = c(0,0)) +
-  labs(
-    x = "Local Time",
-    y = "Wind Direction (°)",
-    title = "Comparison of Wind Direction: Measured vs. ERA_Reanalysis for ALAR 7/2/25 Flight"
-  ) +
-  theme(
-    legend.position = "bottom") +
-theme_minimal(base_size = 14)
-
-boxplot(
-  wind_dir ~ Source,
-  data = plot_df,
-  main =  "Wind Direction sorted by Wind Source",
-  ylab = "Wind Direction (°)"
-) 
-#### Comparison of wind speed vectors #####
-library(ggplot2)
-library(tidyr)
-library(dplyr)
-
-plot_df <- bind_rows(
-  final_df %>% select(time = date_ny, wind_speed) %>% mutate(Source = "ERA5"),
-  ALAR_5min %>% select(time = Time_local, wind_speed = w_spd) %>% mutate(Source = "Measurement")
-)
-
-ggplot(plot_df, aes(x = time, y = wind_speed, color = Source)) +
-  geom_line(size = 1) +
-  scale_color_manual(values = c("Measurement" = "red", "ERA5" = "black")) +
-  scale_y_continuous(limits = c(0, 10), expand = c(0,0)) +
-  labs(
-    x = "Local Time",
-    y = "Wind Speed (m/s)",
-    title = "Comparison of Wind Speed: Measured vs. ERA_Reanalysis for ALAR 7/2/25 Flight"
-  ) +
-  theme(
-    legend.position = "bottom") +
-  theme_minimal(base_size = 14)
-
-boxplot(
-  wind_speed ~ Source,
-  data = plot_df,
-  main =  "Wind Speeds sorted by Wind Source",
-  ylab = "Wind Speed (m/s)"
-)
-
-
-##### .nc files ####
-#they are in here: /Users/reneechabot-mehlin/Downloads/alar_winds_file
-library(ncdf4)
-library(dplyr)
-
-nc_dir <- "/Users/reneechabot-mehlin/Downloads/alar_winds_file"
-nc_files <- list.files(nc_dir, pattern = "\\.nc$", full.names = TRUE)
-
-u_files <- nc_files[grepl("_u", nc_files, ignore.case = TRUE)]
-v_files <- nc_files[grepl("_v", nc_files, ignore.case = TRUE)]
-
-min_lon <- 72
-max_lon <- 77
-min_lat <- 39.5
-max_lat <- 41.5
-
-u_list <- list()
-for (nc_file in u_files) {
-  u <- nc_open(nc_file)
-  lon  <- ncvar_get(u, "longitude")
-  lat  <- ncvar_get(u, "latitude")
-  time <- ncvar_get(u, "utc_date")
-  time <- as.POSIXct(time,origin = "1970-01-01",  tz =  "UTC")
-  #U.component <- ncvar_get(u, "U")
-  df <- expand.grid(lon = lon, lat = lat, time = time) #, u = U.component)
-  df <- df %>%
-    filter(lat >= min_lat, lat <= max_lat,
-           lon >= min_lon, lon <= max_lon)
-  u_list[[nc_file]] <- df
-  nc_close(u)
-}
-
-v_list <- list()
-for (nc_file in u_files) {
-  v <- nc_open(nc_file)
-  lon  <- ncvar_get(v, "longitude")
-  lat  <- ncvar_get(v, "latitude")
-  time <- ncvar_get(v, "utc_date")
-  time <- as.POSIXct(time,origin = "1970-01-01",  tz =  "UTC")
-  #U.component <- ncvar_get(u, "U")
-  df <- expand.grid(lon = lon, lat = lat, time = time) #, u = U.component)
-  df <- df %>%
-    filter(lat >= min_lat, lat <= max_lat,
-           lon >= min_lon, lon <= max_lon)
-  v_list[[nc_file]] <- df
-  nc_close(u)
-}
-
