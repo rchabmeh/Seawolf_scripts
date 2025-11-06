@@ -1,6 +1,6 @@
 ##Adding ALAR flight comparison info______####
 ALAR <- read.csv(
-  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/July_WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
 )
 ALAR$Time_local <- as.POSIXct(ALAR$Time_local, origin = "1904-01-01", tz = "America/New_York")
 ALAR$Time_UTC <- as.POSIXct(ALAR$Time_UTC, origin = "1904-01-01", tz = "UTC")
@@ -100,7 +100,7 @@ ggplot() +
 ##### .nc files ####
 #they are in here: /Users/reneechabot-mehlin/Downloads/alar_winds_file
 ALAR <- read.csv(
-  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/July_WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
 )
 ALAR$Time_local <- as.POSIXct(ALAR$Time_local, origin = "1904-01-01", tz = "America/New_York")
 ALAR$Time_UTC <- as.POSIXct(ALAR$Time_UTC, origin = "1904-01-01", tz = "UTC")
@@ -192,7 +192,7 @@ for (nc_file in u_files) {
     #dim(U_component) [1280 ,640] so now you need to remove comma (went from 4 dim to 2 dim which makes sense) first .nc file
     #dim(U_component) [1280, 640, 6] so now you add the comma (went from 4 dim to 3 dim which makes sense) second .nc file
     # explanation: we have 1 level and 1 time we are looping through so only lon/lat will change for the first file, second file time changes too so lon/lat/time changes
-    U_sub <- U_component[lon_idx, lat_idx, , drop = FALSE]  
+    U_sub <- U_component[lon_idx, lat_idx, , drop = FALSE]
     df$U <- as.vector(U_sub)
     
     new_name <- sub(
@@ -267,7 +267,7 @@ for (nc_file in v_files) {
     #dim(U_component) [1280 ,640] so now you need to remove comma (went from 4 dim to 2 dim which makes sense) first .nc file
     #dim(U_component) [1280, 640, 6] so now you add the comma (went from 4 dim to 3 dim which makes sense) second .nc file
     # explanation: we have 1 level and 1 time we are looping through so only lon/lat will change for the first file, second file time changes too so lon/lat/time changes
-    V_sub <- V_component[lon_idx, lat_idx, , drop = FALSE]  
+    V_sub <- V_component[lon_idx, lat_idx, , drop = FALSE]
     df$V <- as.vector(V_sub)
     
     new_name <- sub(
@@ -427,3 +427,69 @@ ggplot() +
     subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")
   ) +
   theme_minimal(base_size = 12)
+###### Comparison Time ######
+
+ALAR_COMPARISON$U <- ALAR_5min$U
+ALAR_COMPARISON$V <- ALAR_5min$V
+ALAR_COMPARISON$wind_dir <- ALAR_5min$w_dir
+ALAR_COMPARISON$CALC_wind_dir <- round((atan2(-ALAR_COMPARISON$U, -ALAR_COMPARISON$V) * 180 / pi) %% 360, 0)
+
+mean(abs(ALAR_COMPARISON$CALC_wind_dir - ALAR_COMPARISON$wind_dir), na.rm = TRUE)
+
+calc_dir <- (atan2(-ALAR_COMPARISON$U, -ALAR_COMPARISON$V) * 180/pi) %% 360  # calculated "from" direction
+err_deg  <- ( (calc_dir - ALAR_COMPARISON$wind_dir + 180) %% 360 ) - 180  # circular difference (-180,180)
+mean(err_deg, na.rm=TRUE)
+
+ALAR_COMPARISON$wind_speed <- ALAR_5min$w_spd
+
+obs_with_model$wind_dir <- round((atan2(-obs_with_model$U, -obs_with_model$V) * 180 / pi) %% 360, 0)
+
+saveRDS(obs_with_model, "/Users/reneechabot-mehlin/Downloads/obs_with_model.RData")
+saveRDS(ALAR_COMPARISON, "/Users/reneechabot-mehlin/Downloads/ALAR_COMPARISON.RData")
+
+##### plots and such-- load in here! ####
+obs_with_model <- readRDS("/Users/reneechabot-mehlin/Downloads/obs_with_model.RData")
+ALAR_COMPARISON <- readRDS("/Users/reneechabot-mehlin/Downloads/ALAR_COMPARISON.RData")
+
+
+library(ggplot2)
+ggplot() +
+  geom_point(data = obs_with_model, aes(x = time, y = wind_dir, color = "Modeled")) +
+  geom_line(data = obs_with_model, aes(x = time, y = wind_dir, color = "Modeled")) +
+  geom_point(data = ALAR_COMPARISON, aes(x = time, y = wind_dir, color = "Observations")) +
+  geom_line(data = ALAR_COMPARISON, aes(x = time, y = wind_dir, color = "Observations")) +
+  labs(
+    title = "Comparison of ERA5 wind direction vs measured wind direction",
+    x = "Time",
+    y = "Wind direction",
+    subtitle = "July 2nd, 2025",
+    color = "Dataset"
+  ) +
+  scale_color_manual(values = c("Modeled" = "blue", "Observations" = "red")) +
+  theme_minimal(base_size = 14)
+
+bias_df <- data.frame(
+  time = obs_with_model$time,
+  bias = obs_with_model$wind_dir - ALAR_COMPARISON$wind_dir
+)
+
+ggplot(bias_df, aes(x = time, y = bias)) +
+  geom_line() +
+  geom_hline(yintercept = 1, color = "red") +
+  labs(
+    x = "Time",
+    y = "Model Bias",
+    title = "Wind Direction Model Bias",
+    subtitle = "July 2nd, 2025"
+  ) +
+  theme_minimal(base_size = 14)
+
+mse <- round(mean((ALAR_COMPARISON$wind_dir - obs_with_model$wind_dir)^2, na.rm = T), 0)
+rmse <- round(sqrt(mean((ALAR_COMPARISON$wind_dir - obs_with_model$wind_dir)^2, na.rm = T)), 0)
+rsq <- round(summary(lm(ALAR_COMPARISON$wind_dir ~ obs_with_model$wind_dir))$r.squared, 2)
+
+lm_df <- data.frame(observation = ALAR_COMPARISON$wind_dir, modelled = obs_with_model$wind_dir)
+
+lin <-lm(observation ~ modelled, data = lm_df)
+par(mfrow = c(2,2))
+plot(lin)
