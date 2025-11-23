@@ -333,11 +333,12 @@ find_closest <- function(df_model, df_obs, time_window_hours = 1) {
   
   for (i in seq_len(nrow(df_obs))) {
     obs <- df_obs[i, ] #loops through observations
-    
+   
+     #time first
     df_model_near <- df_model[abs(difftime(df_model$time, obs$time, units = "hours")) <= time_window_hours, ]
     if (nrow(df_model_near) == 0)
       next
-    
+    #distance next 
     dist <- (df_model_near$lon - obs$lon)^2 +
       (df_model_near$lat - obs$lat)^2 +
       (df_model_near$height - obs$height)^2
@@ -451,6 +452,9 @@ saveRDS(ALAR_COMPARISON, "/Users/reneechabot-mehlin/Downloads/ALAR_COMPARISON.RD
 obs_with_model <- readRDS("/Users/reneechabot-mehlin/Downloads/obs_with_model.RData")
 ALAR_COMPARISON <- readRDS("/Users/reneechabot-mehlin/Downloads/ALAR_COMPARISON.RData")
 
+# obs_with_model$wind_dir <- obs_with_model$wind_dir - 90
+# ALAR_COMPARISON$wind_dir <- ALAR_COMPARISON$wind_dir - 90
+
 
 library(ggplot2)
 ggplot() +
@@ -493,3 +497,398 @@ lm_df <- data.frame(observation = ALAR_COMPARISON$wind_dir, modelled = obs_with_
 lin <-lm(observation ~ modelled, data = lm_df)
 par(mfrow = c(2,2))
 plot(lin)
+
+
+
+
+#plot 1
+plot(
+  obs_with_model$lon,
+  obs_with_model$lat,
+  type = "l",
+  col = "black",
+  lwd = 1.5,
+  xlab = "Longitude",
+  ylab = "Latitude"
+)
+lines(obs_with_model$lon[12:18],
+      obs_with_model$lat[12:18],
+      col = "green",
+      lwd = 2)
+lines(obs_with_model$lon[24:31],
+      obs_with_model$lat[24:31],
+      col = "red",
+      lwd = 2)
+lines(obs_with_model$lon[37:41],
+      obs_with_model$lat[37:41],
+      col = "blue",
+      lwd = 2)
+
+#plot 2
+plot(obs_with_model$time,
+     obs_with_model$height_m,
+     type = "l",
+     lwd = 2, xlab = "Time", ylab = "Height [m]")
+lines(
+  obs_with_model$time[12:18],
+  obs_with_model$height_m[12:18],
+  col = "green",
+  lwd = 2
+)
+lines(
+  obs_with_model$time[24:31],
+  obs_with_model$height_m[24:31],
+  col = "red",
+  lwd = 2
+)
+lines(
+  obs_with_model$time[37:41],
+  obs_with_model$height_m[37:41],
+  col = "blue",
+  lwd = 2
+)
+lines(
+  obs_with_model$time[44:48],
+  obs_with_model$height_m[44:48],
+  col = "orange",
+  lwd = 2
+)
+#plot 3
+plot(
+  obs_with_model$lon,
+  obs_with_model$height_m,
+  type = "l",
+  col = "black",
+  lwd = 1.5,
+  xlim = c(-75.4, -73.85),
+  ylim = c(200, 600), xlab = "Longitude", ylab = "Height [m]"
+)
+lines(
+  obs_with_model$lon[12:18],
+  obs_with_model$height_m[12:18],
+  col = "green",
+  lwd = 2
+)
+lines(obs_with_model$lon[24:31],
+      obs_with_model$height_m[24:31],
+      col = "red",
+      lwd = 2)
+lines(
+  obs_with_model$lon[37:41],
+  obs_with_model$height_m[37:41],
+  col = "blue",
+  lwd = 2
+)
+
+#plot 4
+plot(
+  ALAR_COMPARISON$U[12:18],
+  ALAR_COMPARISON$V[12:18],
+  pch = 21 ,
+  bg = "green",
+  xlim = c(-3, 8), xlab = "U-wind component",
+ylab = "V-wind component")
+points(ALAR_COMPARISON$U[24:31],
+       ALAR_COMPARISON$V[24:31],
+       pch = 21 ,
+       bg = "red")
+points(ALAR_COMPARISON$U[37:41],
+       ALAR_COMPARISON$V[37:41],
+       pch = 21 ,
+       bg = "blue")
+
+points(
+  obs_with_model$U_model[12:18],
+  obs_with_model$V_model[12:18],
+  pch = 23,
+  bg = "green"
+)
+points(
+  obs_with_model$U_model[24:31],
+  obs_with_model$V_model[24:31],
+  pch = 23,
+  bg = "red"
+)
+points(
+  obs_with_model$U_model[37:41],
+  obs_with_model$V_model[37:41],
+  pch = 23,
+  bg = "blue"
+)
+
+#plot 5
+plot(
+  ALAR_COMPARISON$wind_dir[12:18],
+  obs_with_model$wind_dir[12:18],
+  xlim = c(0, 360),
+  ylim = c(0,360),
+  col = "green",
+  pch = 19,
+  xlab = "ALAR measured wind direction (degrees)",
+  ylab = "ERA5 Reanalysis modeled wind direction (degrees)"
+)
+points(ALAR_COMPARISON$wind_dir[24:31],
+       obs_with_model$wind_dir[24:31], pch = 19, col = "red")
+points(ALAR_COMPARISON$wind_dir[37:41],
+       obs_with_model$wind_dir[37:41], pch = 19, col = "blue")
+abline(a = 0, b = 1, col = "grey", lty = 2)
+
+
+
+obs_with_model$group <- "black"
+obs_with_model$group[12:18] <- "green"
+obs_with_model$group[24:31] <- "red"
+obs_with_model$group[37:41] <- "blue"
+obs_with_model$group[44:48] <- "orange"
+
+ALAR_COMPARISON$group <- NA
+ALAR_COMPARISON$group[12:18] <- "green"
+ALAR_COMPARISON$group[24:31] <- "red"
+ALAR_COMPARISON$group[37:41] <- "blue"
+ALAR_COMPARISON$group[44:48] <- "orange"
+
+
+
+
+library(ggplot2)
+p1 <- ggplot(obs_with_model, aes(x = lon, y = lat)) +
+  geom_path(color = "black", linewidth = 1.2) +
+  geom_path(data = obs_with_model[12:18,], color = "green", linewidth = 1.2) +
+  geom_path(data = obs_with_model[24:31,], color = "red", linewidth = 1.2) +
+  geom_path(data = obs_with_model[37:41,], color = "blue", linewidth = 1.2) +
+  geom_path(data = obs_with_model[44:48,], color = "orange", linewidth = 1.2) +
+  labs(x = "Longitude", y = "Latitude")
+
+p2 <- ggplot(obs_with_model, aes(x = time, y = height_m)) +
+  geom_line(linewidth = 1.2) +
+  geom_line(data = obs_with_model[12:18,], color = "green", linewidth = 1.2) +
+  geom_line(data = obs_with_model[24:31,], color = "red", linewidth = 1.2) +
+  geom_line(data = obs_with_model[37:41,], color = "blue", linewidth = 1.2) +
+  geom_line(data = obs_with_model[44:48,], color = "orange", linewidth = 1.2) +
+  labs(x = "Time", y = "Height [m]")
+
+p3 <- ggplot(obs_with_model, aes(x = lon, y = height_m)) +
+  geom_line(color = "black", linewidth = 0.5) +
+  geom_line(data = obs_with_model[12:18,], color = "green", linewidth = 1.2) +
+  geom_line(data = obs_with_model[24:31,], color = "red", linewidth = 1.2) +
+  geom_line(data = obs_with_model[37:41,], color = "blue", linewidth = 1.2) +
+  geom_line(data = obs_with_model[44:48,], color = "orange", linewidth = 1.2) +
+  
+  coord_cartesian(xlim = c(-75.4, -73.7), ylim = c(200, 3100)) +
+  labs(x = "Longitude", y = "Height [m]")
+
+#plot circular
+library(ggplot2)
+library(dplyr)
+
+ranges <- list(
+  12:18,
+  24:31,
+  37:41,
+  44:48
+)
+
+# Colors for each segment
+segment_colors <- c("green", "red", "blue", "orange")
+
+df_all <- do.call(rbind, lapply(seq_along(ranges), function(i) {
+  idx <- ranges[[i]]
+  data.frame(
+    angle_deg_obs  = obs_with_model$wind_dir[idx],
+    angle_deg_alar = ALAR_COMPARISON$wind_dir[idx],
+    r_obs = 0.8,
+    r_ALAR = 0.5, 
+    segment = i                 # segment id (1–4)
+  )
+}))
+
+convert_xy <- function(angle_deg, r)
+{
+  angle_rad <- (90 - angle_deg) * pi / 180
+  data.frame(
+    x = r * cos(angle_rad),
+    y = r * sin(angle_rad)
+  )
+}
+
+# obs (diamonds)
+obs_xy <- df_all %>%
+  rowwise() %>%
+  do({
+    cbind(
+      convert_xy(.$angle_deg_obs, .$r_obs),
+      segment = .$segment,
+      dataset = "obs"
+    )
+  })
+
+# alar (circles)
+alar_xy <- df_all %>%
+  rowwise() %>%
+  do({
+    cbind(
+      convert_xy(.$angle_deg_alar, .$r_ALAR),
+      segment = .$segment,
+      dataset = "alar"
+    )
+  })
+
+# Combine both
+plot_df <- rbind(obs_xy, alar_xy)
+
+circle <- data.frame(
+  angle = seq(0, 2*pi, length.out = 360)
+) %>% mutate(
+  x = cos(angle),
+  y = sin(angle)
+)
+
+ticks <- data.frame(
+  angle_deg = seq(0, 330, 30)
+) %>%
+  mutate(
+    angle_rad = (90 - angle_deg) * pi/180,
+    x = 1.1 * cos(angle_rad),
+    y = 1.1 * sin(angle_rad),
+    label = angle_deg
+  )
+
+p4 <- ggplot() +
+  geom_path(data = circle, aes(x, y), linewidth = 1) +
+  
+  # Horizontal diameter (0°–180°)
+  geom_segment(aes(x = -1, y = 0, xend = 1, yend = 0), linewidth = 0.6) +
+  
+  # Vertical diameter (90°–270°)
+  geom_segment(aes(x = 0, y = -1, xend = 0, yend = 1), linewidth = 0.6) +
+  
+  # ALAR (circles)
+  geom_point(
+    data = subset(plot_df, dataset == "alar"),
+    aes(x, y, color = factor(segment)),
+    size = 3, shape = 16
+  ) +
+  
+  # OBS (diamonds)
+  geom_point(
+    data = subset(plot_df, dataset == "obs"),
+    aes(x, y, color = factor(segment)),
+    size = 3, shape = 18
+  ) +
+  
+  geom_text(data = ticks, aes(x, y, label = label), size = 4) +
+  
+  scale_color_manual(values = segment_colors, guide = "none") +  # remove legend
+  coord_equal() +
+  theme_void()                                                   # remove axes/title/etc.
+
+p5 <- ggplot() +
+  geom_point(data = data.frame(ALAR = ALAR_COMPARISON$wind_dir[12:18] -90 ,
+                               ERA5 = obs_with_model$wind_dir[12:18]- 90),
+             aes(x = ALAR, y = ERA5), color = "green", size = 5) +
+  geom_point(data = data.frame(ALAR = ALAR_COMPARISON$wind_dir[24:31]-90,
+                               ERA5 = obs_with_model$wind_dir[24:31]-90),
+             aes(x = ALAR, y = ERA5), color = "red", size = 5) +
+  geom_point(data = data.frame(ALAR = ALAR_COMPARISON$wind_dir[37:41]-90,
+                               ERA5 = obs_with_model$wind_dir[37:41]-90),
+             aes(x = ALAR, y = ERA5), color = "blue", size = 5) +
+  geom_point(data = data.frame(ALAR = ALAR_COMPARISON$wind_dir[44:48]-90,
+                               ERA5 = obs_with_model$wind_dir[44:48]-90),
+             aes(x = ALAR, y = ERA5), color = "orange", size = 5) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  coord_cartesian(xlim = c(-90,360), ylim = c(-90,360)) +
+  labs(
+    x = "ALAR measured wind direction (°) - 90° ",
+    y = "ERA5 modeled wind direction (°) - 90° "
+  )
+
+
+
+t_fmt <- function(x) format(x, "%H:%M")
+
+range1 <- paste0(t_fmt(min(obs_with_model$time[12:18])), "–", t_fmt(max(obs_with_model$time[12:18])))
+range2 <- paste0(t_fmt(min(obs_with_model$time[24:31])), "–", t_fmt(max(obs_with_model$time[24:31])))
+range3 <- paste0(t_fmt(min(obs_with_model$time[37:41])), "–", t_fmt(max(obs_with_model$time[37:41])))
+range4 <- paste0(t_fmt(min(obs_with_model$time[44:48])), "–", t_fmt(max(obs_with_model$time[44:48])))
+
+
+legend_labels <- c(
+  "Full Flight Time Range",
+  "17:47–18:17 UTC",
+  "18:47–19:22 UTC",
+  "19:52–20:12 UTC",
+  "20:27–20:47 UTC"
+)
+
+legend_data <- data.frame(
+  x = 1:5,
+  y = 1:5,
+  segment = factor(legend_labels, levels = legend_labels)
+)
+
+seg_colors <- c(
+  "Full Flight Time Range" = "black",
+  "17:47–18:17 UTC" = "green",
+  "18:47–19:22 UTC" = "red",
+  "19:52–20:12 UTC"= "blue",
+  "20:27–20:47 UTC" = "orange"
+)
+
+legend_data_shapes <- data.frame(
+  x = 1:2,
+  y = 1:2,
+  type = factor(c("Observed", "Modeled"), levels = c("Observed", "Modeled")),
+  pch  = c(21, 23)
+)
+
+library(ggplot2)
+library(cowplot)
+
+legend_plot <- ggplot(legend_data, aes(x, y, color = segment)) +
+  geom_point(size = 5) +
+  scale_color_manual(values = seg_colors, name = "Time Range") +
+  theme_void() +
+  theme(
+    legend.position = "right",
+    legend.title = element_text(size = 16),
+    legend.text  = element_text(size = 14)
+  )
+
+legend_shapes <- ggplot(legend_data_shapes, aes(x, y, shape = type)) +
+  geom_point(size = 5, fill = "grey") +
+  scale_shape_manual(values = c(21, 23), name = "Data Type") +
+  theme_void() +
+  theme(
+    legend.position = "right",
+    legend.title = element_text(size = 16),
+    legend.text  = element_text(size = 14)
+  )
+
+legend1 <- get_legend(legend_plot)
+legend2 <- get_legend(legend_shapes)
+combined_legend <- plot_grid(
+  legend1, legend2,
+  ncol = 1
+)
+
+
+four_panel <- plot_grid(
+  p1, p2, p3, p4,
+  labels = c("A", "B", "C", "D"),
+  ncol = 2
+)
+
+final_plot <- plot_grid(
+  four_panel,
+  combined_legend,
+  ncol = 2,
+  rel_widths = c(4, 1)
+)
+p5.1 <- plot_grid(p5, legend1, ncol = 2, rel_widths = c(4,1))
+final_plot
+p5.1
+
+
+
+
+
