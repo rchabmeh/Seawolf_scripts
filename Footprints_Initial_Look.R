@@ -223,7 +223,7 @@ library(ggplot2)
 library(sf)
 library(dplyr)
 
-nc_dir <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/nc_files"
+nc_dir <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/nc_files/GFS_files/cruise_24"
 nc_files <- list.files(nc_dir, pattern = "\\.nc$", full.names = TRUE)
 
 all_min <- Inf
@@ -232,7 +232,12 @@ all_max <- -Inf
 for (nc_file in nc_files) {
   footprint <- nc_open(nc_file)
   fp_data <- ncvar_get(footprint, "foot")
+  
+  fp_time <- ncvar_get(footprint, "time")
+  fp_time <- as.POSIXct(fp_time, tz = "UTC")
+  
   nc_close(footprint)
+  
   
   if (length(dim(fp_data)) == 3) {
     summed_fp <- apply(fp_data, c(1, 2), sum, na.rm = TRUE)
@@ -293,6 +298,7 @@ for (nc_file in nc_files) {
   fp_time <- ncvar_get(footprint, "time")
   fp_time <- as.POSIXct(fp_time, tz = "UTC")
   fp_data <- ncvar_get(footprint, "foot")
+  fp_time_intial <- tail(fp_time, 1)
   nc_close(footprint)
   
   if (length(dim(fp_data)) == 3) {
@@ -307,9 +313,7 @@ for (nc_file in nc_files) {
   min_val <- min(fp_df$value[fp_df$value > 0], na.rm = TRUE)
   max_val <- max(fp_df$value, na.rm = TRUE)
   
-  date_label <- ifelse(is.na(fp_time[1]),
-                       "unknown",
-                       format(fp_time[1], "%Y-%m-%d %H:%M UTC"))
+  date_label <- fp_time_intial
   
   p <- ggplot() +
     geom_raster(data = fp_df, aes(x = lon, y = lat, fill = value)) +
@@ -364,8 +368,15 @@ for (nc_file in nc_files) {
     ) +
     theme_minimal(base_size = 12)
   
-  sum_footprint_out <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/summed_footprint_png"
-  out_file <- file.path(sum_footprint_out, paste0("summed_footprint_", format(fp_time[1], "%Y%m%d%H"), ".png"))
+  sum_footprint_out <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/summed_footprint_png/GFS_pngs/cruise_24"
+  out_file <- file.path(
+    sum_footprint_out,
+    paste0(
+      "summed_footprint_", 
+      format(fp_time_intial, "%Y%m%d%H"), "_",
+      tools::file_path_sans_ext(basename(nc_file)), ".png"
+    )
+  ) 
   ggsave(
     out_file,
     plot = p,
@@ -375,4 +386,33 @@ for (nc_file in nc_files) {
   )
   message("Saved summed footprint: ", out_file)
 }
+
+
+
+# 
+# 
+# # What files were written?
+# png_out_dir <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/summed_footprint_png"
+# png_files <- list.files(png_out_dir, pattern = "\\.png$", full.names = FALSE)
+# 
+# # Extract timestamps printed in PNG names
+# png_keys <- sub("summed_footprint_(.*)\\.png", "\\1", png_files)
+# 
+# # Extract timestamps from nc files
+# nc_times <- sapply(nc_files, function(f) {
+#   nc <- nc_open(f)
+#   t <- ncvar_get(nc, "time")
+#   nc_close(nc)
+#   format(as.POSIXct(t[1], tz="UTC"), "%Y%m%d%H")
+# })
+# 
+# # Compare
+# missing <- setdiff(nc_times, png_keys)
+# missing
+ 
+
+
+
+
+
 

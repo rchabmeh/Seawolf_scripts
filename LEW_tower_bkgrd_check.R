@@ -18,6 +18,20 @@ all_data <- lapply(files, function(f) {
 })
 
 all_data <- bind_rows(all_data)
+all_data$DATE <- ifelse(
+  nchar(all_data$DATE) == 10,
+  paste0(all_data$DATE, " 00:00:00"),
+  all_data$DATE
+)
+all_data$DATE <- as.POSIXct(all_data$DATE,
+                      format = "%Y-%m-%d %H:%M:%S",
+                      tz = "UTC")
+
+library(lubridate)
+all_data$local_time <- with_tz(all_data$DATE, tzone = "America/New_York")
+all_data$hour <- hour(all_data$local_time)
+all_data <- all_data[all_data$hour >= 10 & all_data$hour <= 16, ]
+
 LEW_co2       <- all_data %>% filter(type == "co2")
 LEW_ch4_ct    <- all_data %>% filter(type == "ch4_ct")
 LEW_ch4_cams  <- all_data %>% filter(type == "ch4_cams")

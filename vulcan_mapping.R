@@ -23,7 +23,7 @@ plot(
   xlim = c(-80, -70),
   ylab = "Latitude",
   ylim = c(38, 42),
-  main = "VULCAN V4.0 FFCO2 Emissions (total,1km,mn,2022)"
+  main = "VULCAN V4.0 ffCO2 Inventory"
 )
 lines(us_ll, col = "white", lwd = 1.5)
 points(twr$Lon, twr$Lat, col = "red", bg = "red", pch = 21)

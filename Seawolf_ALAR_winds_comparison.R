@@ -889,6 +889,221 @@ final_plot
 p5.1
 
 
+##### 12/9/25 ####
+obs_with_model <- readRDS("/Users/reneechabot-mehlin/Downloads/obs_with_model.RData")
+ALAR_COMPARISON <- readRDS("/Users/reneechabot-mehlin/Downloads/ALAR_COMPARISON.RData")
+library(sf)
+library(ggplot2)
+library(raster)
+library(viridis)
+states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k")
+
+east_coast_states <- c(
+  "Maine",
+  "New Hampshire",
+  "Massachusetts",
+  "Rhode Island",
+  "Connecticut",
+  "New York",
+  "New Jersey",
+  "Delaware",
+  "Maryland",
+  "Virginia",
+  "North Carolina",
+  "South Carolina",
+  "Georgia",
+  "Florida",
+  "Pennsylvania",
+  "Vermont"
+)
+
+east_states_sf <- states |>
+  dplyr::filter(NAME %in% east_coast_states)
+
+east_extent <- extent(-85, -65, 25, 47)
+library(sf)
+ALAR_COMPARISON_sf <- st_as_sf(ALAR_COMPARISON, coords = c("lon", "lat"), crs = 4326)
+ALAR_COMPARISON_sf <- st_transform(ALAR_COMPARISON_sf, st_crs(east_states_sf))
+ALAR_COMPARISON_sf$over_land <- lengths(st_intersects(ALAR_COMPARISON_sf, east_states_sf)) > 0
+
+ggplot() +
+  geom_sf(
+    data = east_states_sf,
+    fill = "gray90",
+    color = "gray50",
+    linewidth = 0.3
+  ) +
+  geom_path(
+    data = ALAR_COMPARISON,
+    aes(x = lon, y = lat),
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_sf(
+    data = ALAR_COMPARISON_sf,
+    aes(color = over_land),
+    size = 2
+  ) +
+  theme_minimal(base_size = 12) +
+  coord_sf(
+    xlim = c(-77, -72),
+    ylim = c(39.5, 41.5),
+    expand = FALSE
+  ) +
+  scale_color_manual(values = c("blue", "red"), labels = c("Water", "Land"))
+
+
+ALAR_COMPARISON_sf_split <- split(ALAR_COMPARISON_sf, ALAR_COMPARISON_sf$over_land)
+land_ALAR <- ALAR_COMPARISON_sf_split$`TRUE`
+water_ALAR <- ALAR_COMPARISON_sf_split$`FALSE`
+
+library(sf)
+obs_sf <- st_as_sf(obs_with_model, coords = c("lon", "lat"), crs = 4326)
+obs_sf <- st_transform(obs_sf, st_crs(east_states_sf))
+obs_sf$over_land <- lengths(st_intersects(obs_sf, east_states_sf)) > 0
+
+obs_sf_split <- split(obs_sf, obs_sf$over_land)
+land_model <- obs_sf_split$`TRUE`
+water_model <- obs_sf_split$`FALSE`
+
+keep <- c("land_model", "land_ALAR", "water_model", "water_ALAR")
+rm(list= setdiff(ls(), keep))
+
+
+sf_to_df <- function(sf_obj) {
+  df <- cbind(st_drop_geometry(sf_obj), st_coordinates(sf_obj))
+  names(df)[(ncol(df)-1):ncol(df)] <- c("lon", "lat")
+  return(df)
+}
+
+
+water_ALAR <- sf_to_df(water_ALAR)
+water_model <- sf_to_df(water_model)
+land_ALAR <- sf_to_df(land_ALAR)
+land_model <- sf_to_df(land_model)
+
+
+library(ggplot2)
+library(cowplot)
+library(dplyr)
+library(tidyr)
+
+all_times <- seq(
+  from = min(c(land_ALAR$time, water_ALAR$time)),
+  to   = max(c(land_ALAR$time, water_ALAR$time)),
+  by   = "10 min"  
+)
+
+land_complete <- land_ALAR %>%
+  complete(time = all_times, fill = list(height_m = NA))
+
+water_complete <- water_ALAR %>%
+  complete(time = all_times, fill = list(height_m = NA))
+
+p1 <- ggplot(land_complete, aes(x = time, y = height_m)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time", y = "Height (m)", title = "Land ALAR") +
+  theme_minimal()
+
+p2 <- ggplot(water_complete, aes(x = time, y = height_m)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time", y = "Height (m)", title = "Water ALAR") +
+  theme_minimal()
+
+plot_grid(p1, p2, ncol = 1)
+
+# plot(land_ALAR$height_m[8:12])
+# plot(land_ALAR$height_m[19:24])
+# plot(land_ALAR$height_m[25:28])
+# plot(land_ALAR$height_m[31:33])
+# 
+# plot(water_ALAR$height_m[14:15])
+
+
+library(ggplot2)
+library(dplyr)
+
+land_ALAR <- land_ALAR %>%
+  mutate(group = case_when(
+    row_number() %in% 8:12  ~ "Segment1",
+    row_number() %in% 19:24 ~ "Segment2",
+    row_number() %in% 25:28 ~ "Segment3",
+    row_number() %in% 31:33 ~ "Segment4",
+    TRUE                     ~ "Other"
+  ))
+
+p_land <- ggplot(land_ALAR, aes(x = time, y = height_m, color = group, group = 1)) +
+  geom_point() +
+  scale_color_manual(values = c(
+    "Segment1" = "red",
+    "Segment2" = "blue",
+    "Segment3" = "green",
+    "Segment4" = "purple",
+    "Other"    = "black"
+  )) +
+  labs(x = "Time", y = "Height (m)", title = "Land ALAR") +
+  theme_minimal() 
+
+
+water_ALAR <- water_ALAR %>%
+  mutate(group = case_when(
+    row_number() %in% 14:15 ~ "Segment1",
+    TRUE                     ~ "Other"
+  ))
+
+p_water <- ggplot(water_ALAR, aes(x = time, y = height_m, color = group, group = 1)) +
+  geom_point() +
+  scale_color_manual(values = c(
+    "Segment1" = "red",
+    "Other"    = "black"
+  )) +
+  labs(x = "Time", y = "Height (m)", title = "Water ALAR") +
+  theme_minimal()
+library(cowplot)
+plot_grid(p_land, p_water, ncol = 1)
+
+
+idx_list <- list(8:12, 19:24, 25:28, 31:33)
+cols <- c("red", "blue", "green", "purple")
+plot(
+  land_ALAR$wind_dir[idx_list[[1]]],
+  land_model$wind_dir[idx_list[[1]]],
+  xlab = "ALAR Wind Dir (°)",
+  ylab = "Model Wind Dir (°)",
+  main = "ALAR vs ERA5 Reanalysis Winds",
+  col = cols[1],
+  pch = 19,
+  xlim = c(0,375),
+  ylim = c(0,375)
+)
+for(i in 2:length(idx_list)) {
+  points(
+    land_ALAR$wind_dir[idx_list[[i]]],
+    land_model$wind_dir[idx_list[[i]]],
+    col = cols[i],
+    pch = 19
+  )
+}
+abline(a = 0, b = 1, lty = 2)
+
+
+section_labels <- sapply(idx_list, function(ix) {
+  start_time <- land_ALAR$time[min(ix)]
+  end_time   <- land_ALAR$time[max(ix)]
+  paste(format(start_time, "%H:%M"), format(end_time, "%H:%M"), sep = "–")
+})
+cols <- c("red", "blue", "green", "purple")
+plot.new()
+legend(
+  "center",
+  legend = section_labels,
+  col = cols,
+  pch = 19,
+  title = "Time Range EDT",
+  cex = 0.6
+)
 
 
 
