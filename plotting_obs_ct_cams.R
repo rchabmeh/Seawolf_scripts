@@ -367,7 +367,7 @@ scale_ch4 <- scale_colour_viridis_c(
   limits = ch4_limits,
   name = expression(CH[4]~"(ppm)")
 )
-
+ 
 ### CO2 ####
 #OBS
 plot_c14_obs <- ggplot() +

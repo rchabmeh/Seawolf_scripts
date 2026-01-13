@@ -1,9 +1,11 @@
 #Comparing ship to LEW!
 
-#GOALS: OBS CRUISE - OBS SHIP for cruise 4 and cruise 24
+#GOALS: OBS CRUISE - OBS LEW for cruise 4 and cruise 24
+##Use another tower for cruise 14
 
-cruise_4 <- read.csv("/Volumes/Seagate/cruise4_eulerian/cruise4_info_5_min_avg_daylight.csv")
-
+cruise_4 <- read.csv("/Users/reneechabot-mehlin/Desktop/Seawulf_files/cruises_modeled_info/cruise_4/cruise4_info_5_min_avg_daylight.csv")
+cruise_14 <- read.csv("/Users/reneechabot-mehlin/Desktop/Seawulf_files/cruises_modeled_info/cruise_14/cruise14_info_5_min_avg_daylight.csv")
+cruise_24 <- read.csv("/Users/reneechabot-mehlin/Desktop/Seawulf_files/cruises_modeled_info/cruise_24/cruise24_info_5_min_avg_daylight.csv")
 ##### Only have to run once (already ran) #####
 #"2022-04-08 14:00:00"
 #"2022-04-15 20:45:00"
@@ -47,14 +49,6 @@ LEW_22_CH4_50 <- LEW_22_CH4_50[
 
 saveRDS(LEW_22_CO2_50, "/Users/reneechabot-mehlin/Desktop/twr_comp/cruise4/LEW_CO2.RData")
 saveRDS(LEW_22_CH4_50, "/Users/reneechabot-mehlin/Desktop/twr_comp/cruise4/LEW_CH4.RData")
-
-
-
-
-
-
-
-
 
 #####Load in towers #####
 
