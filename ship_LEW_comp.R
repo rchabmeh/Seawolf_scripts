@@ -180,7 +180,173 @@ merged_data_closest_hour$hour_bin <- NULL
 
 hrly_enhancements <- data.frame(CO2_ENH_PPM = (merged_data_closest_hour$OBS_CO2_PPM - merged_data_closest_hour$LEW_CO2_PPM),
                            CH4_ENH_PPB = (merged_data_closest_hour$OBS_CH4_PPB - merged_data_closest_hour$LEW_CH4_PPB))
+hrly_enhancements$DATE.TIME <-merged_data_closest_hour$TIME_UTC
+hrly_enhancements$LON <- merged_data_closest_hour$LON
+hrly_enhancements$LAT <- merged_data_closest_hour$LAT
+
 half.hrly_enhancements <- data.frame(CO2_ENH_PPM = (merged_data_closest_half_hour$OBS_CO2_PPM - merged_data_closest_half_hour$LEW_CO2_PPM),
                                      CH4_ENH_PPB = (merged_data_closest_half_hour$OBS_CH4_PPB - merged_data_closest_half_hour$LEW_CH4_PPB))
 
+library(ggplot2)
+ggplot(data = hrly_enhancements, aes(x = DATE.TIME, y = CO2_ENH_PPM)) + 
+  geom_point(colour = "blue") + 
+  geom_hline(yintercept = 0, colour = "red") + 
+  labs(x = "Date UTC", y = "CO2 enhancement (ppm)", title = "Cruise 4 CO2 enhancements (ppm)")
+  
 
+ggplot(data = hrly_enhancements, aes(x = DATE.TIME, y = CH4_ENH_PPB)) + 
+  geom_point(colour = "darkgreen") + 
+  labs(x = "Date UTC", y = "CH4 enhancement (ppb)", title = "Cruise 4 CH4 enhancements (ppb)")
+
+
+hrly_enhancements <- hrly_enhancements[
+  order(hrly_enhancements$DATE.TIME),
+]
+
+library(maps)
+states <- map_data("state")
+
+ne_states <- c(
+  "maine", "new hampshire", "vermont",
+  "massachusetts", "rhode island", "connecticut",
+  "new york", "new jersey", "pennsylvania"
+)
+
+states_ne <- states[states$region %in% ne_states, ]
+
+xlim_use <- range(hrly_enhancements$LON, na.rm = TRUE) + c(-0.05, 0.05)
+ylim_use <- range(hrly_enhancements$LAT,  na.rm = TRUE) + c(-0.05, 0.05)
+
+sites <- data.frame(
+  site = c("Cape May", "Point Pleasant"),
+  lat  = c(38.9316, 40.0829),
+  lon  = c(-74.9108, -74.0683)
+)
+
+
+scale_co2 <- scale_colour_viridis_c(
+  option = "D",
+  direction = 1,
+  limits = c(-7.33, 7.09),  # focus range
+  oob = scales::squish,      # out-of-range values are squished to the ends
+  name = expression(CO[2]~"(ppm)")
+)
+
+max_point <- hrly_enhancements[which.max(hrly_enhancements$CO2_ENH_PPM), ]
+
+p.co2 <- ggplot() +
+  geom_polygon(
+    data = states_ne,
+    aes(x = long, y = lat, group = group),
+    fill = "grey",
+    color = "gray50",
+    linewidth = 0.4
+  ) +
+  geom_path(
+    data = hrly_enhancements,
+    aes(x = LON, y = LAT, colour = CO2_ENH_PPM),
+    linewidth = 1
+  ) + 
+  geom_point( data = hrly_enhancements,
+              aes(x = LON, y = LAT, colour = CO2_ENH_PPM))+
+  coord_fixed(
+    ratio = 1.3,
+    xlim = xlim_use,
+    ylim = ylim_use
+  ) +
+  labs(
+    x = "Longitude",
+    y = "Latitude",
+    color = expression(CO[2]),
+    title = "Cruise 4 Carbon Dioxide (ppm) Enhancement"
+  ) +
+  theme_grey() + 
+  scale_co2 +
+  geom_point(
+    data = sites,
+    aes(x = lon, y = lat),
+    color = "black",
+    size = 3
+  ) +
+  geom_text(
+    data = sites,
+    aes(x = lon, y = lat, label = site),
+    nudge_y = 0.15,
+    size = 3
+  ) +
+  geom_text_repel(
+    data = subset(hrly_enhancements, CO2_ENH_PPM > 7),
+    aes(x = LON, y = LAT, label = paste(round(CO2_ENH_PPM, 2), "ppm")),
+    size = 3,
+    color = "red",
+    max.overlaps = Inf,
+    nudge_x = 0.08# ensures all labels are considered
+  ) +
+  geom_point(
+    data = max_point,
+    aes(x = LON, y = LAT),
+    color = "yellow",
+    size = 2
+  )
+
+
+####
+
+
+scale_ch4 <- scale_colour_viridis_c(
+  option = "D",
+  direction = 1,
+  limits = c(-71.11, -23.13),  # focus range
+  oob = scales::squish,      # out-of-range values are squished to the ends
+  name = expression(CH[4]~"(ppb)")
+)
+
+max_point <- hrly_enhancements[which.max(hrly_enhancements$CH4_ENH_PPB), ]
+
+p.ch4 <- ggplot() +
+  geom_polygon(
+    data = states_ne,
+    aes(x = long, y = lat, group = group),
+    fill = "grey",
+    color = "gray50",
+    linewidth = 0.4
+  ) +
+  geom_path(
+    data = hrly_enhancements,
+    aes(x = LON, y = LAT, colour = CH4_ENH_PPB),
+    linewidth = 1
+  ) + 
+  geom_point( data = hrly_enhancements,
+              aes(x = LON, y = LAT, colour = CH4_ENH_PPB))+
+  coord_fixed(
+    ratio = 1.3,
+    xlim = xlim_use,
+    ylim = ylim_use
+  ) +
+  labs(
+    x = "Longitude",
+    y = "Latitude",
+    color = expression(CO[2]),
+    title = "Cruise 4 Methane (ppb) Enhancement"
+  ) +
+  theme_grey() + 
+  scale_ch4 +
+  geom_point(
+    data = sites,
+    aes(x = lon, y = lat),
+    color = "black",
+    size = 3
+  ) +
+  geom_text(
+    data = sites,
+    aes(x = lon, y = lat, label = site),
+    nudge_y = 0.15,
+    size = 3
+  ) 
+ 
+library(cowplot)
+
+plot_grid(p.co2, p.ch4, ncol = 2)
+
+
+ 
