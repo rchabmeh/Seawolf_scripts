@@ -17,10 +17,9 @@ states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2021_us_state_500k/cb_
 # colnames(Seawolf_lat_lon) <- c("Latitude_deg", "Longitude_deg")
 # write.csv(Seawolf_lat_lon, '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Cruises/Cruise 24 (10 11 23-11 7 23)/Seawolf_24_lat_lon')
 
-Seawolf_lat_lon <- read.csv(
-"/Users/reneechabot-mehlin/Downloads/FLIGHT_07_02_2025.csv")
+Seawolf_lat_lon <- read.csv("/Users/reneechabot-mehlin/Downloads/2023-03-22__2023-04-19_Seawolf_1hz.csv")
 
-directory <- "/Users/reneechabot-mehlin/Desktop/test"
+directory <- "/Users/reneechabot-mehlin/Desktop/Seawulf_files/hrrr/c19"
 #directory <- "/Users/reneechabot-mehlin/hysplit/working/cruise_4_hrrr_tdump_files"
 setwd(directory)
 
@@ -170,7 +169,7 @@ train_tracks <- st_as_sfc(trainline$the_geom, crs = 4326)
 states <- st_transform(states, crs = 4326)
 #Plotting tracks and trajectories
 library(paletteer)
-#colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
+colors <- as.character(paletteer_c("grDevices::rainbow", n = length(trajectory1_list)))
 plot(
   st_geometry((states)),
   xlim = c(-78, -70),
@@ -193,15 +192,44 @@ for (i in 1:length(trajectory1_list)) {
   lon <- trajectory1_list[[i]][[11]]
   lat <- trajectory1_list[[i]][[10]]
   
-  print(paste("i =", i, "length(lon) =", length(lon), "length(lat) =", length(lat)))
+  #print(paste("i =", i, "length(lon) =", length(lon), "length(lat) =", length(lat)))
   
-  if (all(is.finite(lon)) && all(is.finite(lat)) && length(lon) > 1) {
-   # lines(lon, lat, col = colors[i], lwd = 0.5, type = "o", pch = 20, cex = 0.6)
-    points(lon[1],lat[1], col = colors[i],pch = 20)
-  } else {
-    message("Skipped trajectory ", i)
-  }
+  #if (all(is.finite(lon)) && all(is.finite(lat)) && length(lon) > 1) {
+   lines(lon, lat, col = colors[i], lwd = 0.5, type = "o", pch = 20, cex = 0.6)
+  #  points(lon[1],lat[1], col = colors[i],pch = 20)
+ # } else {
+  #  message("Skipped trajectory ", i)
+ # }
 }
+
+indices <- 227:233 #55:62, 130:136, 227:233
+colors  <- as.character(paletteer_c("grDevices::rainbow", n = length(indices)))
+plot(
+  st_geometry((states)),
+  xlim = c(-78, -70),
+  ylim = c(38, 42),
+  xlab = "",
+  ylab = "",
+  main = "Potential Sources of GHGs",
+  border = "grey",
+  axes = T,
+  las = 1,
+  asp = 1
+)
+for (j in seq_along(indices)) {
+  i <- indices[j]
+  
+  lon <- trajectory1_list[[i]][[11]]
+  lat <- trajectory1_list[[i]][[10]]
+  
+  lines(lon, lat,
+        col = colors[j],
+        lwd = 0.5,
+        type = "o",
+        pch = 20,
+        cex = 0.6)
+}
+
 
 #plot(st_geometry(train_tracks), col = "blue", lwd = 2, add = TRUE)
 

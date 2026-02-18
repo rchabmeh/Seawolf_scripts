@@ -392,6 +392,113 @@ era5_wind_speed <- sqrt(matched_df$u^2 + matched_df$v^2)
 wind_df_era5 <- data.frame(u = matched_df$u, v = matched_df$v, lon, lat)
 
 
+##comparing scaling same
+library(ggplot2)
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+library(dplyr)
+lims_df <- wind_long %>%
+  group_by(component) %>%
+  summarise(
+    min_val = min(c(obs, era5), na.rm = TRUE),
+    max_val = max(c(obs, era5), na.rm = TRUE)
+  )
+wind_long <- merge(wind_long, lims_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  geom_blank(aes(x = min_val, y = min_val)) +
+  geom_blank(aes(x = max_val, y = max_val)) +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##comparing scaling diff
+library(ggplot2)
+
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
+
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##regression
+stats_df <- do.call(rbind, lapply(split(wind_long, wind_long$component), function(df) {
+  fit <- lm(era5 ~ obs, data = df)
+  data.frame(
+    component = unique(df$component),
+    intercept = coef(fit)[1],
+    slope = coef(fit)[2],
+    r2 = summary(fit)$r.squared
+  )
+}))
+wind_long <- merge(wind_long, stats_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  geom_text(
+    data = stats_df,
+    aes(
+      x = -Inf,
+      y = Inf,
+      label = paste0(
+        "y = ",
+        round(slope, 2), "x + ",
+        round(intercept, 2),
+        "\nR² = ",
+        round(r2, 3)
+      )
+    ),
+    hjust = -0.1,
+    vjust = 1.1,
+    inherit.aes = FALSE
+  ) +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+
+
+##
 library(sf)
 library(ggplot2)
 library(raster)
@@ -510,7 +617,6 @@ p2 <- ggplot() +
 library(cowplot)
 
 plot_grid(p1, p2)
-
 
 
 ##### 7.2.25 initial plot and load in #####
@@ -740,8 +846,111 @@ wind_df_obs <- data.frame(u, v, lon, lat)
 
 era5_wind_speed <- sqrt(matched_df$u^2 + matched_df$v^2)
 wind_df_era5 <- data.frame(u = matched_df$u, v = matched_df$v, lon, lat)
+##comparing scaling same
+library(ggplot2)
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+library(dplyr)
+lims_df <- wind_long %>%
+  group_by(component) %>%
+  summarise(
+    min_val = min(c(obs, era5), na.rm = TRUE),
+    max_val = max(c(obs, era5), na.rm = TRUE)
+  )
+wind_long <- merge(wind_long, lims_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  geom_blank(aes(x = min_val, y = min_val)) +
+  geom_blank(aes(x = max_val, y = max_val)) +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##comparing scaling diff
+library(ggplot2)
 
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
 
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##regression
+stats_df <- do.call(rbind, lapply(split(wind_long, wind_long$component), function(df) {
+  fit <- lm(era5 ~ obs, data = df)
+  data.frame(
+    component = unique(df$component),
+    intercept = coef(fit)[1],
+    slope = coef(fit)[2],
+    r2 = summary(fit)$r.squared
+  )
+}))
+wind_long <- merge(wind_long, stats_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  geom_text(
+    data = stats_df,
+    aes(
+      x = -Inf,
+      y = Inf,
+      label = paste0(
+        "y = ",
+        round(slope, 2), "x + ",
+        round(intercept, 2),
+        "\nR² = ",
+        round(r2, 3)
+      )
+    ),
+    hjust = -0.1,
+    vjust = 1.1,
+    inherit.aes = FALSE
+  ) +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##
 library(sf)
 library(ggplot2)
 library(raster)
@@ -985,7 +1194,111 @@ wind_df_obs <- data.frame(u, v, lon, lat)
 era5_wind_speed <- sqrt(matched_df$u^2 + matched_df$v^2)
 wind_df_era5 <- data.frame(u = matched_df$u, v = matched_df$v, lon, lat)
 
+##comparing scaling same
+library(ggplot2)
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+library(dplyr)
+lims_df <- wind_long %>%
+  group_by(component) %>%
+  summarise(
+    min_val = min(c(obs, era5), na.rm = TRUE),
+    max_val = max(c(obs, era5), na.rm = TRUE)
+  )
+wind_long <- merge(wind_long, lims_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  geom_blank(aes(x = min_val, y = min_val)) +
+  geom_blank(aes(x = max_val, y = max_val)) +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##comparing scaling diff
+library(ggplot2)
 
+wind_comp <- data.frame(
+  u_obs  = wind_df_obs$u,
+  v_obs  = wind_df_obs$v,
+  u_era5 = wind_df_era5$u,
+  v_era5 = wind_df_era5$v
+)
+
+wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
+wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
+
+wind_long <- data.frame(
+  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
+  obs  = c(wind_comp$u_obs,
+           wind_comp$v_obs,
+           wind_comp$dir_obs),
+  era5 = c(wind_comp$u_era5,
+           wind_comp$v_era5,
+           wind_comp$dir_era5)
+)
+
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##regression
+stats_df <- do.call(rbind, lapply(split(wind_long, wind_long$component), function(df) {
+  fit <- lm(era5 ~ obs, data = df)
+  data.frame(
+    component = unique(df$component),
+    intercept = coef(fit)[1],
+    slope = coef(fit)[2],
+    r2 = summary(fit)$r.squared
+  )
+}))
+wind_long <- merge(wind_long, stats_df, by = "component")
+ggplot(wind_long, aes(x = obs, y = era5)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  geom_text(
+    data = stats_df,
+    aes(
+      x = -Inf,
+      y = Inf,
+      label = paste0(
+        "y = ",
+        round(slope, 2), "x + ",
+        round(intercept, 2),
+        "\nR² = ",
+        round(r2, 3)
+      )
+    ),
+    hjust = -0.1,
+    vjust = 1.1,
+    inherit.aes = FALSE
+  ) +
+  facet_wrap(~ component, scales = "free") +
+  labs(x = "Observed",
+       y = "ERA5",
+       title = "Observed vs ERA5 Wind Comparison") +
+  theme_bw()
+##
 library(sf)
 library(ggplot2)
 library(raster)
@@ -1052,7 +1365,7 @@ p1 <- ggplot() +
   ) +
   scale_color_viridis_c(option = "plasma", name = "Wind speed (m/s)") +
   labs(
-    title = "5-Minute Averaged Wind Vectors over ALAR Flight Path (2/2/2026)",
+    title = "5-Minute Averaged Wind Vectors over ALAR Flight Path (2/5/2026)",
     x = "Longitude",
     y = "Latitude",
     subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")

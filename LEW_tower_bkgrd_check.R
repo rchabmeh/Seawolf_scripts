@@ -127,7 +127,28 @@ four_panel <- plot_grid(
   ncol = 2
 )
 
-four_panel
+four_panel_spaced <- four_panel +
+  theme(plot.margin = margin(t = 22, r = 5, b = 5, l = 5))
+
+four_panel_titled <- ggdraw(four_panel_spaced) +
+  draw_label(
+    "Observed vs Modeled CO2 and CH4 at LEW",
+    x = 0.5, y = 0.99,
+    hjust = 0.5,
+    vjust = 1,
+    fontface = "bold",
+    size = 16
+  ) +
+  draw_label(
+    "10:00-16:00 Local Time (2022-2023)",
+    x = 0.5, y = 0.97,
+    hjust = 0.5,
+    vjust = 1,
+    fontface = "bold",
+    size = 12
+  )
+
+four_panel_titled
 
 ##### WNJ #####
 files <- list.files(
@@ -278,7 +299,28 @@ four_panel <- plot_grid(
   p1, p2, p3, p4,
   ncol = 2
 )
-four_panel
+four_panel_spaced <- four_panel +
+  theme(plot.margin = margin(t = 22, r = 5, b = 5, l = 5))
+
+four_panel_titled <- ggdraw(four_panel_spaced) +
+  draw_label(
+    "Observed vs Modeled CO2 and CH4 at WNJ",
+    x = 0.5, y = 0.99,
+    hjust = 0.5,
+    vjust = 1,
+    fontface = "bold",
+    size = 16
+  ) +
+  draw_label(
+    "10:00-16:00 Local Time (2022-2023)",
+    x = 0.5, y = 0.97,
+    hjust = 0.5,
+    vjust = 1,
+    fontface = "bold",
+    size = 12
+  )
+
+four_panel_titled
 ##### SHIP #####
 cruise_4 <- read.csv("/Volumes/Seagate/cruise4_eulerian/all_models_merged_cruise4.csv")
 cruise_13 <- read.csv("/Volumes/Seagate/cruise13_eulerian/all_models_merged_cruise13.csv")
