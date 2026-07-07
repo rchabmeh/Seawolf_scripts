@@ -1,6 +1,6 @@
 # use this link to grab data: https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels?tab=download
 #grab: reanalysis, u, v, and geopotential, 750-1000 hPa 
-
+##### _________________________________________________________________#####
 ##### ______ adding wind vectors to 2.2.26 & 2.5.26 _________ #####
 
 winds_2.2.26 <- data.frame(wd_dir = c(345,316,330,317,360,303,320,320,318), 
@@ -619,9 +619,10 @@ library(cowplot)
 plot_grid(p1, p2)
 
 
+##### _________________________________________________________________#####
 ##### 7.2.25 initial plot and load in #####
 ALAR <- read.csv(
-  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/ALAR-Flights/2025_Flights/July_WINDS_TEST/7-2-25/2025-07-02_ALAR_1hz.csv'
+  '/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/winds_comparison_alar_over_ocean/csv files/2025-07-02_ALAR_1hz.csv'
 )
 ALAR$Time_local <- as.POSIXct(ALAR$Time_local, origin = "1904-01-01", tz = "America/New_York")
 ALAR$Time_UTC <- as.POSIXct(ALAR$Time_UTC, origin = "1904-01-01", tz = "UTC")
@@ -721,11 +722,10 @@ ggplot() +
   ) +
   theme_minimal(base_size = 12)
 
-
 ##### loading in 7.2.25 ERA5 #######
 library(ncdf4)
 library(dplyr)
-era5_7.2.25 <- nc_open("/Users/reneechabot-mehlin/Downloads/7-2-25-era5-reanalysis.nc")
+era5_7.2.25 <- nc_open('/Users/reneechabot-mehlin/Library/CloudStorage/GoogleDrive-renee.chabot@stonybrook.edu/.shortcut-targets-by-id/1GSVxGJlWo-R0hbtHEXmwYdG8xHXiGhzo/Shepson Group Drive/Renée/Research/R V Seawolf- Cruises/Seawolf_data/documents/winds_comparison_alar_over_ocean/era5 files/7-2-25-era5-reanalysis.nc')
 
 lon  <- ncvar_get(era5_7.2.25, "longitude")
 lat  <- ncvar_get(era5_7.2.25, "latitude")
@@ -793,7 +793,6 @@ final <- ALAR_5min
 nearest_index <- function(x, x0) {
   which.min(abs(x - x0))
 }
-
 
 matched <- vector("list", nrow(final))
 
@@ -1069,354 +1068,4 @@ p2 <- ggplot() +
 library(cowplot)
 
 plot_grid(p1, p2)
-
-##### ______ loading in ERA5-Reanalysis winds 2.2.26 ________######
-library(ncdf4)
-library(dplyr)
-era5_2.5.26 <- nc_open("/Users/reneechabot-mehlin/Downloads/2-5-26-era5-reanalysis.nc")
-
-lon  <- ncvar_get(era5_2.5.26, "longitude")
-lat  <- ncvar_get(era5_2.5.26, "latitude")
-
-time <- ncvar_get(era5_2.5.26, "valid_time")
-time <- as.POSIXct(time , origin = "1970-01-01 00:00:00", tz = "UTC") #3600 converts hrs -> sec
-
-
-u <- ncvar_get(era5_2.5.26, "u")
-v <- ncvar_get(era5_2.5.26, "v")
-z <- ncvar_get(era5_2.5.26, "z")
-
-g <- 9.80665
-height_msl <- z / g
-
-
-min_time <- as.POSIXct(min(final_2.5.26$utc_time), tz = "UTC")
-max_time <- as.POSIXct(max(final_2.5.26$utc_time), tz = "UTC")
-
-time_indices <- which(time >= min_time & time <= max_time)
-if (length(time_indices) == 0) {
-  message("No overlapping times for file: ", era5_2.5.26) #check to basically make sure I load in the right file
-  nc_close(era5_2.5.26)
-  next
-}
-time_sel <- time[time_indices]
-
-level <- ncvar_get(era5_2.5.26, "pressure_level") 
-
-
-u_sel <- u[ , , , time_indices, drop = FALSE]
-v_sel <- v[ , , , time_indices, drop = FALSE]
-height_sel <- height_msl[ , , , time_indices, drop = FALSE]
-
-
-wind_by_level <- vector("list", length(level))
-names(wind_by_level) <- paste0("p", level)
-for (k in seq_along(level)) {
-  
-  u_k <- u_sel[ , , k, ]  
-  v_k <- v_sel[ , , k, ]
-  h_k <- height_sel[ , , k, ]
-  
-  df <- expand.grid(
-    lon  = lon,
-    lat  = lat,
-    time = time_sel
-  )
-  
-  df$u <- as.vector(u_k)
-  df$v <- as.vector(v_k)
-  df$ht <- as.vector(h_k)
-  
-  df$pressure_level <- level[k]
-  
-  wind_by_level[[k]] <- df
-}
-
-wind_all <- do.call(rbind, wind_by_level)
-
-
-final <- final_2.5.26
-
-final$height_m <- final$ht_ft * 0.3048
-
-nearest_index <- function(x, x0) {
-  which.min(abs(x - x0))
-}
-
-
-matched <- vector("list", nrow(final))
-
-for (i in seq_len(nrow(final))) {
-  
-  obs_time <- final$utc_time[i]
-  obs_lat  <- final$Latitude_deg[i]
-  obs_lon  <- final$Longitude_deg[i]
-  obs_h    <- final$HeightAbvMSL_m[i]
-  
-  # subset ERA5 to nearest time
-  ti <- nearest_index(unique(wind_all$time), obs_time)
-  t_sel <- unique(wind_all$time)[ti]
-  
-  era_t <- wind_all[wind_all$time == t_sel, ]
-  
-  # nearest grid point
-  li <- nearest_index(era_t$lat, obs_lat)
-  loi <- nearest_index(era_t$lon, obs_lon)
-  
-  era_space <- era_t[
-    era_t$lat == era_t$lat[li] &
-      era_t$lon == era_t$lon[loi],
-  ]
-  
-  hi <- nearest_index(era_space$ht, obs_h)
-  
-  matched[[i]] <- cbind(
-    final[i, ],
-    era_space[hi, c("u", "v", "pressure_level", "ht")]
-  )
-}
-
-
-matched_df <- do.call(rbind, matched)
-
-
-##### ______ plotting 2.2.26 comparison _________ #####
-
-wind_speed <- (matched_df$wd_spd/1.944) #knots to m/s
-wind_dir <- matched_df$wd_dir
-u <- -wind_speed * sin(pi * wind_dir / 180)
-v <- -wind_speed * cos(pi * wind_dir / 180)
-lon <- matched_df$Longitude_deg
-lat <- matched_df$Latitude_deg
-
-wind_df_obs <- data.frame(u, v, lon, lat)
-
-era5_wind_speed <- sqrt(matched_df$u^2 + matched_df$v^2)
-wind_df_era5 <- data.frame(u = matched_df$u, v = matched_df$v, lon, lat)
-
-##comparing scaling same
-library(ggplot2)
-wind_comp <- data.frame(
-  u_obs  = wind_df_obs$u,
-  v_obs  = wind_df_obs$v,
-  u_era5 = wind_df_era5$u,
-  v_era5 = wind_df_era5$v
-)
-wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
-wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
-wind_long <- data.frame(
-  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
-  obs  = c(wind_comp$u_obs,
-           wind_comp$v_obs,
-           wind_comp$dir_obs),
-  era5 = c(wind_comp$u_era5,
-           wind_comp$v_era5,
-           wind_comp$dir_era5)
-)
-library(dplyr)
-lims_df <- wind_long %>%
-  group_by(component) %>%
-  summarise(
-    min_val = min(c(obs, era5), na.rm = TRUE),
-    max_val = max(c(obs, era5), na.rm = TRUE)
-  )
-wind_long <- merge(wind_long, lims_df, by = "component")
-ggplot(wind_long, aes(x = obs, y = era5)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  facet_wrap(~ component, scales = "free") +
-  geom_blank(aes(x = min_val, y = min_val)) +
-  geom_blank(aes(x = max_val, y = max_val)) +
-  labs(x = "Observed",
-       y = "ERA5",
-       title = "Observed vs ERA5 Wind Comparison") +
-  theme_bw()
-##comparing scaling diff
-library(ggplot2)
-
-wind_comp <- data.frame(
-  u_obs  = wind_df_obs$u,
-  v_obs  = wind_df_obs$v,
-  u_era5 = wind_df_era5$u,
-  v_era5 = wind_df_era5$v
-)
-
-wind_comp$dir_obs  <- (270 - atan2(wind_comp$v_obs,  wind_comp$u_obs)  * 180/pi) %% 360
-wind_comp$dir_era5 <- (270 - atan2(wind_comp$v_era5, wind_comp$u_era5) * 180/pi) %% 360
-
-wind_long <- data.frame(
-  component = rep(c("u", "v", "direction"), each = nrow(wind_comp)),
-  obs  = c(wind_comp$u_obs,
-           wind_comp$v_obs,
-           wind_comp$dir_obs),
-  era5 = c(wind_comp$u_era5,
-           wind_comp$v_era5,
-           wind_comp$dir_era5)
-)
-
-ggplot(wind_long, aes(x = obs, y = era5)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  facet_wrap(~ component, scales = "free") +
-  labs(x = "Observed",
-       y = "ERA5",
-       title = "Observed vs ERA5 Wind Comparison") +
-  theme_bw()
-##regression
-stats_df <- do.call(rbind, lapply(split(wind_long, wind_long$component), function(df) {
-  fit <- lm(era5 ~ obs, data = df)
-  data.frame(
-    component = unique(df$component),
-    intercept = coef(fit)[1],
-    slope = coef(fit)[2],
-    r2 = summary(fit)$r.squared
-  )
-}))
-wind_long <- merge(wind_long, stats_df, by = "component")
-ggplot(wind_long, aes(x = obs, y = era5)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  geom_text(
-    data = stats_df,
-    aes(
-      x = -Inf,
-      y = Inf,
-      label = paste0(
-        "y = ",
-        round(slope, 2), "x + ",
-        round(intercept, 2),
-        "\nR² = ",
-        round(r2, 3)
-      )
-    ),
-    hjust = -0.1,
-    vjust = 1.1,
-    inherit.aes = FALSE
-  ) +
-  facet_wrap(~ component, scales = "free") +
-  labs(x = "Observed",
-       y = "ERA5",
-       title = "Observed vs ERA5 Wind Comparison") +
-  theme_bw()
-##
-library(sf)
-library(ggplot2)
-library(raster)
-library(viridis)
-states <- st_read("/Users/reneechabot-mehlin/Downloads/cb_2023_us_state_500k")
-
-east_coast_states <- c(
-  "Maine",
-  "New Hampshire",
-  "Massachusetts",
-  "Rhode Island",
-  "Connecticut",
-  "New York",
-  "New Jersey",
-  "Delaware",
-  "Maryland",
-  "Virginia",
-  "North Carolina",
-  "South Carolina",
-  "Georgia",
-  "Florida",
-  "Pennsylvania",
-  "Vermont"
-)
-
-east_states_sf <- states |>
-  dplyr::filter(NAME %in% east_coast_states)
-
-east_extent <- extent(-85, -65, 25, 47)
-
-arrow_scale <- 0.08
-p1 <- ggplot() +
-  geom_sf(
-    data = east_states_sf,
-    fill = "gray90",
-    color = "gray50",
-    linewidth = 0.3
-  ) +
-  geom_path(
-    data = final,
-    aes(x = Longitude_deg, y = Latitude_deg),
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_segment(
-    data = wind_df_obs,
-    aes(
-      x = lon,
-      y = lat,
-      xend = lon + u * arrow_scale,
-      yend = lat + v * arrow_scale,
-      color = wind_speed
-    ),
-    arrow = arrow(length = unit(0.15, "cm")),
-    linewidth = 0.5
-  ) +
-  geom_point(data = wind_df_obs,
-             aes(x = lon, y = lat, color = wind_speed),
-             size = 1) +
-  coord_sf(
-    xlim = c(-77, -72),
-    ylim = c(38.5, 41.5),
-    expand = FALSE
-  ) +
-  scale_color_viridis_c(option = "plasma", name = "Wind speed (m/s)") +
-  labs(
-    title = "5-Minute Averaged Wind Vectors over ALAR Flight Path (2/5/2026)",
-    x = "Longitude",
-    y = "Latitude",
-    subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")
-  ) +
-  theme_minimal(base_size = 12)
-
-p2 <- ggplot() +
-  geom_sf(
-    data = east_states_sf,
-    fill = "gray90",
-    color = "gray50",
-    linewidth = 0.3
-  ) +
-  geom_path(
-    data = final,
-    aes(x = Longitude_deg, y = Latitude_deg),
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_segment(
-    data = wind_df_era5,
-    aes(
-      x = lon,
-      y = lat,
-      xend = lon + u * arrow_scale,
-      yend = lat + v * arrow_scale,
-      color = era5_wind_speed
-    ),
-    arrow = arrow(length = unit(0.15, "cm")),
-    linewidth = 0.5
-  ) +
-  geom_point(data = wind_df_era5,
-             aes(x = lon, y = lat, color = era5_wind_speed),
-             size = 1) +
-  coord_sf(
-    xlim = c(-77, -72),
-    ylim = c(38.5, 41.5),
-    expand = FALSE
-  ) +
-  scale_color_viridis_c(option = "plasma", name = "Wind speed (m/s)") +
-  labs(
-    title = "ERA5-Reanalysis Wind Vectors over ALAR Flight Path (2/5/2026)",
-    x = "Longitude",
-    y = "Latitude",
-    subtitle = paste0("The arrow scaling is: ", arrow_scale, "%")
-  ) +
-  theme_minimal(base_size = 12)
-
-library(cowplot)
-
-plot_grid(p1, p2)
-
-
 

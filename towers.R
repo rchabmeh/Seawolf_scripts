@@ -1,8 +1,7 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on October 24, 2025
+#Updated last on June 4, 2026
 
 #You will have to manually change items in:
-# 1.3 (xlim_vals)
 # 2.3 (start_date, end_date)
 # 2.4 (cruise)
 ##### ________________________ 1. Just Towers _____________________________#####
@@ -405,701 +404,7 @@ WNJ_23_CO2_43$datetime_EDT <- with_tz(WNJ_23_CO2_43$datetime_UTC, tzone = "Ameri
 # WNJ_23_CO2_98$datetime_EDT <- with_tz(WNJ_23_CO2_98$datetime_UTC, tzone = "America/New_York")
 # 
 
-##### Set time limit for basic plots #####
-xlim_vals <- c(as.POSIXct("2023-10-12 08:00:00"),
-               as.POSIXct("2023-10-17 18:00:00"))
-##### Basic Plotting 2022 #####
-#ch4____
-plot(
-  x = LEW_22_CH4_95$datetime_EDT,
-  y = LEW_22_CH4_95$ch4_ppb,
-  xlim = xlim_vals,
-  ylim = c(1950, 2250),
-  xlab = "Date (ETD)",
-  ylab = "CH4 (ppb)",
-  main = "NEC TOWER DATA",
-  type = "b",
-  col = "red",
-  pch = 20
-)
-arrows(
-  x0 = LEW_22_CH4_95$datetime_EDT,
-  y0 = LEW_22_CH4_95$ch4_ppb - LEW_22_CH4_95$ch4_uncertainty,
-  x1 = LEW_22_CH4_95$datetime_EDT,
-  y1 = LEW_22_CH4_95$ch4_ppb + LEW_22_CH4_95$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "red"
-)
-
-# Add remaining lines and error bars
-lines(
-  LEW_22_CH4_50$datetime_EDT,
-  LEW_22_CH4_50$ch4_ppb,
-  type = "b",
-  col = "darkred",
-  pch = 20
-)
-arrows(
-  LEW_22_CH4_50$datetime_EDT,
-  LEW_22_CH4_50$ch4_ppb - LEW_22_CH4_50$ch4_uncertainty,
-  LEW_22_CH4_50$datetime_EDT,
-  LEW_22_CH4_50$ch4_ppb + LEW_22_CH4_50$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkred"
-)
-
-lines(
-  TMD_22_CH4_113$datetime_EDT,
-  TMD_22_CH4_113$ch4_ppb,
-  type = "b",
-  col = "green",
-  pch = 20
-)
-arrows(
-  TMD_22_CH4_113$datetime_EDT,
-  TMD_22_CH4_113$ch4_ppb - TMD_22_CH4_113$ch4_uncertainty,
-  TMD_22_CH4_113$datetime_EDT,
-  TMD_22_CH4_113$ch4_ppb + TMD_22_CH4_113$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "green"
-)
-
-lines(
-  TMD_22_CH4_49$datetime_EDT,
-  TMD_22_CH4_49$ch4_ppb,
-  type = "b",
-  col = "darkgreen",
-  pch = 20
-)
-arrows(
-  TMD_22_CH4_49$datetime_EDT,
-  TMD_22_CH4_49$ch4_ppb - TMD_22_CH4_49$ch4_uncertainty,
-  TMD_22_CH4_49$datetime_EDT,
-  TMD_22_CH4_49$ch4_ppb + TMD_22_CH4_49$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkgreen"
-)
-
-lines(
-  BVA_22_CH4_111$datetime_EDT,
-  BVA_22_CH4_111$ch4_ppb,
-  type = "b",
-  col = "lightblue",
-  pch = 20
-)
-arrows(
-  BVA_22_CH4_111$datetime_EDT,
-  BVA_22_CH4_111$ch4_ppb - BVA_22_CH4_111$ch4_uncertainty,
-  BVA_22_CH4_111$datetime_EDT,
-  BVA_22_CH4_111$ch4_ppb + BVA_22_CH4_111$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "lightblue"
-)
-
-lines(
-  BVA_22_CH4_50$datetime_EDT,
-  BVA_22_CH4_50$ch4_ppb,
-  type = "b",
-  col = "blue",
-  pch = 20
-)
-arrows(
-  BVA_22_CH4_50$datetime_EDT,
-  BVA_22_CH4_50$ch4_ppb - BVA_22_CH4_50$ch4_uncertainty,
-  BVA_22_CH4_50$datetime_EDT,
-  BVA_22_CH4_50$ch4_ppb + BVA_22_CH4_50$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "blue"
-)
-
-# Add description of error bars
-mtext(
-  "Vertical bars represent ±1 SD (standard deviation)",
-  side = 1,
-  line = 4,
-  cex = 0.9
-)
-
-subset_ch4 <- function(df) {
-  df$ch4_ppb[df$datetime_EDT >= xlim_vals[1] &
-               df$datetime_EDT <= xlim_vals[2]]
-}
-ch4_dfs <- list(
-  LEW_22_CH4_95,
-  LEW_22_CH4_50,
-  TMD_22_CH4_113,
-  TMD_22_CH4_49,
-  BVA_22_CH4_111,
-  BVA_22_CH4_50
-)
-
-plotted_ch4 <- unlist(lapply(ch4_dfs, subset_ch4))
-
-avg_ch4 <- mean(plotted_ch4, na.rm = TRUE)
-
-abline(
-  h = avg_ch4,
-  col = "black",
-  lty = 2,
-  lwd = 3
-)
-
-# Add text in top-right corner
-usr <- par("usr") # Get plot bounds
-text(
-  x = usr[2],
-  y = usr[4],
-  # near top right
-  labels = paste0("Mean CH4: ", round(avg_ch4, 1), " ppb"),
-  adj = c(1, 1),
-  col = "black",
-  cex = 0.9
-)
-plot.new()
-# Add legend below plot
-par(xpd = TRUE) # Allow drawing outside plot area
-legend(
-  "center",
-  legend = c("LEW 95m", "LEW 50m", "TMD 113m", "TMD 49m", "BVA 111m", "BVA 50m"),
-  title = "Legend",
-  title.col = "black",
-  col = c("red", "darkred", "green", "darkgreen", "lightblue", "blue"),
-  pch = 20,
-  lty = 1,
-  bty = "n",
-  cex = 0.9
-)
-par (xpd = FALSE)
-
-#co2___
-# Plot main dataset
-plot(
-  x = LEW_22_CO2_95$datetime_EDT,
-  y = LEW_22_CO2_95$co2_ppm,
-  xlim = xlim_vals,
-  ylim = c(420, 460),
-  xlab = "Date (ETD)",
-  ylab = "CO2 (ppm)",
-  main = "NEC TOWER DATA",
-  type = "b",
-  col = "red",
-  pch = 20
-)
-arrows(
-  x0 = LEW_22_CO2_95$datetime_EDT,
-  y0 = LEW_22_CO2_95$co2_ppm - LEW_22_CO2_95$co2_uncertainty,
-  x1 = LEW_22_CO2_95$datetime_EDT,
-  y1 = LEW_22_CO2_95$co2_ppm + LEW_22_CO2_95$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "red"
-)
-
-# Add remaining lines and error bars
-lines(
-  LEW_22_CO2_50$datetime_EDT,
-  LEW_22_CO2_50$co2_ppm,
-  type = "b",
-  col = "darkred",
-  pch = 20
-)
-arrows(
-  LEW_22_CO2_50$datetime_EDT,
-  LEW_22_CO2_50$co2_ppm - LEW_22_CO2_50$co2_uncertainty,
-  LEW_22_CO2_50$datetime_EDT,
-  LEW_22_CO2_50$co2_ppm + LEW_22_CO2_50$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkred"
-)
-
-lines(
-  TMD_22_CO2_113$datetime_EDT,
-  TMD_22_CO2_113$co2_ppm,
-  type = "b",
-  col = "green",
-  pch = 20
-)
-arrows(
-  TMD_22_CO2_113$datetime_EDT,
-  TMD_22_CO2_113$co2_ppm - TMD_22_CO2_113$co2_uncertainty,
-  TMD_22_CO2_113$datetime_EDT,
-  TMD_22_CO2_113$co2_ppm + TMD_22_CO2_113$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "green"
-)
-
-lines(
-  TMD_22_CO2_49$datetime_EDT,
-  TMD_22_CO2_49$co2_ppm,
-  type = "b",
-  col = "darkgreen",
-  pch = 20
-)
-arrows(
-  TMD_22_CO2_49$datetime_EDT,
-  TMD_22_CO2_49$co2_ppm - TMD_22_CO2_49$co2_uncertainty,
-  TMD_22_CO2_49$datetime_EDT,
-  TMD_22_CO2_49$co2_ppm + TMD_22_CO2_49$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkgreen"
-)
-
-lines(
-  BVA_22_CO2_111$datetime_EDT,
-  BVA_22_CO2_111$co2_ppm,
-  type = "b",
-  col = "lightblue",
-  pch = 20
-)
-arrows(
-  BVA_22_CO2_111$datetime_EDT,
-  BVA_22_CO2_111$co2_ppm - BVA_22_CO2_111$co2_uncertainty,
-  BVA_22_CO2_111$datetime_EDT,
-  BVA_22_CO2_111$co2_ppm + BVA_22_CO2_111$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "lightblue"
-)
-
-lines(
-  BVA_22_CO2_50$datetime_EDT,
-  BVA_22_CO2_50$co2_ppm,
-  type = "b",
-  col = "blue",
-  pch = 20
-)
-arrows(
-  BVA_22_CO2_50$datetime_EDT,
-  BVA_22_CO2_50$co2_ppm - BVA_22_CO2_50$co2_uncertainty,
-  BVA_22_CO2_50$datetime_EDT,
-  BVA_22_CO2_50$co2_ppm + BVA_22_CO2_50$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "blue"
-)
-
-# Add description of error bars
-mtext(
-  "Vertical bars represent ±1 SD (standard deviation)",
-  side = 1,
-  line = 4,
-  cex = 0.9
-)
-
-# Compute and draw mean CO2 line
-subset_co2 <- function(df) {
-  df$co2_ppm[df$datetime_EDT >= xlim_vals[1] &
-               df$datetime_EDT <= xlim_vals[2]]
-}
-co2_dfs <- list(
-  LEW_22_CO2_95,
-  LEW_22_CO2_50,
-  TMD_22_CO2_113,
-  TMD_22_CO2_49,
-  BVA_22_CO2_111,
-  BVA_22_CO2_50
-)
-
-plotted_co2 <- unlist(lapply(co2_dfs, subset_co2))
-
-avg_co2 <- mean(plotted_co2, na.rm = TRUE)
-
-abline(
-  h = avg_co2,
-  col = "black",
-  lty = 2,
-  lwd = 3
-)
-
-# Add text in top-right corner
-usr <- par("usr") # Get plot bounds
-text(
-  x = usr[2],
-  y = usr[4],
-  # near top right
-  labels = paste0("Mean CO2: ", round(avg_co2, 1), " ppm"),
-  adj = c(1, 1),
-  col = "black",
-  cex = 0.9
-)
-plot.new()
-# Add legend below plot
-par(xpd = TRUE) # Allow drawing outside plot area
-legend(
-  "center",
-  legend = c("LEW 95m", "LEW 50m", "TMD 113m", "TMD 49m", "BVA 111m", "BVA 50m"),
-  title = "Legend",
-  title.col = "black",
-  col = c("red", "darkred", "green", "darkgreen", "lightblue", "blue"),
-  pch = 20,
-  lty = 1,
-  bty = "n",
-  cex = 0.9
-)
-
-##### Basic Plotting 2023 #####
-# Plot CH4 data
-plot(
-  x = LEW_23_CH4_95$datetime_EDT,
-  y = LEW_23_CH4_95$ch4_ppb,
-  xlim = xlim_vals,
-  ylim = c(2000, 2070),
-  xlab = "Date (ETD)",
-  ylab = "CH4 (ppb)",
-  main = "NEC TOWER DATA",
-  type = "b",
-  col = "red",
-  pch = 20
-)
-arrows(
-  x0 = LEW_23_CH4_95$datetime_EDT,
-  y0 = LEW_23_CH4_95$ch4_ppb - LEW_23_CH4_95$ch4_uncertainty,
-  x1 = LEW_23_CH4_95$datetime_EDT,
-  y1 = LEW_23_CH4_95$ch4_ppb + LEW_23_CH4_95$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "red"
-)
-
-# Add remaining lines and error bars
-lines(
-  LEW_23_CH4_50$datetime_EDT,
-  LEW_23_CH4_50$ch4_ppb,
-  type = "b",
-  col = "darkred",
-  pch = 20
-)
-arrows(
-  LEW_23_CH4_50$datetime_EDT,
-  LEW_23_CH4_50$ch4_ppb - LEW_23_CH4_50$ch4_uncertainty,
-  LEW_23_CH4_50$datetime_EDT,
-  LEW_23_CH4_50$ch4_ppb + LEW_23_CH4_50$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkred"
-)
-
-lines(
-  TMD_23_CH4_113$datetime_EDT,
-  TMD_23_CH4_113$ch4_ppb,
-  type = "b",
-  col = "green",
-  pch = 20
-)
-arrows(
-  TMD_23_CH4_113$datetime_EDT,
-  TMD_23_CH4_113$ch4_ppb - TMD_23_CH4_113$ch4_uncertainty,
-  TMD_23_CH4_113$datetime_EDT,
-  TMD_23_CH4_113$ch4_ppb + TMD_23_CH4_113$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "green"
-)
-
-lines(
-  TMD_23_CH4_49$datetime_EDT,
-  TMD_23_CH4_49$ch4_ppb,
-  type = "b",
-  col = "darkgreen",
-  pch = 20
-)
-arrows(
-  TMD_23_CH4_49$datetime_EDT,
-  TMD_23_CH4_49$ch4_ppb - TMD_23_CH4_49$ch4_uncertainty,
-  TMD_23_CH4_49$datetime_EDT,
-  TMD_23_CH4_49$ch4_ppb + TMD_23_CH4_49$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkgreen"
-)
-
-lines(
-  BVA_23_CH4_111$datetime_EDT,
-  BVA_23_CH4_111$ch4_ppb,
-  type = "b",
-  col = "lightblue",
-  pch = 20
-)
-arrows(
-  BVA_23_CH4_111$datetime_EDT,
-  BVA_23_CH4_111$ch4_ppb - BVA_23_CH4_111$ch4_uncertainty,
-  BVA_23_CH4_111$datetime_EDT,
-  BVA_23_CH4_111$ch4_ppb + BVA_23_CH4_111$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "lightblue"
-)
-
-lines(
-  BVA_23_CH4_50$datetime_EDT,
-  BVA_23_CH4_50$ch4_ppb,
-  type = "b",
-  col = "blue",
-  pch = 20
-)
-arrows(
-  BVA_23_CH4_50$datetime_EDT,
-  BVA_23_CH4_50$ch4_ppb - BVA_23_CH4_50$ch4_uncertainty,
-  BVA_23_CH4_50$datetime_EDT,
-  BVA_23_CH4_50$ch4_ppb + BVA_23_CH4_50$ch4_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "blue"
-)
-
-mtext(
-  "Vertical bars represent ±1 SD (standard deviation)",
-  side = 1,
-  line = 4,
-  cex = 0.9
-)
-
-subset_ch4 <- function(df) {
-  df$ch4_ppb[df$datetime_EDT >= xlim_vals[1] &
-               df$datetime_EDT <= xlim_vals[2]]
-}
-ch4_dfs <- list(
-  LEW_23_CH4_95,
-  LEW_23_CH4_50,
-  TMD_23_CH4_113,
-  TMD_23_CH4_49,
-  BVA_23_CH4_111,
-  BVA_23_CH4_50
-)
-
-plotted_ch4 <- unlist(lapply(ch4_dfs, subset_ch4))
-avg_ch4 <- mean(plotted_ch4, na.rm = TRUE)
-
-abline(
-  h = avg_ch4,
-  col = "black",
-  lty = 2,
-  lwd = 3
-)
-
-usr <- par("usr")
-text(
-  x = usr[2],
-  y = usr[4],
-  labels = paste0("Mean CH4: ", round(avg_ch4, 1), " ppb"),
-  adj = c(1, 1),
-  col = "black",
-  cex = 0.9
-)
-plot.new()
-
-par(xpd = TRUE)
-legend(
-  "center",
-  legend = c("LEW 95m", "LEW 50m", "TMD 113m", "TMD 49m", "BVA 111m", "BVA 50m"),
-  title = "Legend",
-  title.col = "black",
-  col = c("red", "darkred", "green", "darkgreen", "lightblue", "blue"),
-  pch = 20,
-  lty = 1,
-  bty = "n",
-  cex = 0.9
-)
-par(xpd = FALSE)
-
-# Plot CO2 data
-plot(
-  x = LEW_23_CO2_95$datetime_EDT,
-  y = LEW_23_CO2_95$co2_ppm,
-  xlim = xlim_vals,
-  ylim = c(420, 430),
-  xlab = "Date (ETD)",
-  ylab = "CO2 (ppm)",
-  main = "NEC TOWER DATA",
-  type = "b",
-  col = "red",
-  pch = 20
-)
-arrows(
-  x0 = LEW_23_CO2_95$datetime_EDT,
-  y0 = LEW_23_CO2_95$co2_ppm - LEW_23_CO2_95$co2_uncertainty,
-  x1 = LEW_23_CO2_95$datetime_EDT,
-  y1 = LEW_23_CO2_95$co2_ppm + LEW_23_CO2_95$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "red"
-)
-
-lines(
-  LEW_23_CO2_50$datetime_EDT,
-  LEW_23_CO2_50$co2_ppm,
-  type = "b",
-  col = "darkred",
-  pch = 20
-)
-arrows(
-  LEW_23_CO2_50$datetime_EDT,
-  LEW_23_CO2_50$co2_ppm - LEW_23_CO2_50$co2_uncertainty,
-  LEW_23_CO2_50$datetime_EDT,
-  LEW_23_CO2_50$co2_ppm + LEW_23_CO2_50$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkred"
-)
-
-lines(
-  TMD_23_CO2_113$datetime_EDT,
-  TMD_23_CO2_113$co2_ppm,
-  type = "b",
-  col = "green",
-  pch = 20
-)
-arrows(
-  TMD_23_CO2_113$datetime_EDT,
-  TMD_23_CO2_113$co2_ppm - TMD_23_CO2_113$co2_uncertainty,
-  TMD_23_CO2_113$datetime_EDT,
-  TMD_23_CO2_113$co2_ppm + TMD_23_CO2_113$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "green"
-)
-
-lines(
-  TMD_23_CO2_49$datetime_EDT,
-  TMD_23_CO2_49$co2_ppm,
-  type = "b",
-  col = "darkgreen",
-  pch = 20
-)
-arrows(
-  TMD_23_CO2_49$datetime_EDT,
-  TMD_23_CO2_49$co2_ppm - TMD_23_CO2_49$co2_uncertainty,
-  TMD_23_CO2_49$datetime_EDT,
-  TMD_23_CO2_49$co2_ppm + TMD_23_CO2_49$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "darkgreen"
-)
-
-lines(
-  BVA_23_CO2_111$datetime_EDT,
-  BVA_23_CO2_111$co2_ppm,
-  type = "b",
-  col = "lightblue",
-  pch = 20
-)
-arrows(
-  BVA_23_CO2_111$datetime_EDT,
-  BVA_23_CO2_111$co2_ppm - BVA_23_CO2_111$co2_uncertainty,
-  BVA_23_CO2_111$datetime_EDT,
-  BVA_23_CO2_111$co2_ppm + BVA_23_CO2_111$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "lightblue"
-)
-
-lines(
-  BVA_23_CO2_50$datetime_EDT,
-  BVA_23_CO2_50$co2_ppm,
-  type = "b",
-  col = "blue",
-  pch = 20
-)
-arrows(
-  BVA_23_CO2_50$datetime_EDT,
-  BVA_23_CO2_50$co2_ppm - BVA_23_CO2_50$co2_uncertainty,
-  BVA_23_CO2_50$datetime_EDT,
-  BVA_23_CO2_50$co2_ppm + BVA_23_CO2_50$co2_uncertainty,
-  angle = 90,
-  code = 3,
-  length = 0.02,
-  col = "blue"
-)
-
-mtext(
-  "Vertical bars represent ±1 SD (standard deviation)",
-  side = 1,
-  line = 4,
-  cex = 0.9
-)
-
-subset_co2 <- function(df) {
-  df$co2_ppm[df$datetime_EDT >= xlim_vals[1] &
-               df$datetime_EDT <= xlim_vals[2]]
-}
-co2_dfs <- list(
-  LEW_23_CO2_95,
-  LEW_23_CO2_50,
-  TMD_23_CO2_113,
-  TMD_23_CO2_49,
-  BVA_23_CO2_111,
-  BVA_23_CO2_50
-)
-
-plotted_co2 <- unlist(lapply(co2_dfs, subset_co2))
-avg_co2 <- mean(plotted_co2, na.rm = TRUE)
-
-abline(
-  h = avg_co2,
-  col = "black",
-  lty = 2,
-  lwd = 3
-)
-
-usr <- par("usr")
-text(
-  x = usr[2],
-  y = usr[4],
-  labels = paste0("Mean CO2: ", round(avg_co2, 1), " ppm"),
-  adj = c(1, 1),
-  col = "black",
-  cex = 0.9
-)
-plot.new()
-
-par(xpd = TRUE)
-legend(
-  "center",
-  legend = c("LEW 95m", "LEW 50m", "TMD 113m", "TMD 49m", "BVA 111m", "BVA 50m"),
-  title = "Legend",
-  title.col = "black",
-  col = c("red", "darkred", "green", "darkgreen", "lightblue", "blue"),
-  pch = 20,
-  lty = 1,
-  bty = "n",
-  cex = 0.9
-)
-par(xpd = FALSE)
-
-
-##### _____________________2. Adding Models _______________________________#####
+##### ___________________ 2. Averaging Times + Time Limits ________________#####
 ##### Averaging data for 3 hour intervals 2022 #####
 #3 hr avg__
 all_data <- list(
@@ -1238,9 +543,12 @@ for (i in names(averaged_data)) {
   }
 }
 
-##### Set time limit for model comparison #####
-start_date <- as.Date("2023-03-22")
-end_date <- as.Date("2023-04-01")
+##### ALWAYS RUN: Set time limit for model comparison #####
+cruise <- "Cruise 14"
+cruise_squish <- tolower(gsub(" ", "_", cruise))
+
+start_date <- as.Date("2022-10-06")
+end_date <- as.Date("2022-11-8")
 
 # Filter averaged_data to time period of interest
 datetime_filtered_data <- lapply(averaged_data, function(df) {
@@ -1250,22 +558,38 @@ datetime_filtered_data <- lapply(averaged_data, function(df) {
 
 library(dplyr)
 big_df <- bind_rows(datetime_filtered_data, .id = "source")
+names(big_df)[names(big_df) == "source"] <- "SiteCode"
+
+big_df$SiteCode <- substr(big_df$SiteCode, 1, 3)
+
 obs_co2 <- big_df[!is.na(big_df$co2_ppm), ]
 obs_co2$ch4_ppb <- NULL
 
 obs_ch4 <- big_df[!is.na(big_df$ch4_ppb), ]
 obs_ch4$co2_ppm <- NULL
-##### Loading in CarbonTracker #####
+
+interval_start <- sub("–.*", "", obs_co2$interval)
+
+obs_co2$datetime_utc <- as.POSIXct(
+  paste(obs_co2$date, interval_start),
+  tz = "UTC"
+)
+
+interval_start <- sub("–.*", "", obs_ch4$interval)
+
+obs_ch4$datetime_utc <- as.POSIXct(
+  paste(obs_ch4$date, interval_start),
+  tz = "UTC"
+  
+) 
+
+##### ___________________ 3. Adding Models ________________________________#####
+##### Carbon Tracker #####
 
 # obs_co2
 # obs_ch4
 
 library(raster)
-
-cruise <- "Cruise 19"
-cruise_squish <- tolower(gsub(" ", "", cruise))
-
-
 #edit for laptop usage
 # co2_files <- list.files(
 #   paste0(
@@ -1277,14 +601,15 @@ cruise_squish <- tolower(gsub(" ", "", cruise))
 #   full.names =  TRUE
 # )
 
-
 co2_files <- list.files(
   paste0(
-    '/Volumes/Seagate/',
+    '/Users/reneechabot-mehlin/Desktop/model_plotting/',
     cruise_squish,
-    '_eulerian/carbon_tracker_co2_total'
+    '/',
+    cruise_squish,
+    "_nrt_co2"
   ),
-  pattern = '\\.nc$',
+  pattern = '*.nc',
   full.names = TRUE
 )
 
@@ -1293,7 +618,7 @@ CT_CO2 <- lapply(co2_files, function(f) {
     f,
     varname = "co2",
     stopIfNotEqualSpaced = FALSE,
-    level = 1
+    level = 1 #lowest height
   )
 })
 
@@ -1311,11 +636,13 @@ CT_CO2 <- lapply(co2_files, function(f) {
 
 ch4_files <- list.files(
   paste0(
-    '/Volumes/Seagate/',
+    '/Users/reneechabot-mehlin/Desktop/model_plotting/',
     cruise_squish,
-    '_eulerian/carbon_tracker_ch4_total'
+    '/',
+    cruise_squish,
+    "_ch4_ct"
   ),
-  pattern = '\\.nc$',
+  pattern = '*.nc',
   full.names = TRUE
 )
 
@@ -1324,13 +651,13 @@ CT_CH4 <- lapply(ch4_files, function(f) {
     f,
     varname = "ch4",
     stopIfNotEqualSpaced = FALSE,
-    level = 1
+    level = 1 #lowest height
   )
 })
 
 
 CT_CO2_cropped <- list()
-for (i in seq(CT_CO2)) {
+for (i in seq_along(CT_CO2)) {
   ras_date <- as.Date(floor(as.numeric((getZ(
     CT_CO2[[i]]
   )[1]))))
@@ -1343,7 +670,7 @@ for (i in seq(CT_CO2)) {
 CT_CO2_cropped <- CT_CO2_cropped[!sapply(CT_CO2_cropped, is.null)]
 
 CT_CH4_cropped <- list()
-for (i in seq(CT_CO2)) {
+for (i in seq_along(CT_CH4)) {
   ras_date <- as.Date(getZ(CT_CH4[[i]])[1]) #starts at 03:00 and ends the next day at 00:00
   if (ras_date >= start_date &&
       ras_date <= end_date) {
@@ -1367,6 +694,7 @@ CTCO2_lists <- unlist(CTCO2_lists, recursive = FALSE)
 coords <- unique(obs_co2[, c("Lon", "Lat")])
 all_results <- list()
 
+
 for (i in seq_along(CTCO2_lists)) {
   r_brick <- CTCO2_lists[[i]]
   
@@ -1376,6 +704,7 @@ for (i in seq_along(CTCO2_lists)) {
     dates <- 1:nlayers(r_brick)
   }
   
+
   dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   hours <- as.numeric(format(dates_posix, "%H"))
   rounded_hours <- floor(hours / 3) * 3 #choosing floor instead of ceiling so 01:30 -> 00:00
@@ -1388,10 +717,10 @@ for (i in seq_along(CTCO2_lists)) {
   vals <- raster::extract(r_brick, coords)
   
   df <- data.frame(
-    date = rep(as.POSIXct(dates_posix_aligned), each = nrow(coords)),
+    datetime_utc = rep(as.POSIXct(dates_posix_aligned), each = nrow(coords)),
     Lon  = rep(coords$Lon, times = nlayers(r_brick)),
     Lat  = rep(coords$Lat, times = nlayers(r_brick)),
-    co2  = as.vector(t(vals))
+    CT.NRT_co2  = as.vector(t(vals))
   )
   
   all_results[[i]] <- df
@@ -1406,7 +735,7 @@ CT_CO2_df <- merge(CT_CO2_df,
 library(raster)
 
 CTCH4_lists <- unlist(CTCH4_lists, recursive = FALSE)
-coords <- unique(obs_co2[, c("Lon", "Lat")])
+coords <- unique(obs_ch4[, c("Lon", "Lat")])
 all_results <- list()
 
 for (i in seq_along(CTCH4_lists)) {
@@ -1422,10 +751,10 @@ for (i in seq_along(CTCH4_lists)) {
   dates_posix <- as.POSIXct(dates, origin = "1970-01-01", tz = "UTC")
   
   df <- data.frame(
-    date = rep(as.POSIXct(dates_posix), each = nrow(coords)),
+    datetime_utc = rep(as.POSIXct(dates_posix), each = nrow(coords)),
     Lon  = rep(coords$Lon, times = nlayers(r_brick)),
     Lat  = rep(coords$Lat, times = nlayers(r_brick)),
-    ch4  = as.vector(t(vals))
+    CT_ch4  = as.vector(t(vals))
   )
   
   all_results[[i]] <- df
@@ -1437,340 +766,195 @@ CT_CH4_df <- merge(CT_CH4_df,
                    by = c("Lon", "Lat"),
                    all.x = TRUE)
 
+obs_co2 <- merge(obs_co2, CT_CO2_df, by = c("datetime_utc","Lon", "Lat","SiteCode"))
+obs_ch4 <- merge(obs_ch4, CT_CH4_df, by = c("datetime_utc","Lon", "Lat","SiteCode"))
 
-###### Loading in CAMS information ######
+#### CAMS information #####
 
 library(raster)
 library(ncdf4)
 library(sf)
 library(dplyr)
 library(reshape2)
-CAMS <- list()
-all_timestamps <- list()
+
+CAMS <- list(CH4 = list(), CO2 = list())
 files <- list.files(
   paste0(
-    '/Volumes/Seagate/',
+    '/Users/reneechabot-mehlin/Desktop/model_plotting/',
     cruise_squish,
-    '_eulerian/cams_global_inversion_optimized_ghg_fluxes'
+    '/',
+    cruise_squish,
+    "_cams"
   ),
   pattern = '\\.nc$',
   full.names = TRUE
 )
 
-#for computer usage
-# files <- list.files(
-#   "/Users/reneechabot-mehlin/Desktop/towers/models/cruise24/cams_global_inversion_optimized_ghg_fluxes",
-#   pattern = "\\.nc$",
-#   full.names = T
-# )
-
+level_co2 <- 3   # 43.3 m
+level_ch4 <- 1   # 378.3 m (lowest)
 
 for (f in files) {
-  cat("Processing:", f, "\n")
+  
+  cat("Processing:", basename(f), "\n")
+  
   nc <- nc_open(f)
   var_names <- names(nc$var)
   
   if ("CH4" %in% var_names) {
     var_to_use <- "CH4"
+    lvl <- level_ch4
+    
   } else if ("CO2" %in% var_names) {
     var_to_use <- "CO2"
+    lvl <- level_co2
+    
   } else {
-    warning("No CH4 or CO2 found in:", f)
     nc_close(nc)
     next
   }
   
-  # Read timestamps
-  if ("time" %in% names(nc$dim)) {
-    time_vals <- ncvar_get(nc, "time")
-    time_units <- ncatt_get(nc, "time", "units")$value
-    origin <- sub("hours since ", "", time_units)
-    timestamps <- as.POSIXct(time_vals * 3600, origin = origin, tz = "UTC")
-  } else {
-    warning("No time dimension in:", f)
-    nc_close(nc)
-    next
-  }
   nc_close(nc)
   
-  # Load all time layers
-  r <- stack(f, varname = var_to_use)
+  CAMS[[var_to_use]][[length(CAMS[[var_to_use]]) + 1]] <- brick(
+    f,
+    varname = var_to_use,
+    level = lvl
+  )
+}
+
+get_timestamps <- function(nc_file) {
   
-  # Unit fix for CO2
-  if (var_to_use == "CO2") {
-    r <- calc(r, function(x)
-      x * 1e6)
+  nc <- nc_open(nc_file)
+  on.exit(nc_close(nc), add = TRUE)
+  
+  if (!("time" %in% names(nc$dim))) {
+    warning(paste("No time dimension in:", nc_file))
+    return(NULL)
   }
   
-  file_key <- basename(f)  # Use file name as key
-  CAMS[[file_key]] <- r
-  all_timestamps[[file_key]] <- timestamps
+  time_vals  <- ncvar_get(nc, "time")
+  time_units <- ncatt_get(nc, "time", "units")$value
+  
+  origin <- sub("hours since ", "", time_units)
+  
+  as.POSIXct(
+    time_vals * 3600,
+    origin = origin,
+    tz = "UTC"
+  )
 }
 
-coords <- unique(obs_co2[, c("Lon", "Lat")])
-library(raster)
+all_timestamps <- lapply(files, get_timestamps)
+names(all_timestamps) <- basename(files)
 
-extracted_list <- list()
+# optional: save matched layer info
+closest_times <- data.frame()
 
-for (file_key in names(CAMS)) {
-  r_stack <- CAMS[[file_key]]
-  timestamps <- all_timestamps[[file_key]]
+time_tolerance_secs <- 0
+
+# CO2 loop — only process CO2 files
+for (j in seq_len(nrow(obs_co2))) {
+  target_time <- obs_co2$datetime_utc[j]
+  lon <- obs_co2$Lon[j]
+  lat <- obs_co2$Lat[j]
+  coords <- matrix(c(lon, lat), ncol = 2)
   
-  vals <- raster::extract(r_stack, coords)
-  df <- data.frame(
-    Lon = rep(coords$Lon, each = nlayers(r_stack)),
-    Lat = rep(coords$Lat, each = nlayers(r_stack)),
-    Timestamp = rep(timestamps, times = nrow(coords)),
-    Value = as.vector(t(vals)),
-    File = file_key
-  )
-  
-  extracted_list[[file_key]] <- df
-}
-
-all_data_cams <- do.call(rbind, extracted_list)
-
-all_data_cams <- merge(
-  all_data_cams,
-  unique(matched_rows[, c("Lon", "Lat", "SiteCode")]),
-  by = c("Lon", "Lat"),
-  all.x = TRUE
-)
-
-start_datetime <- as.POSIXct(start_date, tz = "UTC")
-end_datetime   <- as.POSIXct(end_date + 1, tz = "UTC") - 1
-
-
-cams_CO2 <- all_data_cams[grepl("CO2", all_data_cams$File, ignore.case = TRUE) &
-                            all_data_cams$Timestamp >= start_datetime &
-                            all_data_cams$Timestamp <= end_datetime, ]
-
-cams_CH4 <- all_data_cams[grepl("CH4", all_data_cams$File, ignore.case = TRUE) &
-                            all_data_cams$Timestamp >= start_datetime &
-                            all_data_cams$Timestamp <= end_datetime, ]
-cams_CO2$File <- NULL
-cams_CH4$File <- NULL
-
-
-##### Plotting against CT and CAMS #####
-#CO2
-merged_co2_list <- list()
-for (abriv in unique(matched_rows$SiteCode)) {
-  site = abriv
-  filtered_cams_co2 <- cams_CO2 %>% filter(SiteCode == site)
-  filtered_obs_co2 <- obs_co2 %>% filter(substr(source, 1, 3) == site)
-  filtered_ct_co2 <- CT_CO2_df %>% filter(SiteCode == site)
-  
-  interval_starts <- c(
-    "00:00–03:00 UTC" = "00:00:00",
-    "03:00–06:00 UTC" = "03:00:00",
-    "06:00–09:00 UTC" = "06:00:00",
-    "09:00–12:00 UTC" = "09:00:00",
-    "12:00–15:00 UTC" = "12:00:00",
-    "15:00–18:00 UTC" = "15:00:00",
-    "18:00–21:00 UTC" = "18:00:00",
-    "21:00–00:00 UTC" = "21:00:00"
-  )
-  
-  filtered_obs_co2$datetime <- as.POSIXct(paste(filtered_obs_co2$date, interval_starts[filtered_obs_co2$interval]), tz = "UTC")
-  filtered_obs_co2$height <- sub(".*_(\\d+)$", "\\1", filtered_obs_co2$source)
-  heights <- unique(filtered_obs_co2$height)
-  colors <- c("cyan", "green")
-  
-  filtered_cams_co2 <- filtered_cams_co2[order(filtered_cams_co2$Timestamp), ]
-  filtered_obs_co2  <- filtered_obs_co2[order(filtered_obs_co2$datetime), ]
-  filtered_ct_co2 <- filtered_ct_co2[order(filtered_ct_co2$date), ]
-  
-  all_y <- c(filtered_cams_co2$Value,
-             filtered_ct_co2$co2,
-             filtered_obs_co2$co2_ppm)
-  y_pad <- diff(range(all_y, na.rm = T)) * 0.05
-  
-  par(mfrow = c(2, 1), mar = c(2, 2, 2, 2))
-  plot(
-    filtered_cams_co2$Timestamp,
-    filtered_cams_co2$Value,
-    col = "darkblue",
-    type = "b",
-    pch = 20,
-    xlab = "Date",
-    ylab = "CO2 (ppm)",
-    main = paste(cruise, "-", "A comparison of models v obs. CO2 at", site),
-    ylim = range(all_y, na.rm = T)
-  )
-  for (i in seq_along(heights)) {
-    subset_obs <- filtered_obs_co2[filtered_obs_co2$height == heights[i], ]
-    lines(
-      subset_obs$datetime,
-      subset_obs$co2_ppm,
-      col = colors[i],
-      type = "b",
-      pch = 20
-    )
+  for (i in seq_along(files)) {
+    # Skip non-CO2 files entirely
+    if (!grepl("CO2", basename(files[i]), ignore.case = TRUE)) next
+    
+    timestamps <- all_timestamps[[i]]
+    if (is.null(timestamps)) next
+    
+    file_start <- min(timestamps)
+    file_end   <- max(timestamps)
+    if (target_time < (file_start - time_tolerance_secs) |
+        target_time > (file_end   + time_tolerance_secs)) next
+    
+    layer_number <- which.min(abs(difftime(timestamps, target_time, units = "secs")))
+    matched_time <- timestamps[layer_number]
+    
+    brick_index <- sum(sapply(files[1:i], function(x)
+      grepl("CO2", basename(x), ignore.case = TRUE)))
+    
+    r_layer <- CAMS[["CO2"]][[brick_index]][[layer_number]]
+    model_value <- raster::extract(r_layer, coords)
+    
+    obs_co2$CAMS_CO2[j] <- model_value * 1e6
+    
+    closest_times <- rbind(closest_times, data.frame(
+      cruise_row  = j,
+      file        = basename(files[i]),
+      variable    = "CO2",
+      cruise_time = target_time,
+      matched_time = matched_time,
+      layer_num   = layer_number
+    ))
   }
-  lines(
-    filtered_ct_co2$date,
-    filtered_ct_co2$co2,
-    col = "red",
-    type = "b",
-    pch = 20
-  )
-  
-  plot.new()
-  legend(
-    "center",
-    legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
-    col    = c("darkblue", colors[seq_along(heights)], "red"),
-    pch    = 20,
-    lty    = 1,
-    cex    = 0.55,
-    title  = "Legend",
-    horiz = T
-  )
-  
-  
-  filtered_cams_co2$DATE <- filtered_cams_co2$Timestamp
-  filtered_obs_co2$DATE  <- filtered_obs_co2$datetime
-  filtered_ct_co2$DATE <- filtered_ct_co2$date
-  
-  names(filtered_cams_co2)[names(filtered_cams_co2) == "Value"] <- "CAMs_CO2"
-  names(filtered_obs_co2)[names(filtered_obs_co2) == "co2_ppm"] <- "Obs_CO2_ppm"
-  names(filtered_ct_co2)[names(filtered_ct_co2) == "co2"] <- "CT_CO2"
-  
-  filtered_cams_co2$SiteCode <- site
-  filtered_ct_co2$SiteCode   <- site
-  filtered_obs_co2$SiteCode  <- site
-  
-  merged_temp <- merge(filtered_cams_co2,
-                       filtered_ct_co2,
-                       by = "DATE",
-                       all = TRUE)
-  merged_co2 <- merge(merged_temp,
-                      filtered_obs_co2,
-                      by = "DATE",
-                      all = TRUE)
-  
-  merged_co2 <- merged_co2[, c("DATE", "SiteCode", "CAMs_CO2", "Obs_CO2_ppm", "CT_CO2")]
-  
-  merged_co2_list[[site]] <- merged_co2
-  
 }
 
-#CH4
-merged_ch4_list <- list()
-for (abriv in unique(matched_rows$SiteCode)) {
-  site = abriv
-  filtered_cams_ch4 <- cams_CH4 %>% filter(SiteCode == site)
-  filtered_obs_ch4 <- obs_ch4 %>% filter(substr(source, 1, 3) == site)
-  filtered_ct_ch4 <- CT_CH4_df %>% filter(SiteCode == site)
+# CH4 loop — only process CH4 files
+for (j in seq_len(nrow(obs_ch4))) {
+  target_time <- obs_ch4$datetime_utc[j]
+  lon <- obs_ch4$Lon[j]
+  lat <- obs_ch4$Lat[j]
+  coords <- matrix(c(lon, lat), ncol = 2)
   
-  interval_starts <- c(
-    "00:00–03:00 UTC" = "00:00:00",
-    "03:00–06:00 UTC" = "03:00:00",
-    "06:00–09:00 UTC" = "06:00:00",
-    "09:00–12:00 UTC" = "09:00:00",
-    "12:00–15:00 UTC" = "12:00:00",
-    "15:00–18:00 UTC" = "15:00:00",
-    "18:00–21:00 UTC" = "18:00:00",
-    "21:00–00:00 UTC" = "21:00:00"
-  )
-  
-  filtered_obs_ch4$datetime <- as.POSIXct(paste(filtered_obs_ch4$date, interval_starts[filtered_obs_ch4$interval]), tz = "UTC")
-  filtered_obs_ch4$height <- sub(".*_(\\d+)$", "\\1", filtered_obs_ch4$source)
-  heights <- unique(filtered_obs_ch4$height)
-  colors <- c("cyan", "green")
-  
-  filtered_cams_ch4 <- filtered_cams_ch4[order(filtered_cams_ch4$Timestamp), ]
-  filtered_obs_ch4  <- filtered_obs_ch4[order(filtered_obs_ch4$datetime), ]
-  filtered_ct_ch4 <- filtered_ct_ch4[order(filtered_ct_ch4$date), ]
-  
-  all_y <- c(filtered_cams_ch4$Value,
-             filtered_ct_ch4$ch4,
-             filtered_obs_ch4$ch4_ppb)
-  y_pad <- diff(range(all_y, na.rm = T)) * 0.05
-  
-  par(mfrow = c(2, 1), mar = c(2, 2, 2, 2))
-  plot(
-    filtered_cams_ch4$Timestamp,
-    filtered_cams_ch4$Value,
-    col = "darkblue",
-    type = "b",
-    pch = 20,
-    xlab = "Date",
-    ylab = "CH4 (ppb)",
-    main = paste(cruise, "-", "A comparison of models v obs. CH4 at", site),
-    ylim = range(all_y, na.rm = T)
-  )
-  for (i in seq_along(heights)) {
-    subset_obs <- filtered_obs_ch4[filtered_obs_ch4$height == heights[i], ]
-    lines(
-      subset_obs$datetime,
-      subset_obs$ch4_ppb,
-      col = colors[i],
-      type = "b",
-      pch = 20
-    )
+  for (i in seq_along(files)) {
+    # Skip non-CH4 files entirely
+    if (!grepl("CH4", basename(files[i]), ignore.case = TRUE)) next
+    
+    timestamps <- all_timestamps[[i]]
+    if (is.null(timestamps)) next
+   
+     file_start <- min(timestamps)
+    file_end   <- max(timestamps)
+    if (target_time < (file_start - time_tolerance_secs) |
+        target_time > (file_end   + time_tolerance_secs)) next
+    
+    layer_number <- which.min(abs(difftime(timestamps, target_time, units = "secs")))
+    matched_time <- timestamps[layer_number]
+    
+    brick_index <- sum(sapply(files[1:i], function(x)
+      grepl("CH4", basename(x), ignore.case = TRUE)))
+    
+    r_layer <- CAMS[["CH4"]][[brick_index]][[layer_number]]
+    model_value <- raster::extract(r_layer, coords)
+    
+    obs_ch4$CAMS_CH4[j] <- model_value  # CH4 already in correct units
+    
+    closest_times <- rbind(closest_times, data.frame(
+      cruise_row  = j,
+      file        = basename(files[i]),
+      variable    = "CH4",
+      cruise_time = target_time,
+      matched_time = matched_time,
+      layer_num   = layer_number
+    ))
   }
-  lines(
-    filtered_ct_ch4$date,
-    filtered_ct_ch4$ch4,
-    col = "red",
-    type = "b",
-    pch = 20
-  )
-  
-  plot.new()
-  legend(
-    "center",
-    legend = c("CAMs", paste("Obs", heights, "m"), "CT"),
-    col    = c("darkblue", colors[seq_along(heights)], "red"),
-    pch    = 20,
-    lty    = 1,
-    cex    = 0.55,
-    title  = "Legend",
-    horiz = T
-  )
-  
-  
-  filtered_cams_ch4$DATE <- filtered_cams_ch4$Timestamp
-  filtered_obs_ch4$DATE  <- filtered_obs_ch4$datetime
-  filtered_ct_ch4$DATE <- filtered_ct_ch4$date
-  
-  names(filtered_cams_ch4)[names(filtered_cams_ch4) == "Value"] <- "CAMs_CH4"
-  names(filtered_obs_ch4)[names(filtered_obs_ch4) == "ch4_ppb"] <- "Obs_CH4_ppb"
-  names(filtered_ct_ch4)[names(filtered_ct_ch4) == "ch4"] <- "CT_CH4"
-  
-  filtered_cams_ch4$SiteCode <- site
-  filtered_ct_ch4$SiteCode   <- site
-  filtered_obs_ch4$SiteCode  <- site
-  
-  merged_temp <- merge(filtered_cams_ch4,
-                       filtered_ct_ch4,
-                       by = "DATE",
-                       all = TRUE)
-  merged_ch4 <- merge(merged_temp,
-                      filtered_obs_ch4,
-                      by = "DATE",
-                      all = TRUE)
-  
-  merged_ch4 <- merged_ch4[, c("DATE", "SiteCode", "CAMs_CH4", "Obs_CH4_ppb", "CT_CH4")]
-  
-  merged_ch4_list[[site]] <- merged_ch4
-  
 }
 
-##### Saving .csv files #####
+obs_co2$date = NULL
+obs_ch4$date = NULL
 
-output_dir <- paste0("/Volumes/Seagate/", cruise_squish, "_eulerian/towers")
+obs_co2$group = NULL
+obs_ch4$group = NULL
+
+obs_co2$interval = NULL
+obs_ch4$interval = NULL
+
+
+#### ___________________ 4. Saving .csv files ______________________________####
+output_dir <- paste0("/Users/reneechabot-mehlin/Desktop/model_plotting/", cruise_squish, "/towers")
 
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
-for (abriv in unique(matched_rows$SiteCode)) {
+for (abriv in unique(obs_co2$SiteCode)) {
   write.csv(
-    merged_co2_list[[abriv]],
-    paste0(
+    obs_co2[obs_co2$SiteCode == abriv, ],
+      paste0(
       output_dir, "/merged_co2_",
       cruise_squish, "_", abriv, ".csv"
     ),
@@ -1778,9 +962,9 @@ for (abriv in unique(matched_rows$SiteCode)) {
   )
 }
 
-for (abriv in unique(matched_rows$SiteCode)) {
+for (abriv in unique(obs_ch4$SiteCode)) {
   write.csv(
-    merged_ch4_list[[abriv]],
+    obs_ch4[obs_ch4$SiteCode == abriv, ],
     paste0(
       output_dir, "/merged_ch4_",
       cruise_squish, "_", abriv, ".csv"
@@ -1789,7 +973,7 @@ for (abriv in unique(matched_rows$SiteCode)) {
   )
 }
 
-##### _____________________________________________________________________#####
+####_____________________Extras: NOT SURE IF I SHOULD REMOVE ______________#####
 #####_______________________ 3. WNJ v LEW Comparison 2022 _________________#####
 ##### Load in the 2022 NEC tower .csv files #####
 
