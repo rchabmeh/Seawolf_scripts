@@ -12,7 +12,7 @@ library(ggplot2)
 library(ggpubr)
 library(tidyr)
 #### ---ALL TIMES CRUISE/MODEL COMPARISON- 5 MINUTE AVG--- ####
-cruise <- "Cruise 4"
+cruise <- "Cruise 24"
 #### Loading in cruise information ######
 cruise_squish <- tolower(gsub(" ", "_", cruise))
 cruise_info_load_in <- read.csv(
@@ -48,7 +48,8 @@ colnames(cruise_info)[colnames(cruise_info) == "Time_UTC"] <- "date"
 cruise_info$Day <- as.Date(cruise_info$date)
 cruise_info_5min <- timeAverage(
   cruise_info,
-  avg.time = "5 min",
+  #avg.time = "3 hour",
+ avg.time = "1 min",
   data.thresh = 0,
   statistic = "mean"
 )
@@ -836,16 +837,16 @@ cruise_info_5min$CAMS_CH4 <- cruise_info_5min$CAMS_CH4/1000
 cruise_info_5min <- cruise_info_5min %>% filter(hour(Time_local) >= 10, hour(Time_local) <= 18)
 
 #### Check against models #####
-plot(cruise_info_5min$Time_local, cruise_info_5min$CO2_dry_cal_moving_day, type = "b", pch = 20)
-lines(cruise_info_5min$Time_local, cruise_info_5min$CT_CO2_tile, type = "b", pch = 20, col = "red")
-lines(cruise_info_5min$Time_local, cruise_info_5min$CAMS_CO2, type = "b", pch = 20, col = "blue")
+# plot(cruise_info_5min$Time_local, cruise_info_5min$CO2_dry_cal_moving_day, type = "b", pch = 20)
+# lines(cruise_info_5min$Time_local, cruise_info_5min$CT_CO2_tile, type = "b", pch = 20, col = "red")
+# lines(cruise_info_5min$Time_local, cruise_info_5min$CAMS_CO2, type = "b", pch = 20, col = "blue")
+# 
+# plot(cruise_info_5min$Time_local, cruise_info_5min$CH4_dry_cal_moving_day, type = "b", pch = 20)
+# lines(cruise_info_5min$Time_local, cruise_info_5min$CT_CH4_tile, type = "b", pch = 20, col = "red")
+# lines(cruise_info_5min$Time_local, cruise_info_5min$CAMS_CH4, type = "b", pch = 20, col = "blue")
 
-plot(cruise_info_5min$Time_local, cruise_info_5min$CH4_dry_cal_moving_day, type = "b", pch = 20)
-lines(cruise_info_5min$Time_local, cruise_info_5min$CT_CH4_tile, type = "b", pch = 20, col = "red")
-lines(cruise_info_5min$Time_local, cruise_info_5min$CAMS_CH4, type = "b", pch = 20, col = "blue")
 
-
-write.csv(cruise_info_5min, "/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_4/c4_alt_models_5min_daylight.csv")
+write.csv(cruise_info_5min, "/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_24/c24_alt_models_1min_daylight.csv")
 
 
 

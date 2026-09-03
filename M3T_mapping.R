@@ -7,7 +7,7 @@ CH4_inventory_build(
   run_directory = run_dir,
   inventory_year = 2022,
   domain = as.data.frame(cbind(c(-80, -70), c(38, 42))),
-  domain_res = 0.1, #was originally 1 degree, run when not using R for other projects
+  domain_res = 0.01, #was originally 1 degree, run when not using R for other projects
   domain_crs = "epsg:4326",
   verbose = T,
   Zenodo_record = "17328718"
@@ -30,6 +30,10 @@ ch4_total <- sum(r)
 names(ch4_total) <- "CH4_total"
 
 log_ch4 <- log10(ch4_total)
+log_ch4[is.infinite(log_ch4)] <- NA
+vals <- values(log_ch4)
+lims <- quantile(vals, c(0.01, 0.99), na.rm = TRUE)
+
 
 states <- vect(
   "/Users/reneechabot-mehlin/Downloads/cb_2021_us_state_500k/cb_2021_us_state_500k.shp"
@@ -71,7 +75,13 @@ ggplot() +
     linewidth = 0.3
   ) +
   coord_sf(xlim = c(-80, -70), ylim = c(38, 42)) +
-  scale_fill_viridis_c(name = expression(log[10] * "(CH"[4] * ")"), na.value = "transparent") +
+  scale_fill_viridis_c(
+  name = expression(log[10] * "(CH"[4] * ")"),
+  limits = lims,
+  oob = scales::squish,
+  na.value = "black"
+) +
+#  scale_fill_viridis_c(name = expression(log[10] * "(CH"[4] * ")"), na.value = "transparent") +
   labs(
     title = "M3T: Total CH4 Emissions",
     subtitle = "Summary combination inventories",
@@ -98,7 +108,7 @@ ggplot() +
   geom_text(
     data = cities,
     aes(x = Longitude, y = Latitude, label = City),
-    color = "black",
+    color = "white",
     size = 5,
     vjust = -0.8,
     fontface = "bold"
@@ -140,14 +150,14 @@ ggplot() +
   geom_point(
     data = limits,
     aes(x = Lon, y = Lat),
-    color = "black",
+    color = "white",
     shape = 18,
     size = 3
   ) +
   geom_text(
     data = limits,
     aes(x = Lon, y = Lat, label = name),
-    color = "black",
+    color = "white",
     size = 5,
     vjust = -0.8,
     fontface = "bold"

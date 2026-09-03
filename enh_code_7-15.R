@@ -150,6 +150,7 @@ WNJ_enh_CAMS <- data.frame(
   TMD_CH4_ppb = (WNJ_ch4$CAMS_CH4 - TMD_ch4$CAMS_CH4)
   )
 
+## sort by date ??
 lew_co2_enh <- data.frame(
   Date = WNJ_co2$datetime_utc,
   OBS = WNJ_enh_obs$LEW_CO2_ppm,
@@ -157,6 +158,7 @@ lew_co2_enh <- data.frame(
   CAMS = WNJ_enh_CAMS$LEW_CO2_ppm
 )
 
+lew_co2_enh <- lew_co2_enh[grepl("^2023-10|^2022-04", lew_co2_enh$Date), ]
 
 lew_ch4_enh <- data.frame(
   Date = WNJ_ch4$datetime_utc,
@@ -165,6 +167,8 @@ lew_ch4_enh <- data.frame(
   CAMS = WNJ_enh_CAMS$LEW_CH4_ppb
 )
 
+lew_ch4_enh <- lew_ch4_enh[grepl("^2023-10|^2022-04", lew_ch4_enh$Date), ]
+
 tmd_co2_enh <- data.frame(
   Date = WNJ_co2$datetime_utc,
   OBS = WNJ_enh_obs$TMD_CO2_ppm,
@@ -172,12 +176,17 @@ tmd_co2_enh <- data.frame(
   CAMS = WNJ_enh_CAMS$TMD_CO2_ppm
 )
 
+tmd_co2_enh <- tmd_co2_enh[grepl("^2022-10", tmd_co2_enh$Date), ]
+
 tmd_ch4_enh <- data.frame(
   Date = WNJ_ch4$datetime_utc,
   OBS = WNJ_enh_obs$TMD_CH4_ppb,
   CT = WNJ_enh_CT$TMD_CH4_ppb,
   CAMS = WNJ_enh_CAMS$TMD_CH4_ppb
 )
+
+tmd_ch4_enh <- tmd_ch4_enh[grepl("^2022-10", tmd_ch4_enh$Date), ]
+
 ##### -------------2.PLOTTING: WNJ - LEW Enhancements--------------------- #####
 #### CT-NRT CO2 ####
 library(ggplot2)
@@ -1460,7 +1469,7 @@ ggplot(c14, aes(obs_ch4, cams_ch4.A)) +
 
 
 #### -------------------7.LOADING IN CRUISES- FULL TIMES------------------- ####
-#### ------------------LOAD IN LEW AND TMD TOWERS FOR BKGRD---------------- ####
+#### ------------------LOAD IN CRUISES, LEW, AND TMD TOWERS-------_-------- ####
 #cruise 4
 df4 <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_4/c4_alt_models_5min_daylight.csv")
 df4$date <- ifelse(
@@ -1565,8 +1574,8 @@ pad <- function(x, n) { length(x) <- n; x }
 SHIP_enh_obs <- data.frame(
   LEW_CO2_ppm = pad(LEW_CO2_ppm, n),
   LEW_CH4_ppb = pad(LEW_CH4_ppb, n),
-  TMD_CO2_ppm = pad(TMD_CO2_ppm, n),
-  TMD_CH4_ppb = pad(TMD_CH4_ppb, n)
+  TMD_CO2_ppm = pad(TMD_CO2_ppm, n), #different dates than LEW dates
+  TMD_CH4_ppb = pad(TMD_CH4_ppb, n) #different dates than LEW dates
 )
 #ct enhancement
 LEW_CO2_ppm <- merged_co2_LEW$CT_CO2_tile - merged_co2_LEW$CT_CO2
@@ -1580,8 +1589,8 @@ pad <- function(x, n) { length(x) <- n; x }
 SHIP_enh_ct <- data.frame(
   LEW_CO2_ppm = pad(LEW_CO2_ppm, n),
   LEW_CH4_ppb = pad(LEW_CH4_ppb, n),
-  TMD_CO2_ppm = pad(TMD_CO2_ppm, n),
-  TMD_CH4_ppb = pad(TMD_CH4_ppb, n)
+  TMD_CO2_ppm = pad(TMD_CO2_ppm, n), #different dates than LEW dates
+  TMD_CH4_ppb = pad(TMD_CH4_ppb, n) #different dates than LEW dates
 )
 #cams enhancement
 LEW_CO2_ppm <- merged_co2_LEW$CAMS_CO2_combo - merged_co2_LEW$CAMS_CO2_LEW
@@ -1595,8 +1604,8 @@ pad <- function(x, n) { length(x) <- n; x }
 SHIP_enh_cams <- data.frame(
   LEW_CO2_ppm = pad(LEW_CO2_ppm, n),
   LEW_CH4_ppb = pad(LEW_CH4_ppb, n),
-  TMD_CO2_ppm = pad(TMD_CO2_ppm, n),
-  TMD_CH4_ppb = pad(TMD_CH4_ppb, n)
+  TMD_CO2_ppm = pad(TMD_CO2_ppm, n), #different dates than LEW dates
+  TMD_CH4_ppb = pad(TMD_CH4_ppb, n) #different dates than LEW dates
 )
 
 ship_enh_lew <- data.frame(obs_co2 = SHIP_enh_obs$LEW_CO2_ppm,
@@ -1604,7 +1613,8 @@ ship_enh_lew <- data.frame(obs_co2 = SHIP_enh_obs$LEW_CO2_ppm,
                            ct_co2 = SHIP_enh_ct$LEW_CO2_ppm,
                            ct_ch4 = SHIP_enh_ct$LEW_CH4_ppb,
                            cams_co2 = SHIP_enh_cams$LEW_CO2_ppm,
-                           cams_ch4 = SHIP_enh_cams$LEW_CH4_ppb)
+                           cams_ch4 = SHIP_enh_cams$LEW_CH4_ppb,
+                           Date = merged_co2_LEW$date)
 
 ship_enh_tmd <- data.frame(obs_co2 = SHIP_enh_obs$TMD_CO2_ppm,
                            obs_ch4 = SHIP_enh_obs$TMD_CH4_ppb,
@@ -1612,6 +1622,10 @@ ship_enh_tmd <- data.frame(obs_co2 = SHIP_enh_obs$TMD_CO2_ppm,
                            ct_ch4 = SHIP_enh_ct$TMD_CH4_ppb,
                            cams_co2 = SHIP_enh_cams$TMD_CO2_ppm,
                            cams_ch4 = SHIP_enh_cams$TMD_CH4_ppb)
+
+ship_enh_tmd <- ship_enh_tmd[rowSums(!is.na(ship_enh_tmd)) > 0, ]
+ship_enh_tmd$Date = merged_co2_c14$date
+
 #### CT-NRT CO2 C4 & C24 ####
 library(ggplot2)
 library(ggpmisc)
@@ -2028,14 +2042,13 @@ ggplot(ship_enh_tmd, aes(obs_ch4, cams_ch4)) +
       "    Observed SEM = ", sem_val_obs
     )
   )
-##### add in alternative gridcells and lowest 5th % average ####
-##### Alternative Gridcells ####
+##### Alternative Gridcells and Lowest 5th percentile for cruise####
 library(dplyr)
 #ALT CO2 merge w/ c4 & c24
 Acombo_sub_co2 <- combo_alt %>%
-  select(date = date ,CAMS_CO2, CT.NRT_co2)
+  select(date = date ,CAMS_CO2, CT.NRT_co2) #alternative gridcells 
 combo_sub_co2 <- combo %>%
-  select(date, CT_CO2_tile, CAMS_CO2)
+  select(date, CT_CO2_tile, CAMS_CO2) #ship gridcells
 merged_co2_alt<- left_join(
   Acombo_sub_co2, combo_sub_co2,
   by = "date",
@@ -2044,9 +2057,9 @@ merged_co2_alt<- left_join(
   na.omit()
 #ALT CH4 merge w/ c4 & c24
 Acombo_sub_ch4 <- combo_alt %>%
-  select(date = date ,CAMS_CH4, CT_ch4)
+  select(date = date ,CAMS_CH4, CT_ch4) #alternative gridcells
 combo_sub_ch4 <- combo %>%
-  select(date, CT_CH4_tile, CAMS_CH4)
+  select(date, CT_CH4_tile, CAMS_CH4) #ship gridcells
 merged_ch4_alt<- left_join(
   Acombo_sub_ch4, combo_sub_ch4,
   by = "date",
@@ -2055,10 +2068,10 @@ merged_ch4_alt<- left_join(
   na.omit()
 #ALT CO2 merge w/ c14
 Alt_14_sub_co2 <- df14_alt %>%
-  select(date = date, CAMS_CO2, CT.NRT_co2)
+  select(date = date, CAMS_CO2, CT.NRT_co2) #alternative gridcells
 df14_sub_co2 <- df14 %>%
   select(date, 
-         CT_CO2_tile, CAMS_CO2)
+         CT_CO2_tile, CAMS_CO2) #ship gridcells
 merged_co2_c14_alt <- left_join(
   Alt_14_sub_co2, df14_sub_co2,
   by = "date",
@@ -2067,10 +2080,10 @@ merged_co2_c14_alt <- left_join(
   na.omit()
 #ALT CH4 merge w/ c14
 Alt_14_sub_ch4 <- df14_alt %>%
-  select(date = date, CAMS_CH4, CT_ch4)
+  select(date = date, CAMS_CH4, CT_ch4) #alternative gricells
 df14_sub_ch4 <- df14 %>%
   select(date, 
-         CT_CH4_tile, CAMS_CH4)
+         CT_CH4_tile, CAMS_CH4) #ship gridcells 
 merged_ch4_c14_alt <- left_join(
   Alt_14_sub_ch4, df14_sub_ch4,
   by = "date",
@@ -2080,14 +2093,16 @@ merged_ch4_c14_alt <- left_join(
 
 enh_combo_co2_alt.gc <- data.frame(
   CT.ppm = (merged_co2_alt$CT_CO2_tile - merged_co2_alt$CT.NRT_co2),
-  CAMS.ppm = (merged_co2_alt$CAMS_CO2_combo - merged_co2_alt$CAMS_CO2_Alt)
-)
+  CAMS.ppm = (merged_co2_alt$CAMS_CO2_combo - merged_co2_alt$CAMS_CO2_Alt),
+  Date = merged_co2_alt$date
+  )
 
 enh_combo_ch4_alt.gc <- data.frame(
   CT.ppb = ((merged_ch4_alt$CT_CH4_tile * 1000) - merged_ch4_alt$CT_ch4),
   CAMS.ppb = ((merged_ch4_alt$CAMS_CH4_combo *
                  1000) - merged_ch4_alt$CAMS_CH4_Alt
-  )
+  ),
+  Date = merged_ch4_alt$date
 )
 
 enh_c14_co2_alt.gc <- data.frame(
@@ -2096,7 +2111,8 @@ enh_c14_co2_alt.gc <- data.frame(
   ),
   CAMS.ppm = (
     merged_co2_c14_alt$CAMS_CO2_cruise - merged_co2_c14_alt$CAMS_CO2_Alt
-  )
+  ),
+  Date = merged_co2_c14_alt$date
 )
 
 enh_c14_ch4_alt.gc <- data.frame(
@@ -2104,10 +2120,13 @@ enh_c14_ch4_alt.gc <- data.frame(
   ),
   CAMS.ppb = ((merged_ch4_c14_alt$CAMS_CH4_cruise *
                  1000) - merged_ch4_c14_alt$CAMS_CH4_Alt
-  )
+  ),
+  Date = merged_ch4_c14_alt$date
 )
 
-##### lowest 5th % Average #####
+alternative_enh_c4.c24 <-merge(enh_combo_co2_alt.gc, enh_combo_ch4_alt.gc, by = "Date", all.x = T)
+alternative_enh_c14 <-merge(enh_c14_co2_alt.gc, enh_c14_ch4_alt.gc, by = "Date", all.x = T)
+
 lowest <- readRDS("/Users/reneechabot-mehlin/Desktop/model_plotting/5th_per_bkgrds.RDS")
 i <- match(combo$cruise, lowest$cruise)
 combo$CO2_enh_L5th <- combo$CO2_dry_cal_moving_day - lowest$co2[i]
@@ -2116,7 +2135,136 @@ i <- match(df14$cruise, lowest$cruise)
 df14$CO2_enh_L5th <- df14$CO2_dry_cal_moving_day - lowest$co2[i]
 df14$CH4_enh_L5th <- df14$CH4_dry_cal_moving_day - lowest$ch4[i]
 
+enh_fifth_c4.c24 = data.frame(
+  CO2_ppm = combo$CO2_enh_L5th,
+  CH4_ppb = (combo$CH4_enh_L5th * 1000),
+  Date = combo$date
+)
 
+enh_fifth_c14 = data.frame(
+  CO2_ppm = df14$CO2_enh_L5th,
+  CH4_ppb = (df14$CH4_enh_L5th * 1000),
+  Date = df14$date
+)
 
+library(ggplot2)
+plot_stats <- function(df, column, title = NULL, ylab = NULL){
+  
+  x <- df[[column]]
+  x <- x[!is.na(x)]
+  
+  stats <- data.frame(
+    Index = seq_along(x),
+    Value = x
+  )
+  
+  mean_x <- mean(x)
+  sd_x   <- sd(x)
+  sem_x  <- sd_x / sqrt(length(x))
+  
+  label <- sprintf(
+    "Mean = %.3f\nSD = %.3f\nSEM = %.3f",
+    mean_x, sd_x, sem_x
+  )
+  
+  ggplot(stats, aes(Index, Value)) +
+    geom_line(color = "black") +
+    geom_point(size = 1.5) +
+    annotate(
+      "label",
+      x = Inf, y = Inf,
+      hjust = 1.05, vjust = 1.1,
+      label = label,
+      size = 5
+    ) +
+    labs(
+      title = title,
+      x = "count (n)",
+      y = ylab
+    ) +
+    theme_bw(base_size = 18)
+}
 
+plot_stats(
+  enh_fifth_c4.c24,
+  "CO2_ppm",
+  "Lowest Fifth Percentile Averaged CO2 Enhancement (C4/C24)",
+  "Ship CO2 Observations - Lowest Fifth Percentile Average CO2 (ppm)"
+)
 
+plot_stats(
+  enh_fifth_c4.c24,
+  "CH4_ppb",
+  "Lowest Fifth Percentile Averaged CH4 Enhancement (C4/C24)",
+  "Ship CH4 Observations - Lowest Fifth Percentile Average CH4 (ppb)"
+)
+
+plot_stats(
+  enh_fifth_c14,
+  "CO2_ppm",
+  "Lowest Fifth Percentile Averaged CO2 Enhancement (C14)",
+  "Ship CO2 Observations - Lowest Fifth Percentile Average CO2 (ppm)"
+)
+
+plot_stats(
+  enh_fifth_c14,
+  "CH4_ppb",
+  "Lowest Fifth Percentile Averaged CH4 Enhancement (C14)",
+  "Ship CH4 Observations - Lowest Fifth Percentile Average CH4 (ppb)"
+)
+
+plot_stats(
+  alternative_enh_c4.c24,
+  "CT.ppm",
+  "Alternative Grid Cell CT-NRT Model CO2 Enhancement (C4/C24)",
+  "Ship CO2 CT-NRT - Alternative Grid Cell CT-NRT Model CO2 (ppm)"
+)
+
+plot_stats(
+  alternative_enh_c4.c24,
+  "CAMS.ppm",
+  "Alternative Grid Cell CAMS Model CO2 Enhancement (C4/C24)",
+  "Ship CO2 CAMS - Alternative Grid Cell CAMS Model CO2 (ppm)"
+)
+
+plot_stats(
+  alternative_enh_c4.c24,
+  "CT.ppb",
+  "Alternative Grid Cell CT Model CH4 Enhancement (C4/C24)",
+  "Ship CH4 CT - Alternative Grid Cell CT Model CH4 (ppb)"
+)
+
+plot_stats(
+  alternative_enh_c4.c24,
+  "CAMS.ppb",
+  "Alternative Grid Cell CAMS Model CH4 Enhancement (C4/C24)",
+  "Ship CH4 CAMS - Alternative Grid Cell CAMS Model CH4 (ppb)"
+)
+
+plot_stats(
+  alternative_enh_c14,
+  "CT.ppm",
+  "Alternative Grid Cell CT-NRT Model CO2 Enhancement (C14)",
+  "Ship CO2 CT-NRT - Alternative Grid Cell CT-NRT Model CO2 (ppm)"
+)
+
+plot_stats(
+  alternative_enh_c14,
+  "CAMS.ppm",
+  "Alternative Grid Cell CAMS Model CO2 Enhancement (C14)",
+  "Ship CO2 CAMS - Alternative Grid Cell CAMS Model CO2 (ppm)"
+)
+
+plot_stats(
+  alternative_enh_c14,
+  "CT.ppb",
+  "Alternative Grid Cell CT Model CH4 Enhancement (C14)",
+  "Ship CH4 CT - Alternative Grid Cell CT Model CH4 (ppb)"
+)
+
+plot_stats(
+  alternative_enh_c14,
+  "CAMS.ppb",
+  "Alternative Grid Cell CAMS Model CH4 Enhancement (C14)",
+  "Ship CH4 CAMS - Alternative Grid Cell CAMS Model CH4 (ppb)"
+)

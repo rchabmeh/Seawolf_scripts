@@ -38,9 +38,11 @@ text(alt.gridcells$Lon, alt.gridcells$Lat, labels = alt.gridcells$name, pos = 4,
 #ok might as well try this bitchhhh out!
 
 ##### Alternative enh pt 2!! #####
-c4.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_4/c4_alt_models_5min_daylight.csv")
-c14.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_14/c14_alt_models_5min_daylight.csv")
-c24.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_24/c24_alt_models_5min_daylight.csv")
+#c4.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_4/c4_alt_models_5min_daylight.csv")
+c14.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_14/c14_alt_models_3hr_daylight.csv")
+
+#c14.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_14/c14_alt_models_5min_daylight.csv")
+c24.5m <- read.csv("/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_24/c24_alt_models_3hr_daylight.csv")
 
 c4.5m$date <- as.POSIXct(c4.5m$date, tz = "UTC", format = "%Y-%m-%d %H:%M:%S")
 
@@ -50,16 +52,16 @@ c14.5m$date = c14.5m$date - 120
 c24.5m$date <- as.POSIXct(c24.5m$date, tz = "UTC", format = "%Y-%m-%d %H:%M:%S")
 c24.5m$date = c24.5m$date - 60
 
-nw.c4.df <- data.frame(date = c4.5m$date, lon = alt.gridcells$Lon[1], lat = alt.gridcells$Lat[1])
+#nw.c4.df <- data.frame(date = c4.5m$date, lon = alt.gridcells$Lon[1], lat = alt.gridcells$Lat[1])
 nw.c24.df <- data.frame(date = c24.5m$date, lon = alt.gridcells$Lon[1], lat = alt.gridcells$Lat[1])
 w.c14.df <- data.frame(date = c14.5m$date, lon = alt.gridcells$Lon[2], lat = alt.gridcells$Lat[2])
 
 
-cruise <- "Cruise 14" ##changing variable here
+cruise <- "Cruise 24" ##changing variable here
 cruise_squish <- tolower(gsub(" ", "_", cruise))
 
-start_date <- as.Date(min(w.c14.df$date)) ##changing variable here
-end_date <- as.Date(max(w.c14.df$date)) ##changing variable here
+start_date <- as.Date(min(nw.c24.df$date)) ##changing variable here
+end_date <- as.Date(max(nw.c24.df$date)) ##changing variable here
 
 #CT
 library(raster)
@@ -210,8 +212,8 @@ for (i in seq_along(CTCH4_lists)) {
 
 CT_CH4_df <- do.call(rbind, all_results)
 
-nw.c24.df <- merge(nw.c24.df, CT_CO2_df, by = c("date","lon", "lat")) ##changing variable here
-nw.c24.df <- merge(nw.c24.df, CT_CH4_df, by = c("date","lon", "lat")) ##changing variable here
+nw.c24.df <- merge(nw.c24.df, CT_CO2_df, by = c("date","lon", "lat")) ##changing variables here
+nw.c24.df <- merge(nw.c24.df, CT_CH4_df, by = c("date","lon", "lat")) ##changing variables here
 
 
 #CAMS
@@ -297,10 +299,10 @@ closest_times <- data.frame()
 time_tolerance_secs <- 0
 
 # CO2 loop — only process CO2 files
-for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
-  target_time <- w.c14.df$date[j] ##changing variable here
-  lon <- w.c14.df$lon[j] ##changing variable here
-  lat <- w.c14.df$lat[j] ##changing variable here
+for (j in seq_len(nrow(nw.c24.df))) { ##changing variable here
+  target_time <- nw.c24.df$date[j] ##changing variable here
+  lon <- nw.c24.df$lon[j] ##changing variable here
+  lat <- nw.c24.df$lat[j] ##changing variable here
   coords <- matrix(c(lon, lat), ncol = 2)
   
   for (i in seq_along(files)) {
@@ -324,7 +326,7 @@ for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
     r_layer <- CAMS[["CO2"]][[brick_index]][[layer_number]]
     model_value <- raster::extract(r_layer, coords)
     
-    w.c14.df$CAMS_CO2[j] <- model_value * 1e6 ##changing variable here
+    nw.c24.df$CAMS_CO2[j] <- model_value * 1e6 ##changing variable here
     
     closest_times <- rbind(closest_times, data.frame(
       cruise_row  = j,
@@ -338,10 +340,10 @@ for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
 }
 
 # CH4 loop — only process CH4 files
-for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
-  target_time <- w.c14.df$date[j] ##changing variable here
-  lon <- w.c14.df$lon[j] ##changing variable here
-  lat <- w.c14.df$lat[j] ##changing variable here
+for (j in seq_len(nrow(nw.c24.df))) { ##changing variable here
+  target_time <- nw.c24.df$date[j] ##changing variable here
+  lon <- nw.c24.df$lon[j] ##changing variable here
+  lat <- nw.c24.df$lat[j] ##changing variable here
   coords <- matrix(c(lon, lat), ncol = 2)
   
   for (i in seq_along(files)) {
@@ -365,7 +367,7 @@ for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
     r_layer <- CAMS[["CH4"]][[brick_index]][[layer_number]]
     model_value <- raster::extract(r_layer, coords)
     
-    w.c14.df$CAMS_CH4[j] <- model_value  # CH4 already in correct units ##changing variable here
+    nw.c24.df$CAMS_CH4[j] <- model_value  #changing variable here
     
     closest_times <- rbind(closest_times, data.frame(
       cruise_row  = j,
@@ -378,7 +380,11 @@ for (j in seq_len(nrow(w.c14.df))) { ##changing variable here
   }
 }
 
-write.csv(nw.c4.df,"/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_4/alt_gridcell_bkgrd_c4.csv")
+write.csv(nw.c24.df,"/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_24/alt_gridcell_bkgrd_c24_3hr.csv")
+
+
+
+
 write.csv(nw.c24.df,"/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_24/alt_gridcell_bkgrd_c24.csv")
 write.csv(w.c14.df,"/Users/reneechabot-mehlin/Desktop/model_plotting/cruise_14/alt_gridcell_bkgrd_c14.csv")
 

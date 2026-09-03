@@ -1,5 +1,5 @@
 #Analyzing tower data: observations and models comparison
-#Updated last on June 4, 2026
+#Updated last on August 4, 2026
 
 #You will have to manually change items in:
 # 2.3 (start_date, end_date)
@@ -790,7 +790,7 @@ files <- list.files(
   full.names = TRUE
 )
 
-level_co2 <- 3   # 43.3 m
+level_co2 <- 1   
 level_ch4 <- 1   # 378.3 m (lowest)
 
 for (f in files) {

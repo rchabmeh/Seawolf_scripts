@@ -28,28 +28,28 @@ dates_c24 <- readRDS("/Users/reneechabot-mehlin/Desktop/Seawulf_files/RData/rece
 dates_c24 <-dates_c24$time
 hours_c24 <- format(dates_c24, "%Y-%m-%d %H")
 
-subset_c4 <- c4_5min_daylight[
-  format(c4_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c4,
-]
-# subset_c4 <- c4_5min_daylight[c4_5min_daylight$date %in% dates_c4, ]
+# subset_c4 <- c4_5min_daylight[
+#   format(c4_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c4,
+# ]
+subset_c4 <- c4_5min_daylight[c4_5min_daylight$date %in% dates_c4, ]
 subset_c4$Observed_CO2<- subset_c4$CO2_dry_cal_moving_day
 subset_c4$Observed_CH4<- subset_c4$CH4_dry_cal_moving_day
 subset_c4$CT_CO2 <- subset_c4$CT_CO2_tile
 subset_c4$CT_CH4 <- subset_c4$CT_CH4_tile
 
-subset_c14 <- c14_5min_daylight[
-  format(c14_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c14,
-]
-#subset_c14 <- c14_5min_daylight[c14_5min_daylight$date %in% dates_c14, ]
+# subset_c14 <- c14_5min_daylight[
+#   format(c14_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c14,
+# ]
+subset_c14 <- c14_5min_daylight[c14_5min_daylight$date %in% dates_c14, ]
 subset_c14$Observed_CO2<- subset_c14$CO2_dry_cal_moving_day
 subset_c14$Observed_CH4<- subset_c14$CH4_dry_cal_moving_day
 subset_c14$CT_CO2 <- subset_c14$CT_CO2_tile
 subset_c14$CT_CH4 <- subset_c14$CT_CH4_tile
 
-subset_c24 <- c24_5min_daylight[
-  format(c24_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c24,
-]
-# subset_c24 <- c24_5min_daylight[c24_5min_daylight$date %in% dates_c24, ]
+# subset_c24 <- c24_5min_daylight[
+#   format(c24_5min_daylight$date, "%Y-%m-%d %H") %in% hours_c24,
+# ]
+ subset_c24 <- c24_5min_daylight[c24_5min_daylight$date %in% dates_c24, ]
 subset_c24$Observed_CO2<- subset_c24$CO2_dry_cal_moving_day
 subset_c24$Observed_CH4<- subset_c24$CH4_dry_cal_moving_day
 subset_c24$CT_CO2 <- subset_c24$CT_CO2_tile
